@@ -43,50 +43,52 @@ import de.schlichtherle.truezip.file.TFile;
 @Mojo( name = "install", defaultPhase = LifecyclePhase.PROCESS_TEST_SOURCES )
 public class InstallPhantomJsMojo extends AbstractMojo {
 
-	@Parameter( defaultValue = "${project.build.directory}/phantomjs-maven-plugin", property = "outputDir", required = true )
+  @Parameter(defaultValue = "${project.build.directory}/phantomjs-maven-plugin", property = "outputDir", required = true )
   private File outputDirectory;
 
   @Parameter(required=true)
   private String version;
-  
+
   @Parameter(defaultValue="https://phantomjs.googlecode.com/files/",required=true)
   private String baseUrl;
-  
+
   @Parameter(defaultValue="${project}",readonly=true)
   private MavenProject mavenProject;
-  
+
   public void execute() throws MojoExecutionException {
-		if (!outputDirectory.exists() && !outputDirectory.mkdir()) {
-			throw new MojoExecutionException("unable to create directory: " + outputDirectory);
-		}
-  	
-  	PhantomJSArchive phantomJSFile = new PhantomJSArchiveBuilder(version).build();
-  	
-  	File extractTo = new File(outputDirectory,phantomJSFile.getExtractToPath());
-		if (!extractTo.exists()) {
-    	StringBuilder url = new StringBuilder();
-    	url.append(baseUrl);
-    	url.append(phantomJSFile.getArchiveName());
-    	
-    	try {
-				URL downloadLocation = new URL(url.toString());
-				getLog().info("Downloading phantomjs binaries from " + url);
-				ReadableByteChannel rbc = Channels.newChannel(downloadLocation.openStream());
-				File outputFile = new File(outputDirectory, phantomJSFile.getArchiveName());
-				FileOutputStream fos = new FileOutputStream(outputFile);
-				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-				TFile archive = new TFile(outputDirectory, phantomJSFile.getPathToExecutable());
-				
-				getLog().info("Extracting "+archive.getAbsolutePath()+" to " + extractTo.getAbsolutePath());
-				extractTo.getParentFile().mkdirs();
-				archive.cp(extractTo);				
-				extractTo.setExecutable(true);
-				mavenProject.getProperties().setProperty("phantomjs.binary", extractTo.getAbsolutePath());
-			} catch (MalformedURLException e) {
-				throw new MojoExecutionException("unable to download " + url, e);
-			} catch (IOException e) {
-				throw new MojoExecutionException("unable to download " + url, e);
-			}
-		}
+    if (!outputDirectory.exists() && !outputDirectory.mkdir()) {
+      throw new MojoExecutionException("unable to create directory: " + outputDirectory);
+    }
+
+    PhantomJSArchive phantomJSFile = new PhantomJSArchiveBuilder(version).build();
+
+    File extractTo = new File(outputDirectory,phantomJSFile.getExtractToPath());
+    if (!extractTo.exists()) {
+      StringBuilder url = new StringBuilder();
+      url.append(baseUrl);
+      url.append(phantomJSFile.getArchiveName());
+
+      try {
+        URL downloadLocation = new URL(url.toString());
+
+        getLog().info("Downloading phantomjs binaries from " + url);
+        ReadableByteChannel rbc = Channels.newChannel(downloadLocation.openStream());
+        File outputFile = new File(outputDirectory, phantomJSFile.getArchiveName());
+        FileOutputStream fos = new FileOutputStream(outputFile);
+        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        TFile archive = new TFile(outputDirectory, phantomJSFile.getPathToExecutable());
+
+        getLog().info("Extracting "+archive.getAbsolutePath()+" to " + extractTo.getAbsolutePath());
+        extractTo.getParentFile().mkdirs();
+        archive.cp(extractTo);
+        extractTo.setExecutable(true);
+
+        mavenProject.getProperties().setProperty("phantomjs.binary", extractTo.getAbsolutePath());
+      } catch (MalformedURLException e) {
+        throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
+      } catch (IOException e) {
+        throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
+      }
+    }
   }
 }
