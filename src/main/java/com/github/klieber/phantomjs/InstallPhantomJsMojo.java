@@ -72,6 +72,9 @@ public class InstallPhantomJsMojo extends AbstractMojo {
   )
   private File outputDirectory;
 
+  /**
+   * The name of the property that will contains the path to the binary.
+   */
   @Parameter(
       defaultValue = "phantomjs.binary",
       property = "phantomjs.propertyName",
