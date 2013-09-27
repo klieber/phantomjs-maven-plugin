@@ -13,3 +13,7 @@ local.properties
 .settings/
 .loadpath
 .externalToolBuilders/
+*.iml
+*.ipr
+*.iws
+.idea/
