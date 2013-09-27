@@ -72,17 +72,17 @@ public class InstallPhantomJsMojo extends AbstractMojo {
   )
   private File outputDirectory;
 
+  @Parameter(
+      defaultValue = "phantomjs.binary",
+      property = "phantomjs.propertyName",
+      required = true
+  )
+  private String propertyName;
+
   @Parameter(defaultValue="${project}",readonly=true)
   private MavenProject mavenProject;
 
   public void execute() throws MojoExecutionException {
-    if (!outputDirectory.exists()) {
-      getLog().info("directory does not exist: " + outputDirectory);
-    }
-
-    if (!outputDirectory.mkdirs()) {
-      getLog().info("unable to mkdirs");
-    }
 
     if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
       throw new MojoExecutionException("unable to create directory: " + outputDirectory);
@@ -110,13 +110,12 @@ public class InstallPhantomJsMojo extends AbstractMojo {
         extractTo.getParentFile().mkdirs();
         archive.cp(extractTo);
         extractTo.setExecutable(true);
-
-        mavenProject.getProperties().setProperty("phantomjs.binary", extractTo.getAbsolutePath());
       } catch (MalformedURLException e) {
         throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
       } catch (IOException e) {
         throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
       }
     }
+    mavenProject.getProperties().put(propertyName, extractTo.getAbsolutePath());
   }
 }
