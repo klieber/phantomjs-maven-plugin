@@ -21,11 +21,13 @@
         <version>@project.version@</version>
         <executions>
           <execution>
-            <id>touch</id>
-            <phase>validate</phase>
+            <id>install-phantomjs</id>
             <goals>
-              <goal>touch</goal>
+              <goal>install</goal>
             </goals>
+            <configuration>
+              <version>1.9.2</version>
+            </configuration>
           </execution>
         </executions>
       </plugin>
