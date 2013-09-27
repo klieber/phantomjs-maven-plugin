@@ -38,25 +38,53 @@ import org.apache.maven.project.MavenProject;
 import de.schlichtherle.truezip.file.TFile;
 
 /**
- * Install phantomjs binaries.
+ * Maven plugin for downloading and installing phantomjs binaries.
  */
 @Mojo( name = "install", defaultPhase = LifecyclePhase.PROCESS_TEST_SOURCES )
 public class InstallPhantomJsMojo extends AbstractMojo {
 
-  @Parameter(defaultValue = "${project.build.directory}/phantomjs-maven-plugin", property = "outputDir", required = true )
-  private File outputDirectory;
-
-  @Parameter(required=true)
+  /**
+   * The version of phantomjs to install.
+   */
+  @Parameter(
+      property = "phantomjs.version",
+      required=true
+  )
   private String version;
 
-  @Parameter(defaultValue="https://phantomjs.googlecode.com/files/",required=true)
+  /**
+   * The base url the phantomjs binary can be downloaded from.
+   */
+  @Parameter(
+      defaultValue="https://phantomjs.googlecode.com/files/",
+      property = "phantomjs.baseUrl",
+      required=true
+  )
   private String baseUrl;
+
+  /**
+   * The directory the phantomjs binary should be installed.
+   */
+  @Parameter(
+      defaultValue = "${project.build.directory}/phantomjs-maven-plugin",
+      property = "phantomjs.outputDir",
+      required = true
+  )
+  private File outputDirectory;
 
   @Parameter(defaultValue="${project}",readonly=true)
   private MavenProject mavenProject;
 
   public void execute() throws MojoExecutionException {
-    if (!outputDirectory.exists() && !outputDirectory.mkdir()) {
+    if (!outputDirectory.exists()) {
+      getLog().info("directory does not exist: " + outputDirectory);
+    }
+
+    if (!outputDirectory.mkdirs()) {
+      getLog().info("unable to mkdirs");
+    }
+
+    if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
       throw new MojoExecutionException("unable to create directory: " + outputDirectory);
     }
 
