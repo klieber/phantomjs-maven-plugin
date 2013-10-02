@@ -1,12 +1,12 @@
-Usage
-=====
+Introduction
+============
 
 This plugin is generally meant to be used with another plugin that requires
 the phantomjs binary. The plugin will download the binary and make it
 executable. Then it will set the property, `phantomjs.binary`, to the path
 to the binary.
 
-This example shows a typical usage with the (jasmine-maven-plugin)[http://searls.github.io/jasmine-maven-plugin/].
+This example shows a typical usage with the [jasmine-maven-plugin](http://searls.github.io/jasmine-maven-plugin/).
 
 ```
 <project>
@@ -43,12 +43,12 @@ This example shows a typical usage with the (jasmine-maven-plugin)[http://searls
           <webDriverClassName>org.openqa.selenium.phantomjs.PhantomJSDriver</webDriverClassName>
           <webDriverCapabilities>
             <phantomjs.binary.path>${phantomjs.binary}</phantomjs.binary.path>
-          </webDriverCapabilities> 
+          </webDriverCapabilities>
         </configuration>
       </plugin>
       ...
     </plugins>
   </build>
   ...
-</project> 
+</project>
 ```

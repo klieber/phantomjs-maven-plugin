@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="jasmine-maven-plugin">
+<project name="phantomjs-maven-plugin">
   <publishDate format="dd MMM yyyy" position="left"/>
   <skin>
     <groupId>org.apache.maven.skins</groupId>
@@ -20,7 +20,6 @@
    <menu name="Overview">
       <item name="Introduction" href="index.html"/>
       <item name="Goals" href="plugin-info.html"/>
-      <item name="Usage" href="usage.html"/>
    </menu>
    
    <menu ref="reports"/>
