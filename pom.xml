@@ -38,8 +38,8 @@
 
   <scm>
     <url>https://github.com/klieber/phantomjs-maven-plugin</url>
-    <connection>scm:git:https://github.com/klieber/phantomjs-maven-plugin.git</connection>
-    <developerConnection>scm:git:https://klieber@github.com/klieber/phantomjs-maven-plugin.git</developerConnection>
+    <connection>scm:git:git@github.com:klieber/phantomjs-maven-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:klieber/phantomjs-maven-plugin.git</developerConnection>
   </scm>
 
   <issueManagement>
