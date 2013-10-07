@@ -25,7 +25,7 @@ This example shows a typical usage with the [jasmine-maven-plugin](http://searls
           </execution>
         </executions>
         <configuration>
-          <version>phantomjs</version>
+          <version>1.9.2</version>
         </configuration>
       </plugin>
       <plugin>
