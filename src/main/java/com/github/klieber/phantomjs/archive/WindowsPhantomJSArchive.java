@@ -18,11 +18,11 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs;
+package com.github.klieber.phantomjs.archive;
 
-public class MacOSXPhantomJSArchive extends PhantomJSArchive {
+public class WindowsPhantomJSArchive extends PhantomJSArchive {
 
-	public MacOSXPhantomJSArchive(String version) {
+	public WindowsPhantomJSArchive(String version) {
 		super(version);
 	}
 
@@ -33,11 +33,11 @@ public class MacOSXPhantomJSArchive extends PhantomJSArchive {
 
 	@Override
 	protected String getPlatform() {
-		return "macosx";
+		return "windows";
 	}
 
 	@Override
 	protected String getExecutable() {
-		return "bin/phantomjs";
+		return "phantomjs.exe";
 	}
 }

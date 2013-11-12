@@ -18,42 +18,34 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs;
+package com.github.klieber.phantomjs.archive;
 
+public class LinuxPhantomJSArchive extends PhantomJSArchive {
 
-public class PhantomJSArchiveBuilder {
-	
-	private final String platform;
 	private final String arch;
-	private final String version;
-	
-	public PhantomJSArchiveBuilder(String platform, String arch, String version) {
-		this.platform = platform;
-		this.arch     = arch;
-		this.version  = version;
+
+	public LinuxPhantomJSArchive(String version, String arch) {
+		super(version);
+		this.arch = arch;
+	}
+
+	@Override
+	protected String getExtension() {
+		return "tar.bz2";
+	}
+
+	@Override
+	protected String getPlatform() {
+		return "linux";
+	}
+
+	@Override
+	protected String getExecutable() {
+		return "bin/phantomjs";
 	}
 	
-	public PhantomJSArchiveBuilder(String version) {
-		this(
-				System.getProperty("os.name").toLowerCase(),
-				System.getProperty("os.arch").toLowerCase(),
-				version
-		);
-	}
-	
-	public PhantomJSArchive build() {
-		PhantomJSArchive archive = null;
-  	if (platform.contains("win")) {
-  		archive = new WindowsPhantomJSArchive(version);
-  	} else if (platform.contains("mac")) {
-  		archive = new MacOSXPhantomJSArchive(version);
-  	} else if (platform.contains("nux")) {
-  		String modifier = arch.contains("64") ? "x86_64" : "i686"; 
- 			archive = new LinuxPhantomJSArchive(version, modifier);
-  	}
-  	if (archive == null) {
-  		throw new IllegalArgumentException("unknown platform: " + platform);
-  	}
-  	return archive;
+	@Override
+	protected String getArch() {
+		return this.arch;
 	}
 }
