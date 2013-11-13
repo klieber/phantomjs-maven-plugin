@@ -37,6 +37,8 @@ import java.nio.channels.ReadableByteChannel;
 
 /**
  * Maven plugin for downloading and installing phantomjs binaries.
+ *
+ * @since 0.1
  */
 @Mojo(name = "install", defaultPhase = LifecyclePhase.PROCESS_TEST_SOURCES)
 public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
