@@ -141,7 +141,7 @@ public abstract class AbstractPhantomJsMojo extends AbstractMojo {
   @Parameter(
       property = "phantomjs.configFile"
   )
-  protected String configFile;
+  protected File configFile;
 
   @Parameter(defaultValue = "${project}", readonly = true)
   protected MavenProject mavenProject;

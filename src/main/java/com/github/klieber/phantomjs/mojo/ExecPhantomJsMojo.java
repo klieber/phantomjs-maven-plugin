@@ -23,12 +23,13 @@ package com.github.klieber.phantomjs.mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.codehaus.plexus.util.cli.CommandLineUtils;
+import org.codehaus.plexus.util.cli.Commandline;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -40,22 +41,24 @@ import java.util.Scanner;
 public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
 
   public void run() throws MojoExecutionException {
-    getLog().info("Executing phantomjs");
+    getLog().info("Executing phantomjs command");
 
     String binary = this.getPhantomJsBinary();
 
-    List<String> commands = new ArrayList<String>();
-
-    if (isWindows() && binary.toLowerCase().endsWith(".bat")) {
-      commands.add("cmd");
-      commands.add("/c");
+    Commandline commandline = new Commandline(binary);
+    if (configFile != null && configFile.exists()) {
+      commandline.createArg().setValue("--config=" + configFile.getAbsolutePath());
+    } else {
+      commandline.addArguments(this.getCommandLineOptions());
     }
-
-    commands.add(binary);
-    commands.add(this.script);
+    commandline.createArg().setValue(this.script);
+    commandline.addArguments(this.arguments.toArray(new String[this.arguments.size()]));
 
     try {
-      Process process = new ProcessBuilder(commands).inheritIO().start();
+      if (getLog().isDebugEnabled()) {
+        getLog().debug("phantomjs command: " + Arrays.asList(commandline.getShellCommandline()));
+      }
+      Process process = new ProcessBuilder(commandline.getShellCommandline()).start();
       inheritIO(process.getInputStream(), System.out);
       inheritIO(process.getErrorStream(), System.err);
       process.waitFor();
@@ -66,9 +69,12 @@ public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
     }
   }
 
-  private boolean isWindows() {
-    String platform = System.getProperty("os.name");
-    return platform != null && platform.toLowerCase().contains("win");
+  private String[] getCommandLineOptions() throws MojoExecutionException {
+    try {
+      return CommandLineUtils.translateCommandline(this.commandLineOptions);
+    } catch (Exception e) {
+      throw new MojoExecutionException("Failed to execute phantomjs command", e);
+    }
   }
 
   private static void inheritIO(final InputStream src, final PrintStream dest) {
