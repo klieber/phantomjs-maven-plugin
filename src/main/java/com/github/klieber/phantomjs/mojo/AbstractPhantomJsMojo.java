@@ -26,48 +26,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.io.File;
-import java.util.List;
-
 /**
  * Abstract base class for phantomjs-maven-plugin mojos.
  */
 public abstract class AbstractPhantomJsMojo extends AbstractMojo {
-
-  /**
-   * The version of phantomjs to install.
-   *
-   * @since 0.1
-   */
-  @Parameter(
-      property = "phantomjs.version",
-      required = true
-  )
-  protected String version;
-
-  /**
-   * The base url the phantomjs binary can be downloaded from.
-   *
-   * @since 0.1
-   */
-  @Parameter(
-      defaultValue = "https://phantomjs.googlecode.com/files/",
-      property = "phantomjs.baseUrl",
-      required = true
-  )
-  protected String baseUrl;
-
-  /**
-   * The directory the phantomjs binary should be installed.
-   *
-   * @since 0.1
-   */
-  @Parameter(
-      defaultValue = "${project.build.directory}/phantomjs-maven-plugin",
-      property = "phantomjs.outputDir",
-      required = true
-  )
-  protected File outputDirectory;
 
   /**
    * The name of the property that will contains the path to the binary.
@@ -79,7 +41,7 @@ public abstract class AbstractPhantomJsMojo extends AbstractMojo {
       property = "phantomjs.propertyName",
       required = true
   )
-  protected String propertyName;
+  private String propertyName;
 
   /**
    * The path to the phantomjs binary
@@ -89,7 +51,7 @@ public abstract class AbstractPhantomJsMojo extends AbstractMojo {
   @Parameter(
       property = "phantomjs.binary"
   )
-  protected String phantomJsBinary;
+  private String phantomJsBinary;
 
   /**
    * Skip the phantomjs-maven-plugin execution.
@@ -101,50 +63,10 @@ public abstract class AbstractPhantomJsMojo extends AbstractMojo {
       property = "phantomjs.skip",
       required = true
   )
-  protected boolean skip;
-
-  /**
-   * Command line options for phantomjs
-   *
-   * @since 0.2
-   */
-  @Parameter(
-      property = "phantomjs.commandLineOptions"
-  )
-  protected String commandLineOptions;
-
-  /**
-   * Script to execute
-   *
-   * @since 0.2
-   */
-  @Parameter(
-      property = "phantomjs.script"
-  )
-  protected String script;
-
-  /**
-   * Arguments for the script being executed
-   *
-   * @since 0.2
-   */
-  @Parameter(
-      property = "phantomjs.args"
-  )
-  protected List<String> arguments;
-
-  /**
-   * Configuration file for phantomjs
-   *
-   * @since 0.2
-   */
-  @Parameter(
-      property = "phantomjs.configFile"
-  )
-  protected File configFile;
+  private boolean skip;
 
   @Parameter(defaultValue = "${project}", readonly = true)
-  protected MavenProject mavenProject;
+  private MavenProject mavenProject;
 
   public final void execute() throws MojoExecutionException {
     if (!skip) {
@@ -159,5 +81,9 @@ public abstract class AbstractPhantomJsMojo extends AbstractMojo {
       this.phantomJsBinary = mavenProject.getProperties().getProperty(this.propertyName);
     }
     return this.phantomJsBinary;
+  }
+
+  protected void setPhantomJsBinary(String binary) {
+    mavenProject.getProperties().put(this.propertyName, binary);
   }
 }

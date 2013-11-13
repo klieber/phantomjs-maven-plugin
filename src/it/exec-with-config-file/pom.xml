@@ -14,23 +14,16 @@
   </properties>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>@project.groupId@</groupId>
-          <artifactId>@project.artifactId@</artifactId>
-          <version>@project.version@</version>
-          <configuration>
-            <version>1.9.2</version>
-            <script>hello.js</script>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>@project.groupId@</groupId>
         <artifactId>@project.artifactId@</artifactId>
+        <version>@project.version@</version>
+        <configuration>
+          <version>1.9.2</version>
+          <configFile>config.json</configFile>
+          <script>store-cookie.js</script>
+        </configuration>
         <executions>
           <execution>
             <goals>

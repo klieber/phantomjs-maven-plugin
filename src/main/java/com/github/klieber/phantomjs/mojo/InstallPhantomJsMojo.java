@@ -26,6 +26,7 @@ import de.schlichtherle.truezip.file.TFile;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,6 +43,41 @@ import java.nio.channels.ReadableByteChannel;
  */
 @Mojo(name = "install", defaultPhase = LifecyclePhase.PROCESS_TEST_SOURCES)
 public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
+
+  /**
+   * The version of phantomjs to install.
+   *
+   * @since 0.1
+   */
+  @Parameter(
+      property = "phantomjs.version",
+      required = true
+  )
+  private String version;
+
+  /**
+   * The base url the phantomjs binary can be downloaded from.
+   *
+   * @since 0.1
+   */
+  @Parameter(
+      defaultValue = "https://phantomjs.googlecode.com/files/",
+      property = "phantomjs.baseUrl",
+      required = true
+  )
+  private String baseUrl;
+
+  /**
+   * The directory the phantomjs binary should be installed.
+   *
+   * @since 0.1
+   */
+  @Parameter(
+      defaultValue = "${project.build.directory}/phantomjs-maven-plugin",
+      property = "phantomjs.outputDir",
+      required = true
+  )
+  private File outputDirectory;
 
   public void run() throws MojoExecutionException {
 
@@ -78,6 +114,6 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
         throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
       }
     }
-    mavenProject.getProperties().put(propertyName, extractTo.getAbsolutePath());
+    this.setPhantomJsBinary(extractTo.getAbsolutePath());
   }
 }

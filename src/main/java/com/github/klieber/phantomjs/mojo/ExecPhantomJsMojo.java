@@ -23,13 +23,16 @@ package com.github.klieber.phantomjs.mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -39,6 +42,46 @@ import java.util.Scanner;
  */
 @Mojo(name = "exec", defaultPhase = LifecyclePhase.TEST)
 public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
+
+  /**
+   * Command line options for phantomjs
+   *
+   * @since 0.2
+   */
+  @Parameter(
+      property = "phantomjs.commandLineOptions"
+  )
+  private String commandLineOptions;
+
+  /**
+   * Script to execute
+   *
+   * @since 0.2
+   */
+  @Parameter(
+      property = "phantomjs.script"
+  )
+  private String script;
+
+  /**
+   * Arguments for the script being executed
+   *
+   * @since 0.2
+   */
+  @Parameter(
+      property = "phantomjs.args"
+  )
+  private List<String> arguments;
+
+  /**
+   * Configuration file for phantomjs
+   *
+   * @since 0.2
+   */
+  @Parameter(
+      property = "phantomjs.configFile"
+  )
+  private File configFile;
 
   public void run() throws MojoExecutionException {
     getLog().info("Executing phantomjs command");
