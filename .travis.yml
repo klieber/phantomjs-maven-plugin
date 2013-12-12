@@ -3,3 +3,5 @@ jdk:
   - openjdk6
   - oraclejdk7
 script: mvn verify -Prun-its
+after_success:
+  - mvn test jacoco:report coveralls:jacoco
