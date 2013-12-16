@@ -18,7 +18,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs;
+package com.github.klieber.phantomjs.archive;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,14 +29,14 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
-public class WindowsPhantomJSArchiveTest {
+public class MacOSXPhantomJSArchiveTest {
 
   @Mock
-  private WindowsPhantomJSArchive archive;
+  private MacOSXPhantomJSArchive archive;
 
   @Before
   public void before() {
-    archive = new WindowsPhantomJSArchive("1.9.2");
+    archive = new MacOSXPhantomJSArchive("1.9.2");
   }
 
   @Test
@@ -46,11 +46,11 @@ public class WindowsPhantomJSArchiveTest {
 
   @Test
   public void testGetExecutable() {
-    assertEquals("phantomjs.exe",archive.getExecutable());
+    assertEquals("bin/phantomjs",archive.getExecutable());
   }
 
   @Test
   public void testGetPlatform() {
-    assertEquals("windows",archive.getPlatform());
+    assertEquals("macosx",archive.getPlatform());
   }
 }

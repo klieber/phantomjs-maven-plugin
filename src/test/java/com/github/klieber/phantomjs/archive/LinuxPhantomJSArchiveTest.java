@@ -18,60 +18,45 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs;
+package com.github.klieber.phantomjs.archive;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PhantomJSArchiveTest {
+public class LinuxPhantomJSArchiveTest {
 
-  private static final String VERSION = "1.9.2";
-  private static final String EXTENSION = "zip";
-  private static final String PLATFORM = "windows";
-  private static final String EXECUTABLE = "phantomjs.exe";
-
-  private static final String ARCHIVE_NAME_WITHOUT_EXTENSION = "phantomjs-"+VERSION+"-"+PLATFORM;
-  private static final String ARCHIVE_NAME = ARCHIVE_NAME_WITHOUT_EXTENSION + "."+EXTENSION;
-
-  private PhantomJSArchive archive;
+  private static final String ARCH = "x86_64";
+  @Mock
+  private LinuxPhantomJSArchive archive;
 
   @Before
   public void before() {
-    archive = new PhantomJSArchive(VERSION) {
-      @Override
-      protected String getExtension() {
-        return EXTENSION;
-      }
-
-      @Override
-      protected String getPlatform() {
-        return PLATFORM;
-      }
-
-      @Override
-      protected String getExecutable() {
-        return EXECUTABLE;
-      }
-    };
+    archive = new LinuxPhantomJSArchive("1.9.2",ARCH);
   }
 
   @Test
-  public void testGetArchiveName() {
-    assertEquals(ARCHIVE_NAME, archive.getArchiveName());
+  public void testGetExtension() {
+    assertEquals("tar.bz2",archive.getExtension());
   }
 
   @Test
-  public void testGetPathToExecutable() {
-    assertEquals(ARCHIVE_NAME+"/"+ARCHIVE_NAME_WITHOUT_EXTENSION+"/"+EXECUTABLE,archive.getPathToExecutable());
+  public void testGetExecutable() {
+    assertEquals("bin/phantomjs",archive.getExecutable());
   }
 
   @Test
-  public void testGetExtractToPath() {
-    assertEquals(ARCHIVE_NAME_WITHOUT_EXTENSION+"/"+EXECUTABLE,archive.getExtractToPath());
+  public void testGetPlatform() {
+    assertEquals("linux",archive.getPlatform());
+  }
+
+  @Test
+  public void testGetArch() {
+    assertEquals(ARCH,archive.getArch());
   }
 }

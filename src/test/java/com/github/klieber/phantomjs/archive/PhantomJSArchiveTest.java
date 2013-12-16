@@ -18,39 +18,60 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs;
+package com.github.klieber.phantomjs.archive;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MacOSXPhantomJSArchiveTest {
+public class PhantomJSArchiveTest {
 
-  @Mock
-  private MacOSXPhantomJSArchive archive;
+  private static final String VERSION = "1.9.2";
+  private static final String EXTENSION = "zip";
+  private static final String PLATFORM = "windows";
+  private static final String EXECUTABLE = "phantomjs.exe";
+
+  private static final String ARCHIVE_NAME_WITHOUT_EXTENSION = "phantomjs-"+VERSION+"-"+PLATFORM;
+  private static final String ARCHIVE_NAME = ARCHIVE_NAME_WITHOUT_EXTENSION + "."+EXTENSION;
+
+  private PhantomJSArchive archive;
 
   @Before
   public void before() {
-    archive = new MacOSXPhantomJSArchive("1.9.2");
+    archive = new PhantomJSArchive(VERSION) {
+      @Override
+      protected String getExtension() {
+        return EXTENSION;
+      }
+
+      @Override
+      protected String getPlatform() {
+        return PLATFORM;
+      }
+
+      @Override
+      protected String getExecutable() {
+        return EXECUTABLE;
+      }
+    };
   }
 
   @Test
-  public void testGetExtension() {
-    assertEquals("zip",archive.getExtension());
+  public void testGetArchiveName() {
+    assertEquals(ARCHIVE_NAME, archive.getArchiveName());
   }
 
   @Test
-  public void testGetExecutable() {
-    assertEquals("bin/phantomjs",archive.getExecutable());
+  public void testGetPathToExecutable() {
+    assertEquals(ARCHIVE_NAME+"/"+ARCHIVE_NAME_WITHOUT_EXTENSION+"/"+EXECUTABLE,archive.getPathToExecutable());
   }
 
   @Test
-  public void testGetPlatform() {
-    assertEquals("macosx",archive.getPlatform());
+  public void testGetExtractToPath() {
+    assertEquals(ARCHIVE_NAME_WITHOUT_EXTENSION+"/"+EXECUTABLE,archive.getExtractToPath());
   }
 }
