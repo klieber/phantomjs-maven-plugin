@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.googlecode.catchexception.CatchException.catchException;
@@ -83,5 +84,12 @@ public class PhantomJSArchiveBuilderTest {
         is(instanceOf(IllegalArgumentException.class)),
         hasMessage("unknown platform: invalid")
     ));
+  }
+
+  @Test
+  public void testConstructWithSystemValues() {
+    builder = new PhantomJSArchiveBuilder("1.9.2");
+    assertEquals(System.getProperty("os.name").toLowerCase(), Whitebox.getInternalState(builder,"platform"));
+    assertEquals(System.getProperty("os.arch").toLowerCase(), Whitebox.getInternalState(builder,"arch"));
   }
 }

@@ -34,6 +34,7 @@ public class PhantomJSArchiveTest {
   private static final String EXTENSION = "zip";
   private static final String PLATFORM = "windows";
   private static final String EXECUTABLE = "phantomjs.exe";
+  private static final String ARCH = "i686";
 
   private static final String ARCHIVE_NAME_WITHOUT_EXTENSION = "phantomjs-"+VERSION+"-"+PLATFORM;
   private static final String ARCHIVE_NAME = ARCHIVE_NAME_WITHOUT_EXTENSION + "."+EXTENSION;
@@ -42,7 +43,32 @@ public class PhantomJSArchiveTest {
 
   @Before
   public void before() {
-    archive = new PhantomJSArchive(VERSION) {
+    archive = createPhantomJSArchive();
+  }
+
+  @Test
+  public void testGetArchiveName() {
+    assertEquals(ARCHIVE_NAME, archive.getArchiveName());
+  }
+
+  @Test
+  public void testGetPathToExecutable() {
+    assertEquals(ARCHIVE_NAME+"/"+ARCHIVE_NAME_WITHOUT_EXTENSION+"/"+EXECUTABLE,archive.getPathToExecutable());
+  }
+
+  @Test
+  public void testGetExtractToPath() {
+    assertEquals(ARCHIVE_NAME_WITHOUT_EXTENSION+"/"+EXECUTABLE,archive.getExtractToPath());
+  }
+
+  @Test
+  public void testGetExtractToPathWithArch() {
+    archive = createPhantomJSArchive(ARCH);
+    assertEquals(ARCHIVE_NAME_WITHOUT_EXTENSION+"-"+ARCH+"/"+EXECUTABLE,archive.getExtractToPath());
+  }
+
+  private static PhantomJSArchive createPhantomJSArchive() {
+    return new PhantomJSArchive(VERSION) {
       @Override
       protected String getExtension() {
         return EXTENSION;
@@ -60,18 +86,27 @@ public class PhantomJSArchiveTest {
     };
   }
 
-  @Test
-  public void testGetArchiveName() {
-    assertEquals(ARCHIVE_NAME, archive.getArchiveName());
-  }
+  private static PhantomJSArchive createPhantomJSArchive(final String arch) {
+    return new PhantomJSArchive(VERSION) {
+      @Override
+      protected String getExtension() {
+        return EXTENSION;
+      }
 
-  @Test
-  public void testGetPathToExecutable() {
-    assertEquals(ARCHIVE_NAME+"/"+ARCHIVE_NAME_WITHOUT_EXTENSION+"/"+EXECUTABLE,archive.getPathToExecutable());
-  }
+      @Override
+      protected String getPlatform() {
+        return PLATFORM;
+      }
 
-  @Test
-  public void testGetExtractToPath() {
-    assertEquals(ARCHIVE_NAME_WITHOUT_EXTENSION+"/"+EXECUTABLE,archive.getExtractToPath());
+      @Override
+      protected String getExecutable() {
+        return EXECUTABLE;
+      }
+
+      @Override
+      protected String getArch() {
+        return arch;
+      }
+    };
   }
 }
