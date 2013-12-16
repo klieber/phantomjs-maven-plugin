@@ -84,6 +84,6 @@ public abstract class AbstractPhantomJsMojo extends AbstractMojo {
   }
 
   protected void setPhantomJsBinary(String binary) {
-    mavenProject.getProperties().put(this.propertyName, binary);
+    mavenProject.getProperties().setProperty(this.propertyName, binary);
   }
 }
