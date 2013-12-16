@@ -18,26 +18,39 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs;
+package com.github.klieber.phantomjs.archive;
 
-public class MacOSXPhantomJSArchive extends PhantomJSArchive {
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
-	public MacOSXPhantomJSArchive(String version) {
-		super(version);
-	}
+import static org.junit.Assert.assertEquals;
 
-	@Override
-	protected String getExtension() {
-		return "zip";
-	}
+@RunWith(MockitoJUnitRunner.class)
+public class MacOSXPhantomJSArchiveTest {
 
-	@Override
-	protected String getPlatform() {
-		return "macosx";
-	}
+  @Mock
+  private MacOSXPhantomJSArchive archive;
 
-	@Override
-	protected String getExecutable() {
-		return "bin/phantomjs";
-	}
+  @Before
+  public void before() {
+    archive = new MacOSXPhantomJSArchive("1.9.2");
+  }
+
+  @Test
+  public void testGetExtension() {
+    assertEquals("zip",archive.getExtension());
+  }
+
+  @Test
+  public void testGetExecutable() {
+    assertEquals("bin/phantomjs",archive.getExecutable());
+  }
+
+  @Test
+  public void testGetPlatform() {
+    assertEquals("macosx",archive.getPlatform());
+  }
 }

@@ -18,34 +18,39 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs;
+package com.github.klieber.phantomjs.archive;
 
-public class LinuxPhantomJSArchive extends PhantomJSArchive {
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
-	private final String arch;
+import static org.junit.Assert.assertEquals;
 
-	public LinuxPhantomJSArchive(String version, String arch) {
-		super(version);
-		this.arch = arch;
-	}
+@RunWith(MockitoJUnitRunner.class)
+public class WindowsPhantomJSArchiveTest {
 
-	@Override
-	protected String getExtension() {
-		return "tar.bz2";
-	}
+  @Mock
+  private WindowsPhantomJSArchive archive;
 
-	@Override
-	protected String getPlatform() {
-		return "linux";
-	}
+  @Before
+  public void before() {
+    archive = new WindowsPhantomJSArchive("1.9.2");
+  }
 
-	@Override
-	protected String getExecutable() {
-		return "bin/phantomjs";
-	}
-	
-	@Override
-	protected String getArch() {
-		return this.arch;
-	}
+  @Test
+  public void testGetExtension() {
+    assertEquals("zip",archive.getExtension());
+  }
+
+  @Test
+  public void testGetExecutable() {
+    assertEquals("phantomjs.exe",archive.getExecutable());
+  }
+
+  @Test
+  public void testGetPlatform() {
+    assertEquals("windows",archive.getPlatform());
+  }
 }

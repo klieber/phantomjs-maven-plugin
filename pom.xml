@@ -251,7 +251,7 @@
         </executions>
         <configuration>
           <excludes>
-            <exclude>com/github/klieber/phantomjs/HelpMojo*</exclude>
+            <exclude>com/github/klieber/phantomjs/mojo/HelpMojo*</exclude>
           </excludes>
         </configuration>
       </plugin>

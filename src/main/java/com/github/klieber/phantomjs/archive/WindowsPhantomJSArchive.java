@@ -18,39 +18,26 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs;
+package com.github.klieber.phantomjs.archive;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+public class WindowsPhantomJSArchive extends PhantomJSArchive {
 
-import static org.junit.Assert.assertEquals;
+	public WindowsPhantomJSArchive(String version) {
+		super(version);
+	}
 
-@RunWith(MockitoJUnitRunner.class)
-public class WindowsPhantomJSArchiveTest {
+	@Override
+	protected String getExtension() {
+		return "zip";
+	}
 
-  @Mock
-  private WindowsPhantomJSArchive archive;
+	@Override
+	protected String getPlatform() {
+		return "windows";
+	}
 
-  @Before
-  public void before() {
-    archive = new WindowsPhantomJSArchive("1.9.2");
-  }
-
-  @Test
-  public void testGetExtension() {
-    assertEquals("zip",archive.getExtension());
-  }
-
-  @Test
-  public void testGetExecutable() {
-    assertEquals("phantomjs.exe",archive.getExecutable());
-  }
-
-  @Test
-  public void testGetPlatform() {
-    assertEquals("windows",archive.getPlatform());
-  }
+	@Override
+	protected String getExecutable() {
+		return "phantomjs.exe";
+	}
 }

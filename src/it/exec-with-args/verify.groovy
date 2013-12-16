@@ -20,5 +20,5 @@ assert binary.canExecute()
 
 String buildLog = FileUtils.fileRead(new File(basedir, 'build.log'));
 
-assert buildLog.contains('Hello, world!'): 'phantomjs script execution failed.';
+assert buildLog.contains('Hello, Bob!'): 'phantomjs script execution failed.';
 

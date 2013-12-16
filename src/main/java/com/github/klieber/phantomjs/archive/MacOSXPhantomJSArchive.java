@@ -18,45 +18,26 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs;
+package com.github.klieber.phantomjs.archive;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+public class MacOSXPhantomJSArchive extends PhantomJSArchive {
 
-import static org.junit.Assert.assertEquals;
+	public MacOSXPhantomJSArchive(String version) {
+		super(version);
+	}
 
-@RunWith(MockitoJUnitRunner.class)
-public class LinuxPhantomJSArchiveTest {
+	@Override
+	protected String getExtension() {
+		return "zip";
+	}
 
-  private static final String ARCH = "x86_64";
-  @Mock
-  private LinuxPhantomJSArchive archive;
+	@Override
+	protected String getPlatform() {
+		return "macosx";
+	}
 
-  @Before
-  public void before() {
-    archive = new LinuxPhantomJSArchive("1.9.2",ARCH);
-  }
-
-  @Test
-  public void testGetExtension() {
-    assertEquals("tar.bz2",archive.getExtension());
-  }
-
-  @Test
-  public void testGetExecutable() {
-    assertEquals("bin/phantomjs",archive.getExecutable());
-  }
-
-  @Test
-  public void testGetPlatform() {
-    assertEquals("linux",archive.getPlatform());
-  }
-
-  @Test
-  public void testGetArch() {
-    assertEquals(ARCH,archive.getArch());
-  }
+	@Override
+	protected String getExecutable() {
+		return "bin/phantomjs";
+	}
 }

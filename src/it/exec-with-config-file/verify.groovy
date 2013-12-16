@@ -18,7 +18,7 @@ File binary = new File(basedir, expected);
 assert binary.isFile()
 assert binary.canExecute()
 
-String buildLog = FileUtils.fileRead(new File(basedir, 'build.log'));
+File cookiesFile = new File(basedir, "target/cookies.txt");
 
-assert buildLog.contains('Hello, world!'): 'phantomjs script execution failed.';
+assert cookiesFile.isFile() : 'phantomjs script execution failed.';
 
