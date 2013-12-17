@@ -27,14 +27,15 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.cli.Commandline;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Maven plugin for downloading and installing phantomjs binaries.
@@ -43,6 +44,8 @@ import java.nio.channels.ReadableByteChannel;
  */
 @Mojo(name = "install", defaultPhase = LifecyclePhase.PROCESS_TEST_SOURCES)
 public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
+
+  private static final String PHANTOMJS = "phantomjs";
 
   /**
    * The version of phantomjs to install.
@@ -79,15 +82,76 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
   )
   private File outputDirectory;
 
+  /**
+   * Check the system path for an existing phantomjs installation.
+   *
+   * @since 0.2
+   */
+  @Parameter(
+      defaultValue = "false",
+      property = "phantomjs.checkSystemPath",
+      required = true
+  )
+  private boolean checkSystemPath;
+
+  /**
+   * Require that the correct version of phantomjs is on the system path.
+   *
+   * @since 0.2
+   */
+  @Parameter(
+      defaultValue = "true",
+      property = "phantomjs.enforceVersion",
+      required = true
+  )
+  private boolean enforceVersion;
+
   public void run() throws MojoExecutionException {
+    String phantomJsBinary = null;
+
+    if (this.checkSystemPath) {
+      phantomJsBinary = this.findBinaryOnSystemPath();
+    }
+
+    if (phantomJsBinary == null) {
+      phantomJsBinary = installBinaryFromWeb();
+    }
+
+    if (phantomJsBinary != null) {
+      this.setPhantomJsBinary(phantomJsBinary);
+    }
+  }
+
+  private String findBinaryOnSystemPath() throws MojoExecutionException {
+    Commandline commandline = new Commandline(PHANTOMJS);
+    commandline.createArg().setValue("-v");
+    try {
+      Process process = new ProcessBuilder(commandline.getShellCommandline()).start();
+      BufferedReader standardOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
+      String versionString = standardOut.readLine().trim();
+      int exitCode = process.waitFor();
+      if (exitCode == 0 && (!enforceVersion || this.version.equals(versionString))) {
+        getLog().info("Found phantomjs "+versionString+" on the system path.");
+        return PHANTOMJS;
+      }
+    } catch (IOException e) {
+      throw new MojoExecutionException("Failed to check system path",e);
+    } catch (InterruptedException e) {
+      throw new MojoExecutionException("Failed to check system path", e);
+    }
+    return null;
+  }
+
+  private String installBinaryFromWeb() throws MojoExecutionException {
 
     if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
-      throw new MojoExecutionException("unable to create directory: " + outputDirectory);
+      throw new MojoExecutionException("Unable to create directory: " + outputDirectory);
     }
 
     PhantomJSArchive phantomJSFile = new PhantomJSArchiveBuilder(version).build();
 
     File extractTo = new File(outputDirectory, phantomJSFile.getExtractToPath());
+
     if (!extractTo.exists()) {
       StringBuilder url = new StringBuilder();
       url.append(baseUrl);
@@ -114,6 +178,6 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
         throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
       }
     }
-    this.setPhantomJsBinary(extractTo.getAbsolutePath());
+    return extractTo.getAbsolutePath();
   }
 }
