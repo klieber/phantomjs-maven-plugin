@@ -27,6 +27,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
 import java.io.*;
@@ -128,7 +129,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
     try {
       Process process = new ProcessBuilder(commandline.getShellCommandline()).start();
       BufferedReader standardOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
-      String versionString = standardOut.readLine().trim();
+      String versionString = StringUtils.trim(standardOut.readLine());
       int exitCode = process.waitFor();
       if (exitCode == 0 && (!enforceVersion || this.version.equals(versionString))) {
         getLog().info("Found phantomjs "+versionString+" on the system path.");
