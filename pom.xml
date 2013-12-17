@@ -228,6 +228,7 @@
         <configuration>
           <message>generating site for ${project.version}</message>
           <server>github</server>
+          <noJekyll>true</noJekyll>
         </configuration>
         <executions>
           <execution>
