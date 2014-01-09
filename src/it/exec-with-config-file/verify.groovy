@@ -2,15 +2,14 @@ import org.codehaus.plexus.util.FileUtils
 
 def platform = System.properties['os.name'].toLowerCase();
 
-def expected = 'target/phantomjs-maven-plugin/phantomjs-1.9.2-';
+def expected = 'target/phantomjs-maven-plugin/';
 
 if (platform.contains('win')) {
-    expected += 'windows/phantomjs.exe';
+    expected += 'phantomjs.exe';
 } else if (platform.contains('mac')) {
-    expected += 'macosx/bin/phantomjs';
+    expected += 'bin/phantomjs';
 } else if (platform.contains('nux')) {
-    def arch = System.properties['os.arch'].contains('64') ? 'x86_64' : 'i686';
-    expected += 'linux-' + arch + '/bin/phantomjs';
+    expected += '/bin/phantomjs';
 }
 
 File binary = new File(basedir, expected);
