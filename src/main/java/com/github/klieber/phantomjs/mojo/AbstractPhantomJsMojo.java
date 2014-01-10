@@ -20,8 +20,11 @@
  */
 package com.github.klieber.phantomjs.mojo;
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.StringUtils;
@@ -66,8 +69,21 @@ public abstract class AbstractPhantomJsMojo extends AbstractMojo {
   private boolean skip;
 
   @Parameter(defaultValue = "${project}", readonly = true)
-  private MavenProject mavenProject;
+  protected MavenProject mavenProject;
 
+  /**
+   * The current Maven session.
+   */
+  @Parameter(defaultValue="${session}", readonly = true)
+  protected MavenSession mavenSession;
+
+  /**
+   * The Maven BuildPluginManager component.
+   */
+  @Component
+  protected BuildPluginManager pluginManager;
+
+  @Override
   public final void execute() throws MojoExecutionException {
     if (!skip) {
       this.run();

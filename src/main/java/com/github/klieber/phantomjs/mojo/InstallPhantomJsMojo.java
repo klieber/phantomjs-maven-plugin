@@ -20,6 +20,8 @@
  */
 package com.github.klieber.phantomjs.mojo;
 
+import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
+
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import com.github.klieber.phantomjs.archive.PhantomJSArchiveBuilder;
 import de.schlichtherle.truezip.file.TFile;
@@ -35,8 +37,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Maven plugin for downloading and installing phantomjs binaries.
@@ -48,6 +48,10 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
 
   private static final String PHANTOMJS = "phantomjs";
 
+  private static final String MAVEN_CENTRAL = "mavenCentral";
+
+  private static final String WEB = "web";
+
   /**
    * The version of phantomjs to install.
    *
@@ -58,6 +62,13 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
       required = true
   )
   private String version;
+
+  @Parameter(
+      property = "phantomjs.installation.source",
+      required = true,
+      defaultValue = "web"
+  )
+  private String installationSource;
 
   /**
    * The base url the phantomjs binary can be downloaded from.
@@ -107,6 +118,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
   )
   private boolean enforceVersion;
 
+  @Override
   public void run() throws MojoExecutionException {
     String phantomJsBinary = null;
 
@@ -115,13 +127,14 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
     }
 
     if (phantomJsBinary == null) {
-      phantomJsBinary = installBinaryFromWeb();
+      phantomJsBinary = installBinary();
     }
 
     if (phantomJsBinary != null) {
       this.setPhantomJsBinary(phantomJsBinary);
     }
   }
+
 
   private String findBinaryOnSystemPath() throws MojoExecutionException {
     Commandline commandline = new Commandline(PHANTOMJS);
@@ -143,14 +156,79 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
     return null;
   }
 
-  private String installBinaryFromWeb() throws MojoExecutionException {
-
+  private String installBinary() throws MojoExecutionException {
     if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
       throw new MojoExecutionException("Unable to create directory: " + outputDirectory);
     }
 
     PhantomJSArchive phantomJSFile = new PhantomJSArchiveBuilder(version).build();
 
+    if(MAVEN_CENTRAL.equals(installationSource)){
+      return installBinaryFromMavenCentral(phantomJSFile);
+    } else if (WEB.equals(installationSource)){
+
+    return installBinaryFromWeb(phantomJSFile);
+    } else {
+      throw new MojoExecutionException("Unknown installation source found! Supported types are '" + WEB + "' or '" + MAVEN_CENTRAL + "'");
+    }
+  }
+
+  private String determineOsClassifier() {
+    String platform = System.getProperty("os.name").toLowerCase();
+    String arch = System.getProperty("os.arch").toLowerCase();
+
+    if (platform.contains("win")) {
+      return "windows";
+    } else if (platform.contains("mac")) {
+      return "macosx";
+    } else if (platform.contains("nux")) {
+      return arch.contains("64") ? "linux-64" : "linux-32";
+    } else {
+      throw new IllegalArgumentException("unknown platform: " + platform);
+    }
+  }
+
+  private String installBinaryFromMavenCentral(PhantomJSArchive phantomJSFile) throws MojoExecutionException {
+    String installationDirectory = new File(outputDirectory, phantomJSFile.getExtractToPath()).getParentFile().getAbsolutePath();
+    executeMojo(
+        plugin(groupId("org.apache.maven.plugins"),
+            artifactId("maven-dependency-plugin"), version("2.6")),
+        goal("unpack"),
+        configuration(
+            element(name("outputDirectory"), installationDirectory),
+            element(name("markersDirectory"), outputDirectory.getAbsolutePath()),
+            element(name("outputAbsoluteArtifactFilename"), "true"),
+            element(name("overWriteSnapshots"), "false"),
+            element(name("overWriteReleases"), "false"),
+            element(name("artifactItems"),
+                element(name("artifactItem"),
+                    element(name("groupId"),
+                        "org.jboss.arquillian.extension"),
+                    element(name("artifactId"),
+                        "arquillian-phantom-binary"),
+                    element(name("version"), version),
+                    element(name("classifier"),
+                        determineOsClassifier())))),
+        executionEnvironment(mavenProject, mavenSession, pluginManager));
+
+    String pathToBinary = outputDirectory + "/" + phantomJSFile.getExtractToPath();
+
+    // add +x flag, this is unfortunately lost during extraction
+    executeMojo(
+        plugin(groupId("org.apache.maven.plugins"),
+            artifactId("maven-antrun-plugin"), version("1.7")),
+        goal("run"),
+        configuration(element(
+            name("target"),
+            element(
+                name("chmod"),
+                attributes(attribute("file", pathToBinary),
+                    attribute("perm", "ugo+x"))))),
+        executionEnvironment(mavenProject, mavenSession, pluginManager));
+    return pathToBinary;
+  }
+
+  private String installBinaryFromWeb(PhantomJSArchive phantomJSFile) throws MojoExecutionException {
     File extractTo = new File(outputDirectory, phantomJSFile.getExtractToPath());
 
     if (!extractTo.exists()) {
