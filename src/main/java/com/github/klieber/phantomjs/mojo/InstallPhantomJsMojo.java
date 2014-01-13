@@ -20,11 +20,29 @@
  */
 package com.github.klieber.phantomjs.mojo;
 
-import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.attribute;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.attributes;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.goal;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.groupId;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.name;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.version;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import com.github.klieber.phantomjs.archive.PhantomJSArchiveBuilder;
-import de.schlichtherle.truezip.file.TFile;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -32,11 +50,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
+import com.github.klieber.phantomjs.archive.PhantomJSArchive;
+import com.github.klieber.phantomjs.archive.PhantomJSArchiveBuilder;
+
+import de.schlichtherle.truezip.file.TFile;
 
 /**
  * Maven plugin for downloading and installing phantomjs binaries.
@@ -189,7 +206,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
   }
 
   private String installBinaryFromMavenCentral(PhantomJSArchive phantomJSFile) throws MojoExecutionException {
-    String installationDirectory = new File(outputDirectory, phantomJSFile.getExtractToPath()).getParentFile().getAbsolutePath();
+    String installationDirectory = new File(outputDirectory, phantomJSFile.getNameWithoutExtension().toString()).getAbsolutePath();
     executeMojo(
         plugin(groupId("org.apache.maven.plugins"),
             artifactId("maven-dependency-plugin"), version("2.6")),
