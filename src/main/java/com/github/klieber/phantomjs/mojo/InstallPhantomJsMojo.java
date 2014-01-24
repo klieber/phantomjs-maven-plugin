@@ -128,23 +128,41 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
   }
 
   private String findBinaryOnSystemPath() throws MojoExecutionException {
-    Commandline commandline = new Commandline(PHANTOMJS);
+    String systemPath = System.getenv("PATH");
+    String pathSeparator = System.getProperty("path.separator",":");
+    String fileSeparator = System.getProperty("file.separator","/");
+    String binary = null;
+    for (String path : systemPath.split(pathSeparator)) {
+      String absolutePath = path + fileSeparator + PHANTOMJS;
+      if (FileUtils.fileExists(absolutePath)) {
+        binary = absolutePath;
+        String versionString = getVersion(binary);
+        if (!enforceVersion || this.version.equals(versionString)) {
+          getLog().info("Found phantomjs "+versionString+" at "+binary);
+          return binary;
+        }
+      }
+    }
+    return null;
+  }
+
+  private String getVersion(String binary) throws MojoExecutionException {
+    Commandline commandline = new Commandline(binary);
     commandline.createArg().setValue("-v");
     try {
       Process process = new ProcessBuilder(commandline.getShellCommandline()).start();
       BufferedReader standardOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
       String versionString = StringUtils.trim(standardOut.readLine());
       int exitCode = process.waitFor();
-      if (exitCode == 0 && (!enforceVersion || this.version.equals(versionString))) {
-        getLog().info("Found phantomjs "+versionString+" on the system path.");
-        return PHANTOMJS;
+      if (exitCode != 0) {
+        throw new MojoExecutionException("Failed to check system path");
       }
+      return versionString;
     } catch (IOException e) {
       throw new MojoExecutionException("Failed to check system path",e);
     } catch (InterruptedException e) {
       throw new MojoExecutionException("Failed to check system path", e);
     }
-    return null;
   }
 
   private String installBinaryFromWeb() throws MojoExecutionException {
