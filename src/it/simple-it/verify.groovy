@@ -2,7 +2,7 @@ import org.codehaus.plexus.util.FileUtils
 
 def platform = System.properties['os.name'].toLowerCase();
 
-def expected = 'target/phantomjs-maven-plugin/phantomjs-1.9.2-';
+def expected = 'target/phantomjs-maven-plugin/phantomjs-1.9.6-';
 
 if (platform.contains('win')) {
     expected += 'windows/phantomjs.exe';

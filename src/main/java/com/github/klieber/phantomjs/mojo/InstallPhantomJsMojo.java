@@ -23,20 +23,21 @@ package com.github.klieber.phantomjs.mojo;
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import com.github.klieber.phantomjs.archive.PhantomJSArchiveBuilder;
 import de.schlichtherle.truezip.file.TFile;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Maven plugin for downloading and installing phantomjs binaries.
@@ -47,6 +48,11 @@ import java.util.regex.Pattern;
 public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
 
   private static final String PHANTOMJS = "phantomjs";
+
+  private static final ComparableVersion LEGACY_VERSION = new ComparableVersion("1.9.2");
+
+  private static final String GOOGLE_CODE = "https://phantomjs.googlecode.com/files/";
+  private static final String BITBUCKET = "http://cdn.bitbucket.org/ariya/phantomjs/downloads/";
 
   /**
    * The version of phantomjs to install.
@@ -65,9 +71,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
    * @since 0.1
    */
   @Parameter(
-      defaultValue = "https://phantomjs.googlecode.com/files/",
-      property = "phantomjs.baseUrl",
-      required = true
+      property = "phantomjs.baseUrl"
   )
   private String baseUrl;
 
@@ -154,6 +158,11 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
     File extractTo = new File(outputDirectory, phantomJSFile.getExtractToPath());
 
     if (!extractTo.exists()) {
+
+      if (baseUrl == null) {
+        baseUrl = LEGACY_VERSION.compareTo(new ComparableVersion(version)) >= 0 ? GOOGLE_CODE : BITBUCKET;
+      }
+
       StringBuilder url = new StringBuilder();
       url.append(baseUrl);
       url.append(phantomJSFile.getArchiveName());
@@ -162,10 +171,12 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
         URL downloadLocation = new URL(url.toString());
 
         getLog().info("Downloading phantomjs binaries from " + url);
-        ReadableByteChannel rbc = Channels.newChannel(downloadLocation.openStream());
         File outputFile = new File(outputDirectory, phantomJSFile.getArchiveName());
-        FileOutputStream fos = new FileOutputStream(outputFile);
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        FileUtils.copyURLToFile(downloadLocation, outputFile);
+
+        if (outputFile.length() <= 0) {
+          throw new MojoExecutionException("Unable to download phantomjs binary from " + url);
+        }
         TFile archive = new TFile(outputDirectory, phantomJSFile.getPathToExecutable());
 
         getLog().info("Extracting " + archive.getAbsolutePath() + " to " + extractTo.getAbsolutePath());
