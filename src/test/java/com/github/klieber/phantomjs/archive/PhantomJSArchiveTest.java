@@ -53,7 +53,7 @@ public class PhantomJSArchiveTest {
 
   @Test
   public void testGetPathToExecutable() {
-    assertEquals(ARCHIVE_NAME+"/"+ARCHIVE_NAME_WITHOUT_EXTENSION+"/"+EXECUTABLE,archive.getPathToExecutable());
+    assertEquals(ARCHIVE_NAME_WITHOUT_EXTENSION+"/"+EXECUTABLE,archive.getPathToExecutable());
   }
 
   @Test
@@ -67,10 +67,18 @@ public class PhantomJSArchiveTest {
     assertEquals(ARCHIVE_NAME_WITHOUT_EXTENSION+"-"+ARCH+"/"+EXECUTABLE,archive.getExtractToPath());
   }
 
+  @Test
+  public void testGetClassifier() {
+     archive = createPhantomJSArchive();
+    assertEquals(PLATFORM,archive.getClassifier());
+    archive = createPhantomJSArchive(ARCH);
+    assertEquals(PLATFORM+"-"+ARCH,archive.getClassifier());
+  }
+
   private static PhantomJSArchive createPhantomJSArchive() {
     return new PhantomJSArchive(VERSION) {
       @Override
-      protected String getExtension() {
+      public String getExtension() {
         return EXTENSION;
       }
 
@@ -89,7 +97,7 @@ public class PhantomJSArchiveTest {
   private static PhantomJSArchive createPhantomJSArchive(final String arch) {
     return new PhantomJSArchive(VERSION) {
       @Override
-      protected String getExtension() {
+      public String getExtension() {
         return EXTENSION;
       }
 

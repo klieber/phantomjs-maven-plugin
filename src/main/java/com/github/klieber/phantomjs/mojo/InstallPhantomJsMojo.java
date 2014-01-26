@@ -23,8 +23,13 @@ package com.github.klieber.phantomjs.mojo;
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import com.github.klieber.phantomjs.archive.PhantomJSArchiveBuilder;
 import de.schlichtherle.truezip.file.TFile;
+
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -44,6 +49,7 @@ import java.net.URL;
  *
  * @since 0.1
  */
+@SuppressWarnings( "deprecation" )
 @Mojo(name = "install", defaultPhase = LifecyclePhase.PROCESS_TEST_SOURCES)
 public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
 
@@ -111,6 +117,15 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
   )
   private boolean enforceVersion;
 
+  @Parameter(
+      defaultValue = "${localRepository}",
+      readonly = true
+  )
+  private ArtifactRepository localRepository;
+
+  @Component
+  private ArtifactFactory artifactFactory;
+  
   public void run() throws MojoExecutionException {
     String phantomJsBinary = null;
 
@@ -176,38 +191,49 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
     File extractTo = new File(outputDirectory, phantomJSFile.getExtractToPath());
 
     if (!extractTo.exists()) {
-
-      if (baseUrl == null) {
-        baseUrl = LEGACY_VERSION.compareTo(new ComparableVersion(version)) >= 0 ? GOOGLE_CODE : BITBUCKET;
+      Artifact localArtifact = artifactFactory.createArtifactWithClassifier("org.phantomjs", "phantomjs", version, phantomJSFile.getExtension(), phantomJSFile.getClassifier());
+      File localFile = new File(localRepository.getBasedir(), localRepository.pathOf(localArtifact));
+      if (!localFile.exists()) {
+        downloadDistribution(phantomJSFile, localFile);
       }
 
-      StringBuilder url = new StringBuilder();
-      url.append(baseUrl);
-      url.append(phantomJSFile.getArchiveName());
-
       try {
-        URL downloadLocation = new URL(url.toString());
-
-        getLog().info("Downloading phantomjs binaries from " + url);
-        File outputFile = new File(outputDirectory, phantomJSFile.getArchiveName());
-        FileUtils.copyURLToFile(downloadLocation, outputFile);
-
-        if (outputFile.length() <= 0) {
-          throw new MojoExecutionException("Unable to download phantomjs binary from " + url);
-        }
-        TFile archive = new TFile(outputDirectory, phantomJSFile.getPathToExecutable());
+        TFile archive = new TFile(localFile, phantomJSFile.getPathToExecutable());
 
         getLog().info("Extracting " + archive.getAbsolutePath() + " to " + extractTo.getAbsolutePath());
         if (extractTo.getParentFile().mkdirs()) {
           archive.cp(extractTo);
           extractTo.setExecutable(true);
         }
-      } catch (MalformedURLException e) {
-        throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
       } catch (IOException e) {
-        throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
+        throw new MojoExecutionException("Unable to extract phantomjs binary from " + localFile, e);
       }
     }
     return extractTo.getAbsolutePath();
+  }
+  
+  private void downloadDistribution(PhantomJSArchive phantomJSFile, File outputFile) throws MojoExecutionException {
+    if (baseUrl == null) {
+      baseUrl = LEGACY_VERSION.compareTo(new ComparableVersion(version)) >= 0 ? GOOGLE_CODE : BITBUCKET;
+    }
+
+    StringBuilder url = new StringBuilder();
+    url.append(baseUrl);
+    url.append(phantomJSFile.getArchiveName());
+
+    try {
+      URL downloadLocation = new URL(url.toString());
+
+      getLog().info("Downloading phantomjs binary from " + url);
+      FileUtils.copyURLToFile(downloadLocation, outputFile);
+
+      if (outputFile.length() <= 0) {
+        throw new MojoExecutionException("Unable to download phantomjs binary from " + url);
+      }
+    } catch (MalformedURLException e) {
+      throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
+    } catch (IOException e) {
+      throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
+    }
   }
 }

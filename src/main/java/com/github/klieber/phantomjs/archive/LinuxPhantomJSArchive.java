@@ -30,7 +30,7 @@ public class LinuxPhantomJSArchive extends PhantomJSArchive {
 	}
 
 	@Override
-	protected String getExtension() {
+	public String getExtension() {
 		return "tar.bz2";
 	}
 
