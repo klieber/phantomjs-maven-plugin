@@ -23,9 +23,7 @@ package com.github.klieber.phantomjs.mojo;
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import com.github.klieber.phantomjs.archive.PhantomJSArchiveBuilder;
 import de.schlichtherle.truezip.file.TFile;
-
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -33,6 +31,7 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.Commandline;
@@ -49,7 +48,6 @@ import java.net.URL;
  *
  * @since 0.1
  */
-@SuppressWarnings( "deprecation" )
 @Mojo(name = "install", defaultPhase = LifecyclePhase.PROCESS_TEST_SOURCES)
 public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
 
@@ -124,7 +122,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
   private ArtifactRepository localRepository;
 
   @Component
-  private ArtifactFactory artifactFactory;
+  private RepositorySystem repositorySystem;
   
   public void run() throws MojoExecutionException {
     String phantomJsBinary = null;
@@ -191,7 +189,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
     File extractTo = new File(outputDirectory, phantomJSFile.getExtractToPath());
 
     if (!extractTo.exists()) {
-      Artifact localArtifact = artifactFactory.createArtifactWithClassifier("org.phantomjs", "phantomjs", version, phantomJSFile.getExtension(), phantomJSFile.getClassifier());
+      Artifact localArtifact = repositorySystem.createArtifactWithClassifier("org.phantomjs", "phantomjs", version, phantomJSFile.getExtension(), phantomJSFile.getClassifier());
       File localFile = new File(localRepository.getBasedir(), localRepository.pathOf(localArtifact));
       if (!localFile.exists()) {
         downloadDistribution(phantomJSFile, localFile);
