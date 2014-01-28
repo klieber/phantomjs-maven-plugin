@@ -30,7 +30,7 @@ public abstract class PhantomJSArchive {
 		this.version  = version;		
 	}
 	
-	protected abstract String getExtension();
+	public abstract String getExtension();
 	protected abstract String getPlatform();
 	protected abstract String getExecutable();
 	
@@ -43,9 +43,7 @@ public abstract class PhantomJSArchive {
 	}
 	
 	public final String getPathToExecutable() {
-		return this.getArchiveNameSB()
-		.append("/")
-		.append(this.getNameWithoutExtension())
+		return this.getNameWithoutExtension()
 		.append("/")
 		.append(this.getExecutable())
 		.toString();
@@ -67,10 +65,15 @@ public abstract class PhantomJSArchive {
 		.append("-")
 		.append(this.version)
 		.append("-")
-		.append(this.getPlatform());
+		.append(this.getClassifier());
+		return sb;
+	}
+	
+	public final String getClassifier() {
+		StringBuilder sb = new StringBuilder().append(this.getPlatform());
 		if (this.getArch() != null) {
 			sb.append("-").append(this.getArch());
-		}		
-		return sb;
+		}
+		return sb.toString();
 	}
 }

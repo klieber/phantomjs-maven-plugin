@@ -27,7 +27,7 @@ public class WindowsPhantomJSArchive extends PhantomJSArchive {
 	}
 
 	@Override
-	protected String getExtension() {
+	public String getExtension() {
 		return "zip";
 	}
 
