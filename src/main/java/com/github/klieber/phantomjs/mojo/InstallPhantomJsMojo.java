@@ -58,6 +58,15 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
   private static final String GOOGLE_CODE = "https://phantomjs.googlecode.com/files/";
   private static final String BITBUCKET = "http://cdn.bitbucket.org/ariya/phantomjs/downloads/";
 
+  private static final String SYSTEM_CHECK_FAILURE = "Failed to check system path";
+  private static final String UNABLE_TO_DOWNLOAD = "Unable to download phantomjs binary from %s";
+  private static final String UNABLE_TO_EXTRACT = "Unable to extract phantomjs binary from %s";
+  private static final String FOUND_PHANTOMJS = "Found phantomjs %s at %s";
+  private static final String UNABLE_TO_CREATE_DIRECTORY = "Unable to create directory: %s";
+
+  private static final String DOWNLOADING = "Downloading phantomjs binary from %s";
+  private static final String EXTRACTING = "Extracting %s to %s";
+
   /**
    * The version of phantomjs to install.
    *
@@ -123,7 +132,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
 
   @Component
   private RepositorySystem repositorySystem;
-  
+
   public void run() throws MojoExecutionException {
     String phantomJsBinary = null;
 
@@ -144,19 +153,27 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
     String systemPath = System.getenv("PATH");
     String pathSeparator = System.getProperty("path.separator",":");
     String fileSeparator = System.getProperty("file.separator","/");
-    String binary = null;
     for (String path : systemPath.split(pathSeparator)) {
       String absolutePath = path + fileSeparator + PHANTOMJS;
-      if (FileUtils.fileExists(absolutePath)) {
-        binary = absolutePath;
-        String versionString = getVersion(binary);
-        if (!enforceVersion || this.version.equals(versionString)) {
-          getLog().info("Found phantomjs "+versionString+" at "+binary);
-          return binary;
-        }
+      if (!this.checkBinary(absolutePath)) {
+        absolutePath += ".exe";
+      }
+      if (this.checkBinary(absolutePath)) {
+        return absolutePath;
       }
     }
     return null;
+  }
+
+  private boolean checkBinary(String binary) throws MojoExecutionException {
+    if (FileUtils.fileExists(binary)) {
+      String versionString = getVersion(binary);
+      if (!enforceVersion || this.version.equals(versionString)) {
+        getLog().info(String.format(FOUND_PHANTOMJS,versionString,binary));
+        return true;
+      }
+    }
+    return false;
   }
 
   private String getVersion(String binary) throws MojoExecutionException {
@@ -168,20 +185,20 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
       String versionString = StringUtils.trim(standardOut.readLine());
       int exitCode = process.waitFor();
       if (exitCode != 0) {
-        throw new MojoExecutionException("Failed to check system path");
+        throw new MojoExecutionException(SYSTEM_CHECK_FAILURE);
       }
       return versionString;
     } catch (IOException e) {
-      throw new MojoExecutionException("Failed to check system path",e);
+      throw new MojoExecutionException(SYSTEM_CHECK_FAILURE,e);
     } catch (InterruptedException e) {
-      throw new MojoExecutionException("Failed to check system path", e);
+      throw new MojoExecutionException(SYSTEM_CHECK_FAILURE,e);
     }
   }
 
   private String installBinaryFromWeb() throws MojoExecutionException {
 
     if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
-      throw new MojoExecutionException("Unable to create directory: " + outputDirectory);
+      throw new MojoExecutionException(String.format(UNABLE_TO_CREATE_DIRECTORY,outputDirectory));
     }
 
     PhantomJSArchive phantomJSFile = new PhantomJSArchiveBuilder(version).build();
@@ -189,7 +206,12 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
     File extractTo = new File(outputDirectory, phantomJSFile.getExtractToPath());
 
     if (!extractTo.exists()) {
-      Artifact localArtifact = repositorySystem.createArtifactWithClassifier("org.phantomjs", "phantomjs", version, phantomJSFile.getExtension(), phantomJSFile.getClassifier());
+      Artifact localArtifact = repositorySystem.createArtifactWithClassifier(
+          "org.phantomjs",
+          "phantomjs",
+          version,
+          phantomJSFile.getExtension(),
+          phantomJSFile.getClassifier());
       File localFile = new File(localRepository.getBasedir(), localRepository.pathOf(localArtifact));
       if (!localFile.exists()) {
         downloadDistribution(phantomJSFile, localFile);
@@ -198,18 +220,18 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
       try {
         TFile archive = new TFile(localFile, phantomJSFile.getPathToExecutable());
 
-        getLog().info("Extracting " + archive.getAbsolutePath() + " to " + extractTo.getAbsolutePath());
+        getLog().info(String.format(EXTRACTING, archive.getAbsolutePath(), extractTo.getAbsolutePath()));
         if (extractTo.getParentFile().mkdirs()) {
           archive.cp(extractTo);
           extractTo.setExecutable(true);
         }
       } catch (IOException e) {
-        throw new MojoExecutionException("Unable to extract phantomjs binary from " + localFile, e);
+        throw new MojoExecutionException(String.format(UNABLE_TO_EXTRACT, localFile), e);
       }
     }
     return extractTo.getAbsolutePath();
   }
-  
+
   private void downloadDistribution(PhantomJSArchive phantomJSFile, File outputFile) throws MojoExecutionException {
     if (baseUrl == null) {
       baseUrl = LEGACY_VERSION.compareTo(new ComparableVersion(version)) >= 0 ? GOOGLE_CODE : BITBUCKET;
@@ -222,16 +244,16 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
     try {
       URL downloadLocation = new URL(url.toString());
 
-      getLog().info("Downloading phantomjs binary from " + url);
+      getLog().info(DOWNLOADING + url);
       FileUtils.copyURLToFile(downloadLocation, outputFile);
 
       if (outputFile.length() <= 0) {
-        throw new MojoExecutionException("Unable to download phantomjs binary from " + url);
+        throw new MojoExecutionException(String.format(UNABLE_TO_DOWNLOAD, url));
       }
     } catch (MalformedURLException e) {
-      throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
+      throw new MojoExecutionException(String.format(UNABLE_TO_DOWNLOAD, url), e);
     } catch (IOException e) {
-      throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
+      throw new MojoExecutionException(String.format(UNABLE_TO_DOWNLOAD, url), e);
     }
   }
 }
