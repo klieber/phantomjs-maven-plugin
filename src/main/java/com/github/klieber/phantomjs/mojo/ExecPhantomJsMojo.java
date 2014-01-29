@@ -20,12 +20,19 @@
  */
 package com.github.klieber.phantomjs.mojo;
 
+import com.github.klieber.phantomjs.exec.ExecutionException;
+import com.github.klieber.phantomjs.exec.PhantomJsExecutor;
+import com.github.klieber.phantomjs.exec.PhantomJsOptions;
+import com.github.klieber.phantomjs.exec.PhantomJsProcessBuilder;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +49,10 @@ import java.util.Scanner;
  */
 @Mojo(name = "exec", defaultPhase = LifecyclePhase.TEST)
 public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ExecPhantomJsMojo.class);
+
+  private static final String EXECUTION_FAILURE = "Failed to execute phantomjs command";
 
   /**
    * Command line options for phantomjs
@@ -83,53 +94,25 @@ public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
   )
   private File configFile;
 
-  public void run() throws MojoExecutionException {
-    getLog().info("Executing phantomjs command");
+  public void run() throws MojoFailureException {
+    LOGGER.info("Executing phantomjs command");
 
     String binary = this.getPhantomJsBinary();
 
-    Commandline commandline = new Commandline(binary);
-    if (configFile != null && configFile.exists()) {
-      commandline.createArg().setValue("--config=" + configFile.getAbsolutePath());
-    } else {
-      commandline.addArguments(this.getCommandLineOptions());
-    }
-    commandline.createArg().setValue(this.script);
-    commandline.addArguments(this.arguments.toArray(new String[this.arguments.size()]));
+    PhantomJsProcessBuilder builder = new PhantomJsProcessBuilder(binary);
+
+    PhantomJsExecutor executor = new PhantomJsExecutor(builder);
+
+    PhantomJsOptions options = new PhantomJsOptions();
+    options.setConfigFile(this.configFile);
+    options.setCommandLineOptions(this.commandLineOptions);
+    options.addArguments(this.arguments);
+    options.setScript(this.script);
 
     try {
-      if (getLog().isDebugEnabled()) {
-        getLog().debug("phantomjs command: " + Arrays.asList(commandline.getShellCommandline()));
-      }
-      Process process = new ProcessBuilder(commandline.getShellCommandline()).start();
-      inheritIO(process.getInputStream(), System.out);
-      inheritIO(process.getErrorStream(), System.err);
-      process.waitFor();
-    } catch (IOException e) {
-      throw new MojoExecutionException("Failed to execute phantomjs command", e);
-    } catch (InterruptedException e) {
-      throw new MojoExecutionException("Failed to execute phantomjs command", e);
+      executor.execute(options);
+    } catch (ExecutionException e) {
+      throw new MojoFailureException(EXECUTION_FAILURE, e);
     }
-  }
-
-  private String[] getCommandLineOptions() throws MojoExecutionException {
-    try {
-      return CommandLineUtils.translateCommandline(this.commandLineOptions);
-    } catch (Exception e) {
-      throw new MojoExecutionException("Failed to execute phantomjs command", e);
-    }
-  }
-
-  private static void inheritIO(final InputStream src, final PrintStream dest) {
-    new Thread(
-        new Runnable() {
-          public void run() {
-            Scanner sc = new Scanner(src);
-            while (sc.hasNextLine()) {
-              dest.println(sc.nextLine());
-            }
-          }
-        }
-    ).start();
   }
 }

@@ -17,3 +17,5 @@ local.properties
 *.ipr
 *.iws
 .idea/
+jacoco.exec
+*.orig

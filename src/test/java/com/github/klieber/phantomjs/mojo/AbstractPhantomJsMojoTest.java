@@ -21,6 +21,7 @@
 package com.github.klieber.phantomjs.mojo;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,19 +50,20 @@ public class AbstractPhantomJsMojoTest {
   @Spy
   private AbstractPhantomJsMojo mojo = new AbstractPhantomJsMojo() {
     @Override
-    protected void run() throws MojoExecutionException { }
+    protected void run() throws MojoFailureException { }
   };
 
   @Test
-  public void testExecute() throws MojoExecutionException {
+  public void testExecute() throws MojoFailureException {
     mojo.execute();
     verify(mojo).run();
   }
 
   @Test
-  public void testSkipExecute() throws MojoExecutionException {
+  public void testSkipExecute() throws MojoFailureException {
     Whitebox.setInternalState(mojo,"skip",true);
     mojo.execute();
+    verify(mojo).getLog();
     verifyNoMoreInteractions(mojo);
   }
 

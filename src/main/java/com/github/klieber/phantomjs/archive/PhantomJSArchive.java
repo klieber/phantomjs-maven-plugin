@@ -68,6 +68,10 @@ public abstract class PhantomJSArchive {
 		.append(this.getClassifier());
 		return sb;
 	}
+
+  public final String getVersion() {
+    return this.version;
+  }
 	
 	public final String getClassifier() {
 		StringBuilder sb = new StringBuilder().append(this.getPlatform());

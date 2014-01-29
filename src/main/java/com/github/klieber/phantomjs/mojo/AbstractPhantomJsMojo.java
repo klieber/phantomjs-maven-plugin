@@ -22,9 +22,11 @@ package com.github.klieber.phantomjs.mojo;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.StringUtils;
+import org.slf4j.impl.StaticLoggerBinder;
 
 /**
  * Abstract base class for phantomjs-maven-plugin mojos.
@@ -68,13 +70,14 @@ public abstract class AbstractPhantomJsMojo extends AbstractMojo {
   @Parameter(defaultValue = "${project}", readonly = true)
   private MavenProject mavenProject;
 
-  public final void execute() throws MojoExecutionException {
+  public final void execute() throws MojoFailureException {
+    StaticLoggerBinder.getSingleton().setMavenLog(getLog());
     if (!skip) {
       this.run();
     }
   }
 
-  protected abstract void run() throws MojoExecutionException;
+  protected abstract void run() throws MojoFailureException;
 
   protected String getPhantomJsBinary() {
     if (StringUtils.isBlank(this.phantomJsBinary)) {
