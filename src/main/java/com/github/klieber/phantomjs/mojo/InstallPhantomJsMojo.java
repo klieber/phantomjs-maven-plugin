@@ -23,6 +23,8 @@ package com.github.klieber.phantomjs.mojo;
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import com.github.klieber.phantomjs.archive.PhantomJSArchiveBuilder;
 import de.schlichtherle.truezip.file.TFile;
+import de.schlichtherle.truezip.file.TVFS;
+import de.schlichtherle.truezip.fs.FsSyncException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.versioning.ComparableVersion;
@@ -227,6 +229,13 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
         }
       } catch (IOException e) {
         throw new MojoExecutionException(String.format(UNABLE_TO_EXTRACT, localFile), e);
+      } finally {
+        try {
+          TVFS.umount();
+        }
+        catch (FsSyncException e) {
+          getLog().error("Unable to unmount file system after extracting", e);
+        }
       }
     }
     return extractTo.getAbsolutePath();
