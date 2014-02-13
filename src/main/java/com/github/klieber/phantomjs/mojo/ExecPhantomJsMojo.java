@@ -24,23 +24,15 @@ import com.github.klieber.phantomjs.exec.ExecutionException;
 import com.github.klieber.phantomjs.exec.PhantomJsExecutor;
 import com.github.klieber.phantomjs.exec.PhantomJsOptions;
 import com.github.klieber.phantomjs.exec.PhantomJsProcessBuilder;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.util.cli.CommandLineUtils;
-import org.codehaus.plexus.util.cli.Commandline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * Maven plugin for downloading and installing phantomjs binaries.

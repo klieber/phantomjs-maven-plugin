@@ -25,8 +25,6 @@ import java.util.List;
 
 public class CompositeLocator implements Locator {
 
-  private static final String UNABLE_TO_LOCATE = "Unable to locate phantomjs binary.";
-
   private final List<Locator> locators;
 
   public CompositeLocator(List<Locator> locators) {

@@ -21,9 +21,6 @@
 package com.github.klieber.phantomjs.download;
 
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import com.github.klieber.phantomjs.config.Configuration;
-import org.apache.maven.artifact.versioning.ComparableVersion;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

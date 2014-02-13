@@ -30,17 +30,13 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
 import static com.googlecode.catchexception.apis.CatchExceptionHamcrestMatchers.hasMessage;
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -68,15 +64,13 @@ public class RuleBasedDownloaderTest {
   @Mock
   private File file;
 
-  private Map<Downloader, Predicate<String>> rules;
-
   private RuleBasedDownloader ruleBasedDownloader;
 
   @Before
   public void before() {
-    this.rules = new LinkedHashMap<Downloader, Predicate<String>>();
-    this.rules.put(downloaderA, predicateA);
-    this.rules.put(downloaderB, predicateB);
+    Map<Downloader, Predicate<String>> rules = new LinkedHashMap<Downloader, Predicate<String>>();
+    rules.put(downloaderA, predicateA);
+    rules.put(downloaderB, predicateB);
 
     this.ruleBasedDownloader = new RuleBasedDownloader(rules);
   }

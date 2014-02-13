@@ -20,7 +20,6 @@
  */
 package com.github.klieber.phantomjs.install;
 
-import com.github.klieber.phantomjs.PhantomJsException;
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import com.github.klieber.phantomjs.cache.CachedFile;
 import com.github.klieber.phantomjs.config.Configuration;
@@ -28,9 +27,6 @@ import com.github.klieber.phantomjs.download.DownloadException;
 import com.github.klieber.phantomjs.download.Downloader;
 import com.github.klieber.phantomjs.extract.ExtractionException;
 import com.github.klieber.phantomjs.extract.Extractor;
-import com.github.klieber.phantomjs.extract.PhantomJsExtractor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 

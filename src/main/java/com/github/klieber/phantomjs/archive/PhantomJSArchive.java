@@ -53,13 +53,13 @@ public abstract class PhantomJSArchive {
 		return this.getNameWithoutExtension().append("/").append(this.getExecutable()).toString();
 	}
 	
-	private final StringBuilder getArchiveNameSB() {
+	private StringBuilder getArchiveNameSB() {
 		return this.getNameWithoutExtension()
 			.append(".")
 			.append(this.getExtension());
 	}
 	
-	private final StringBuilder getNameWithoutExtension() {
+	private StringBuilder getNameWithoutExtension() {
 		StringBuilder sb = new StringBuilder()
 		.append(this.basename)
 		.append("-")

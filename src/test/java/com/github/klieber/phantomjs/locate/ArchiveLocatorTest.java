@@ -28,8 +28,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
@@ -57,7 +55,7 @@ public class ArchiveLocatorTest {
 
   @Test
   public void testLocateShouldHandleException() throws Exception  {
-    when(installer.install()).thenThrow(InstallationException.class);
+    when(installer.install()).thenThrow(new InstallationException("error",new RuntimeException()));
     assertNull(locator.locate());
   }
 }
