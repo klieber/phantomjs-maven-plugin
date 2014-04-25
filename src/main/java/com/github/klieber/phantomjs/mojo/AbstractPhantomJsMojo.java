@@ -70,7 +70,12 @@ public abstract class AbstractPhantomJsMojo extends AbstractMojo {
   private MavenProject mavenProject;
 
   public final void execute() throws MojoFailureException {
-    StaticLoggerBinder.getSingleton().setMavenLog(getLog());
+    try{
+        StaticLoggerBinder.getSingleton().setMavenLog(getLog());
+    } catch (NoClassDefFoundError e){
+        getLog().error("Failed to setup mvn log, this is ok if you're using mvn >= 3.1");
+        getLog().error(System.getProperty("plugin.artifacts"));
+    }
     if (!skip) {
       this.run();
     }
