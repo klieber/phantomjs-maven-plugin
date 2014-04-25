@@ -21,9 +21,13 @@
 package com.github.klieber.phantomjs.cache;
 
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.repository.RepositorySystem;
+import com.github.klieber.phantomjs.util.ArtifactBuilder;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.repository.ArtifactRepository;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.LocalRepositoryManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,12 +41,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(PhantomJSArchive.class)
+@PrepareForTest({PhantomJSArchive.class,LocalRepository.class})
 public class CachedArtifactTest {
-
-  private static final String VERSION = "1.2";
-  private static final String EXTENSION = "tar.gz";
-  private static final String CLASSIFIER = "linux";
 
   private static final String REPOSITORY_PATH = "/tmp";
   private static final String ARTIFACT_PATH = "a/b/artifact-1.2.jar";
@@ -51,42 +51,42 @@ public class CachedArtifactTest {
   private PhantomJSArchive phantomJSArchive;
 
   @Mock
-  private RepositorySystem repositorySystem;
+  private RepositorySystemSession repositorySystemSession;
 
   @Mock
-  private ArtifactRepository artifactRepository;
+  private LocalRepository localRepository;
+
+  @Mock
+  private LocalRepositoryManager localRepositoryManager;
+
+  @Mock
+  private ArtifactBuilder artifactBuilder;
 
   @Mock
   private Artifact artifact;
 
-  @Mock
-  private File file;
+  private File basedir;
 
   private CachedArtifact cachedArtifact;
 
   @Before
   public void before() {
-    cachedArtifact = new CachedArtifact(phantomJSArchive,repositorySystem,artifactRepository);
+    cachedArtifact = new CachedArtifact(phantomJSArchive,artifactBuilder,repositorySystemSession);
+    basedir = new File(REPOSITORY_PATH);
   }
 
   @Test
   public void testGetFile() throws Exception {
-    when(phantomJSArchive.getVersion()).thenReturn(VERSION);
-    when(phantomJSArchive.getExtension()).thenReturn(EXTENSION);
-    when(phantomJSArchive.getClassifier()).thenReturn(CLASSIFIER);
-
-    when(repositorySystem.createArtifactWithClassifier(
+    when(artifactBuilder.createArtifact(
         CachedArtifact.GROUP_ID,
         CachedArtifact.ARTIFACT_ID,
-        VERSION,
-        EXTENSION,
-        CLASSIFIER
+        phantomJSArchive
     )).thenReturn(artifact);
 
-    when(artifactRepository.getBasedir()).thenReturn(REPOSITORY_PATH);
-    when(artifactRepository.pathOf(artifact)).thenReturn(ARTIFACT_PATH);
-
-    when(artifact.getFile()).thenReturn(file);
+    when(repositorySystemSession.getLocalRepositoryManager()).thenReturn(localRepositoryManager);
+    when(localRepositoryManager.getRepository()).thenReturn(localRepository);
+    when(localRepositoryManager.getPathForLocalArtifact(artifact)).thenReturn(ARTIFACT_PATH);
+    when(localRepository.getBasedir()).thenReturn(basedir);
 
     assertEquals(REPOSITORY_PATH + "/" + ARTIFACT_PATH, cachedArtifact.getFile().getAbsolutePath());
   }

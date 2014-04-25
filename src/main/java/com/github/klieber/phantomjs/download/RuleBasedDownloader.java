@@ -36,14 +36,13 @@ public class RuleBasedDownloader implements Downloader {
   }
 
   @Override
-  public void download(PhantomJSArchive archive, File target) throws DownloadException {
+  public File download(PhantomJSArchive archive) throws DownloadException {
     DownloadException exception = null;
 
     for(Map.Entry<Downloader, Predicate<String>> entry : this.rules.entrySet()) {
       try {
         if (entry.getValue().apply(archive.getVersion())) {
-          entry.getKey().download(archive,target);
-          return;
+          return entry.getKey().download(archive);
         }
       } catch(DownloadException e) {
         // save the exception so we can throw it later if no other downloader is available

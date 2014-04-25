@@ -21,7 +21,6 @@
 package com.github.klieber.phantomjs.install;
 
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import com.github.klieber.phantomjs.cache.CachedFile;
 import com.github.klieber.phantomjs.config.Configuration;
 import com.github.klieber.phantomjs.download.DownloadException;
 import com.github.klieber.phantomjs.download.Downloader;
@@ -35,13 +34,11 @@ public class WebInstaller implements Installer {
   private static final String UNABLE_TO_INSTALL = "Unable to install phantomjs.";
 
   private final Configuration config;
-  private final CachedFile cachedFile;
   private final Downloader downloader;
   private final Extractor extractor;
 
-  public WebInstaller(Configuration config, CachedFile cachedFile, Downloader downloader, Extractor extractor) {
+  public WebInstaller(Configuration config, Downloader downloader, Extractor extractor) {
     this.config = config;
-    this.cachedFile = cachedFile;
     this.downloader = downloader;
     this.extractor = extractor;
   }
@@ -54,12 +51,8 @@ public class WebInstaller implements Installer {
     File extractTo = new File(outputDirectory, phantomJSArchive.getExtractToPath());
 
     if (!extractTo.exists()) {
-      File archive = cachedFile.getFile();
-
       try {
-        if (!archive.exists()) {
-          downloader.download(phantomJSArchive, archive);
-        }
+        File archive = downloader.download(phantomJSArchive);
         extractor.extract(archive, extractTo);
       } catch(DownloadException e) {
         throw new InstallationException(UNABLE_TO_INSTALL, e);

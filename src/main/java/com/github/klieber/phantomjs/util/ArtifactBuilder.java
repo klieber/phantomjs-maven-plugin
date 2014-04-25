@@ -18,12 +18,28 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs.download;
+package com.github.klieber.phantomjs.util;
 
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
 
-import java.io.File;
+public class ArtifactBuilder {
 
-public interface Downloader {
-  File download(PhantomJSArchive archive) throws DownloadException;
+  public static final String GROUP_ID = "org.phantomjs";
+  public static final String ARTIFACT_ID = "phantomjs";
+
+  public Artifact createArtifact(String groupId, String artifactId, PhantomJSArchive archive) {
+    return new DefaultArtifact(
+        groupId,
+        artifactId,
+        archive.getClassifier(),
+        archive.getExtension(),
+        archive.getVersion()
+    );
+  }
+
+  public Artifact createArtifact(PhantomJSArchive archive) {
+    return createArtifact(GROUP_ID, ARTIFACT_ID, archive);
+  }
 }

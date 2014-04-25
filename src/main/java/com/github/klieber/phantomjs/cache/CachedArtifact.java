@@ -21,9 +21,11 @@
 package com.github.klieber.phantomjs.cache;
 
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.repository.RepositorySystem;
+import com.github.klieber.phantomjs.util.ArtifactBuilder;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.LocalRepositoryManager;
 
 import java.io.File;
 
@@ -33,25 +35,21 @@ public class CachedArtifact implements CachedFile {
   public static final String ARTIFACT_ID = "phantomjs";
 
   private final PhantomJSArchive phantomJSArchive;
-  private final RepositorySystem repositorySystem;
-  private final ArtifactRepository repository;
+  private final ArtifactBuilder artifactBuilder;
+  private final RepositorySystemSession repositorySystemSession;
 
   public CachedArtifact(PhantomJSArchive phantomJSArchive,
-                        RepositorySystem repositorySystem,
-                        ArtifactRepository repository) {
+                        ArtifactBuilder artifactBuilder,
+                        RepositorySystemSession repositorySystemSession) {
     this.phantomJSArchive = phantomJSArchive;
-    this.repositorySystem = repositorySystem;
-    this.repository = repository;
+    this.artifactBuilder = artifactBuilder;
+    this.repositorySystemSession = repositorySystemSession;
   }
 
   @Override
   public File getFile() {
-    Artifact artifact = repositorySystem.createArtifactWithClassifier(
-        GROUP_ID,
-        ARTIFACT_ID,
-        phantomJSArchive.getVersion(),
-        phantomJSArchive.getExtension(),
-        phantomJSArchive.getClassifier());
-    return new File(repository.getBasedir(), repository.pathOf(artifact));
+    Artifact artifact = artifactBuilder.createArtifact(GROUP_ID,ARTIFACT_ID,phantomJSArchive);
+    LocalRepositoryManager manager = repositorySystemSession.getLocalRepositoryManager();
+    return new File(manager.getRepository().getBasedir(), manager.getPathForLocalArtifact(artifact));
   }
 }

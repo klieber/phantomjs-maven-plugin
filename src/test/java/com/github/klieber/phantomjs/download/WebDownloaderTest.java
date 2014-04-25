@@ -61,7 +61,7 @@ public class WebDownloaderTest {
   @Before
   public void before() {
     mockStatic(FileUtils.class);
-    downloader = new WebDownloader(BASE_URL);
+    downloader = new WebDownloader(BASE_URL, file);
   }
 
   @Test
@@ -69,7 +69,7 @@ public class WebDownloaderTest {
     when(phantomJSArchive.getArchiveName()).thenReturn(FILE_PATH);
     when(file.length()).thenReturn(100L);
 
-    downloader.download(phantomJSArchive, file);
+    downloader.download(phantomJSArchive);
 
     verifyStatic();
     FileUtils.copyURLToFile(any(URL.class), eq(file));
@@ -82,7 +82,7 @@ public class WebDownloaderTest {
     when(phantomJSArchive.getArchiveName()).thenReturn(FILE_PATH);
     when(file.length()).thenReturn(0L);
 
-    catchException(downloader).download(phantomJSArchive, file);
+    catchException(downloader).download(phantomJSArchive);
     assertThat(caughtException(), is(instanceOf(DownloadException.class)));
 
     verifyStatic();
@@ -96,7 +96,7 @@ public class WebDownloaderTest {
     doThrow(new IOException()).when(FileUtils.class);
     FileUtils.copyURLToFile(any(URL.class), eq(file));
 
-    catchException(downloader).download(phantomJSArchive, file);
+    catchException(downloader).download(phantomJSArchive);
     assertThat(caughtException(),is(instanceOf(DownloadException.class)));
 
     verifyStatic();
@@ -107,8 +107,8 @@ public class WebDownloaderTest {
   public void shouldFailDueToMalformedUrl() throws Exception {
     when(phantomJSArchive.getArchiveName()).thenReturn(FILE_PATH);
 
-    downloader = new WebDownloader("invalid-base-url");
-    catchException(downloader).download(phantomJSArchive, file);
+    downloader = new WebDownloader("invalid-base-url", file);
+    catchException(downloader).download(phantomJSArchive);
     assertThat(caughtException(),is(instanceOf(DownloadException.class)));
   }
 }
