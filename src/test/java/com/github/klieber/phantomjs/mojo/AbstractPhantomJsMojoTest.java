@@ -62,7 +62,6 @@ public class AbstractPhantomJsMojoTest {
   public void testSkipExecute() throws MojoFailureException {
     Whitebox.setInternalState(mojo,"skip",true);
     mojo.execute();
-    verify(mojo).getLog();
     verifyNoMoreInteractions(mojo);
   }
 
