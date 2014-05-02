@@ -22,10 +22,8 @@ package com.github.klieber.phantomjs.cache;
 
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import com.github.klieber.phantomjs.util.ArtifactBuilder;
-import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.repository.ArtifactRepository;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
 import org.junit.Before;
@@ -77,11 +75,7 @@ public class CachedArtifactTest {
 
   @Test
   public void testGetFile() throws Exception {
-    when(artifactBuilder.createArtifact(
-        CachedArtifact.GROUP_ID,
-        CachedArtifact.ARTIFACT_ID,
-        phantomJSArchive
-    )).thenReturn(artifact);
+    when(artifactBuilder.createArtifact(phantomJSArchive)).thenReturn(artifact);
 
     when(repositorySystemSession.getLocalRepositoryManager()).thenReturn(localRepositoryManager);
     when(localRepositoryManager.getRepository()).thenReturn(localRepository);

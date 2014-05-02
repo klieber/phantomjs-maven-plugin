@@ -21,12 +21,16 @@
 package com.github.klieber.phantomjs.util;
 
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
+import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.repository.LocalRepositoryManager;
+
+import java.io.File;
 
 public class ArtifactBuilder {
 
-  public static final String GROUP_ID = "org.phantomjs";
+  public static final String GROUP_ID = "com.github.klieber";
   public static final String ARTIFACT_ID = "phantomjs";
 
   public Artifact createArtifact(String groupId, String artifactId, PhantomJSArchive archive) {

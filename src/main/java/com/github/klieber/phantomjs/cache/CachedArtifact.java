@@ -31,9 +31,6 @@ import java.io.File;
 
 public class CachedArtifact implements CachedFile {
 
-  public static final String GROUP_ID = "org.phantomjs";
-  public static final String ARTIFACT_ID = "phantomjs";
-
   private final PhantomJSArchive phantomJSArchive;
   private final ArtifactBuilder artifactBuilder;
   private final RepositorySystemSession repositorySystemSession;
@@ -48,7 +45,7 @@ public class CachedArtifact implements CachedFile {
 
   @Override
   public File getFile() {
-    Artifact artifact = artifactBuilder.createArtifact(GROUP_ID,ARTIFACT_ID,phantomJSArchive);
+    Artifact artifact = artifactBuilder.createArtifact(phantomJSArchive);
     LocalRepositoryManager manager = repositorySystemSession.getLocalRepositoryManager();
     return new File(manager.getRepository().getBasedir(), manager.getPathForLocalArtifact(artifact));
   }
