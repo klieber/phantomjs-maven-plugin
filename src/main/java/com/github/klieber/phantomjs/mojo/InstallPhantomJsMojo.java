@@ -77,7 +77,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Confi
   private static final String BITBUCKET = "http://cdn.bitbucket.org/ariya/phantomjs/downloads/";
 
   private enum Source {
-    WEB,
+    URL,
     REPOSITORY
   };
 
@@ -139,18 +139,21 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Confi
   private boolean enforceVersion;
 
   /**
-   * The download source for the phantomjs binary.
-   *
+   * <p>The download source for the phantomjs binary.</p>
+   * <p>Valid values:</p>
+   * <ul>
+   *   <li>REPOSITORY : download a copy from the maven central repository.</li>
+   *   <li>URL : download directly from a url</li>
+   * </ul>
    * @since 0.3
    */
   @Parameter(
-      defaultValue = "WEB",
+      defaultValue = "REPOSITORY",
       property = "phantomjs.source",
       required = true
   )
   private Source source;
 
-//  @Component
   private RepositorySystem repositorySystem;
 
   @Parameter(
