@@ -25,5 +25,5 @@ import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import java.io.File;
 
 public interface Downloader {
-  void download(PhantomJSArchive archive, File target) throws DownloadException;
+  File download(PhantomJSArchive archive) throws DownloadException;
 }

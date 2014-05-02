@@ -18,35 +18,32 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs.cache;
+package com.github.klieber.phantomjs.util;
 
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import com.github.klieber.phantomjs.util.ArtifactBuilder;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.repository.LocalRepositoryManager;
 
 import java.io.File;
 
-public class CachedArtifact implements CachedFile {
+public class ArtifactBuilder {
 
-  private final PhantomJSArchive phantomJSArchive;
-  private final ArtifactBuilder artifactBuilder;
-  private final RepositorySystemSession repositorySystemSession;
+  public static final String GROUP_ID = "com.github.klieber";
+  public static final String ARTIFACT_ID = "phantomjs";
 
-  public CachedArtifact(PhantomJSArchive phantomJSArchive,
-                        ArtifactBuilder artifactBuilder,
-                        RepositorySystemSession repositorySystemSession) {
-    this.phantomJSArchive = phantomJSArchive;
-    this.artifactBuilder = artifactBuilder;
-    this.repositorySystemSession = repositorySystemSession;
+  public Artifact createArtifact(String groupId, String artifactId, PhantomJSArchive archive) {
+    return new DefaultArtifact(
+        groupId,
+        artifactId,
+        archive.getClassifier(),
+        archive.getExtension(),
+        archive.getVersion()
+    );
   }
 
-  @Override
-  public File getFile() {
-    Artifact artifact = artifactBuilder.createArtifact(phantomJSArchive);
-    LocalRepositoryManager manager = repositorySystemSession.getLocalRepositoryManager();
-    return new File(manager.getRepository().getBasedir(), manager.getPathForLocalArtifact(artifact));
+  public Artifact createArtifact(PhantomJSArchive archive) {
+    return createArtifact(GROUP_ID, ARTIFACT_ID, archive);
   }
 }

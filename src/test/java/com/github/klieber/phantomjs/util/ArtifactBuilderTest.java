@@ -18,70 +18,67 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs.cache;
+package com.github.klieber.phantomjs.util;
 
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import com.github.klieber.phantomjs.util.ArtifactBuilder;
-import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.repository.LocalRepository;
-import org.eclipse.aether.repository.LocalRepositoryManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PhantomJSArchive.class,LocalRepository.class})
-public class CachedArtifactTest {
-
-  private static final String REPOSITORY_PATH = "/tmp";
-  private static final String ARTIFACT_PATH = "a/b/artifact-1.2.jar";
+@PrepareForTest(PhantomJSArchive.class)
+public class ArtifactBuilderTest {
 
   @Mock
   private PhantomJSArchive phantomJSArchive;
 
-  @Mock
-  private RepositorySystemSession repositorySystemSession;
+  private ArtifactBuilder builder = new ArtifactBuilder();
 
-  @Mock
-  private LocalRepository localRepository;
+  private static final String CUSTOM_GROUP_ID = "org.example";
+  private static final String CUSTOM_ARTIFACT_ID = "example";
 
-  @Mock
-  private LocalRepositoryManager localRepositoryManager;
-
-  @Mock
-  private ArtifactBuilder artifactBuilder;
-
-  @Mock
-  private Artifact artifact;
-
-  private File basedir;
-
-  private CachedArtifact cachedArtifact;
+  private static final String CLASSIFIER = "linux";
+  private static final String EXTENSION = "zip";
+  private static final String VERSION = "1.0.0";
 
   @Before
   public void before() {
-    cachedArtifact = new CachedArtifact(phantomJSArchive,artifactBuilder,repositorySystemSession);
-    basedir = new File(REPOSITORY_PATH);
+    when(phantomJSArchive.getClassifier()).thenReturn(CLASSIFIER);
+    when(phantomJSArchive.getExtension()).thenReturn(EXTENSION);
+    when(phantomJSArchive.getVersion()).thenReturn(VERSION);
   }
 
   @Test
-  public void testGetFile() throws Exception {
-    when(artifactBuilder.createArtifact(phantomJSArchive)).thenReturn(artifact);
+  public void shouldCreateArtifactWithDefaults() {
+    verifyArtifact(
+        builder.createArtifact(phantomJSArchive),
+        ArtifactBuilder.GROUP_ID,
+        ArtifactBuilder.ARTIFACT_ID
+    );
+  }
 
-    when(repositorySystemSession.getLocalRepositoryManager()).thenReturn(localRepositoryManager);
-    when(localRepositoryManager.getRepository()).thenReturn(localRepository);
-    when(localRepositoryManager.getPathForLocalArtifact(artifact)).thenReturn(ARTIFACT_PATH);
-    when(localRepository.getBasedir()).thenReturn(basedir);
+  @Test
+  public void shouldCreateArtifactWithCustom() {
+    verifyArtifact(
+        builder.createArtifact(CUSTOM_GROUP_ID,CUSTOM_ARTIFACT_ID,phantomJSArchive),
+        CUSTOM_GROUP_ID,
+        CUSTOM_ARTIFACT_ID
+    );
+  }
 
-    assertEquals(REPOSITORY_PATH + "/" + ARTIFACT_PATH, cachedArtifact.getFile().getAbsolutePath());
+  private void verifyArtifact(Artifact artifact, String groupId, String artifactId) {
+    assertEquals(groupId, artifact.getGroupId());
+    assertEquals(artifactId, artifact.getArtifactId());
+    assertEquals(CLASSIFIER, artifact.getClassifier());
+    assertEquals(EXTENSION, artifact.getExtension());
+    assertEquals(VERSION, artifact.getVersion());
   }
 }

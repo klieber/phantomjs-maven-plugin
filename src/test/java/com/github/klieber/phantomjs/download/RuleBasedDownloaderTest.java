@@ -81,9 +81,9 @@ public class RuleBasedDownloaderTest {
     when(predicateA.apply(VERSION)).thenReturn(true);
     when(predicateB.apply(VERSION)).thenReturn(false);
 
-    this.ruleBasedDownloader.download(phantomJsArchive, file);
+    this.ruleBasedDownloader.download(phantomJsArchive);
 
-    verify(downloaderA).download(phantomJsArchive,file);
+    verify(downloaderA).download(phantomJsArchive);
     verifyNoMoreInteractions(downloaderB);
   }
 
@@ -93,9 +93,9 @@ public class RuleBasedDownloaderTest {
     when(predicateA.apply(VERSION)).thenReturn(false);
     when(predicateB.apply(VERSION)).thenReturn(true);
 
-    this.ruleBasedDownloader.download(phantomJsArchive, file);
+    this.ruleBasedDownloader.download(phantomJsArchive);
 
-    verify(downloaderB).download(phantomJsArchive,file);
+    verify(downloaderB).download(phantomJsArchive);
     verifyNoMoreInteractions(downloaderA);
   }
 
@@ -105,12 +105,12 @@ public class RuleBasedDownloaderTest {
     when(predicateA.apply(VERSION)).thenReturn(true);
     when(predicateB.apply(VERSION)).thenReturn(true);
 
-    doThrow(new DownloadException("DownloaderA Failed")).when(downloaderA).download(phantomJsArchive,file);
+    doThrow(new DownloadException("DownloaderA Failed")).when(downloaderA).download(phantomJsArchive);
 
-    this.ruleBasedDownloader.download(phantomJsArchive, file);
+    this.ruleBasedDownloader.download(phantomJsArchive);
 
-    verify(downloaderA).download(phantomJsArchive, file);
-    verify(downloaderB).download(phantomJsArchive, file);
+    verify(downloaderA).download(phantomJsArchive);
+    verify(downloaderB).download(phantomJsArchive);
   }
 
   @Test
@@ -119,15 +119,15 @@ public class RuleBasedDownloaderTest {
     when(predicateA.apply(VERSION)).thenReturn(true);
     when(predicateB.apply(VERSION)).thenReturn(false);
 
-    doThrow(new DownloadException("DownloaderA Failed")).when(downloaderA).download(phantomJsArchive,file);
+    doThrow(new DownloadException("DownloaderA Failed")).when(downloaderA).download(phantomJsArchive);
 
-    catchException(this.ruleBasedDownloader).download(phantomJsArchive, file);
+    catchException(this.ruleBasedDownloader).download(phantomJsArchive);
     assertThat(caughtException(), allOf(
         is(instanceOf(DownloadException.class)),
         hasMessage("DownloaderA Failed")
     ));
 
-    verify(downloaderA).download(phantomJsArchive, file);
+    verify(downloaderA).download(phantomJsArchive);
     verifyNoMoreInteractions(downloaderB);
   }
 
@@ -137,7 +137,7 @@ public class RuleBasedDownloaderTest {
     when(predicateA.apply(VERSION)).thenReturn(false);
     when(predicateB.apply(VERSION)).thenReturn(false);
 
-    catchException(this.ruleBasedDownloader).download(phantomJsArchive, file);
+    catchException(this.ruleBasedDownloader).download(phantomJsArchive);
 
     assertThat(caughtException(),allOf(
         is(instanceOf(DownloadException.class)),

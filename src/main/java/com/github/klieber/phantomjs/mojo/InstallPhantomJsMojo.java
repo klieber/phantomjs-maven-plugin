@@ -26,25 +26,31 @@ import com.github.klieber.phantomjs.cache.CachedArtifact;
 import com.github.klieber.phantomjs.cache.CachedFile;
 import com.github.klieber.phantomjs.config.Configuration;
 import com.github.klieber.phantomjs.download.Downloader;
+import com.github.klieber.phantomjs.download.RepositoryDownloader;
 import com.github.klieber.phantomjs.download.RuleBasedDownloader;
 import com.github.klieber.phantomjs.download.WebDownloader;
 import com.github.klieber.phantomjs.extract.Extractor;
 import com.github.klieber.phantomjs.extract.PhantomJsExtractor;
 import com.github.klieber.phantomjs.install.Installer;
 import com.github.klieber.phantomjs.install.WebInstaller;
-import com.github.klieber.phantomjs.locate.*;
+import com.github.klieber.phantomjs.locate.ArchiveLocator;
+import com.github.klieber.phantomjs.locate.CompositeLocator;
+import com.github.klieber.phantomjs.locate.Locator;
+import com.github.klieber.phantomjs.locate.PathLocator;
 import com.github.klieber.phantomjs.resolve.PhantomJsBinaryResolver;
+import com.github.klieber.phantomjs.util.ArtifactBuilder;
 import com.github.klieber.phantomjs.util.Predicate;
 import com.github.klieber.phantomjs.util.Predicates;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.repository.RepositorySystem;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.*;
 
@@ -69,6 +75,11 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Confi
 
   private static final String GOOGLE_CODE = "https://phantomjs.googlecode.com/files/";
   private static final String BITBUCKET = "http://cdn.bitbucket.org/ariya/phantomjs/downloads/";
+
+  private enum Source {
+    WEB,
+    REPOSITORY
+  };
 
   /**
    * The version of phantomjs to install.
@@ -127,16 +138,39 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Confi
   )
   private boolean enforceVersion;
 
+  /**
+   * The download source for the phantomjs binary.
+   *
+   * @since 0.3
+   */
   @Parameter(
-      defaultValue = "${localRepository}",
-      readonly = true
+      defaultValue = "WEB",
+      property = "phantomjs.source",
+      required = true
   )
-  private ArtifactRepository localRepository;
+  private Source source;
 
-  @Component
+//  @Component
   private RepositorySystem repositorySystem;
 
+  @Parameter(
+      defaultValue = "${repositorySystemSession}",
+      readonly = true
+  )
+  private RepositorySystemSession repositorySystemSession;
+
+  @Parameter(
+      defaultValue = "${project.remoteProjectRepositories}",
+      readonly = true
+  )
+  private List<RemoteRepository> remoteRepositories;
+
   private PhantomJSArchive phantomJSArchive;
+
+  @Inject
+  public InstallPhantomJsMojo(RepositorySystem repositorySystem) {
+    this.repositorySystem = repositorySystem;
+  }
 
   @Override
   public String getVersion() {
@@ -187,25 +221,29 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Confi
   }
 
   private Locator getArchiveLocator() {
-    CachedFile cachedFile = new CachedArtifact(getPhantomJsArchive(), repositorySystem, localRepository);
+
     Downloader downloader = getDownloader();
 
     Extractor extractor = new PhantomJsExtractor(phantomJSArchive);
 
-    Installer installer = new WebInstaller(this,cachedFile,downloader, extractor);
+    Installer installer = new WebInstaller(this, downloader, extractor);
 
     return new ArchiveLocator(installer);
   }
 
   private Downloader getDownloader() {
+    ArtifactBuilder artifactBuilder = new ArtifactBuilder();
+    CachedFile cachedFile = new CachedArtifact(getPhantomJsArchive(), artifactBuilder, repositorySystemSession);
     Downloader downloader = null;
-    if (this.baseUrl == null) {
+    if (Source.REPOSITORY.equals(source)) {
+      downloader = new RepositoryDownloader(artifactBuilder,repositorySystem,remoteRepositories,repositorySystemSession);
+    } else if (this.baseUrl == null) {
       Map<Downloader, Predicate<String>> rules = new HashMap<Downloader, Predicate<String>>();
-      rules.put(new WebDownloader(GOOGLE_CODE),IS_LEGACY_VERSION);
-      rules.put(new WebDownloader(BITBUCKET),Predicates.not(IS_LEGACY_VERSION));
+      rules.put(new WebDownloader(GOOGLE_CODE, cachedFile.getFile()),IS_LEGACY_VERSION);
+      rules.put(new WebDownloader(BITBUCKET, cachedFile.getFile()),Predicates.not(IS_LEGACY_VERSION));
       downloader = new RuleBasedDownloader(rules);
     } else {
-      downloader = new WebDownloader(baseUrl);
+      downloader = new WebDownloader(baseUrl, cachedFile.getFile());
     }
     return downloader;
   }

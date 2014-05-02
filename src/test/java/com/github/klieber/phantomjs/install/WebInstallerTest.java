@@ -21,14 +21,15 @@
 package com.github.klieber.phantomjs.install;
 
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import com.github.klieber.phantomjs.cache.CachedFile;
 import com.github.klieber.phantomjs.config.Configuration;
 import com.github.klieber.phantomjs.download.DownloadException;
 import com.github.klieber.phantomjs.download.Downloader;
 import com.github.klieber.phantomjs.extract.ExtractionException;
 import com.github.klieber.phantomjs.extract.Extractor;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -37,20 +38,20 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
+import java.io.IOException;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(PhantomJSArchive.class)
 public class WebInstallerTest {
 
-  private static final String PROJECT_ROOT = System.getProperty("user.dir");
-  private static final String OUTPUT_DIRECTORY = PROJECT_ROOT+"/target";
   private static final String EXTRACT_TO_PATH = "phantomjs";
 
   private File phantomJsBinary;
@@ -67,9 +68,6 @@ public class WebInstallerTest {
   private Configuration config;
 
   @Mock
-  private CachedFile cachedFile;
-
-  @Mock
   private Downloader downloader;
 
   @Mock
@@ -78,12 +76,15 @@ public class WebInstallerTest {
   @Captor
   private ArgumentCaptor<File> extractToFile;
 
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
   private WebInstaller webInstaller;
 
   @Before
-  public void before() {
-    webInstaller = new WebInstaller(config,cachedFile,downloader,extractor);
-    outputDirectory = new File(OUTPUT_DIRECTORY);
+  public void before() throws IOException {
+    webInstaller = new WebInstaller(config,downloader,extractor);
+    outputDirectory = temporaryFolder.getRoot();
     phantomJsBinary = new File(outputDirectory, EXTRACT_TO_PATH);
   }
 
@@ -91,31 +92,12 @@ public class WebInstallerTest {
   public void shouldDownloadAndExtract() throws Exception {
     when(config.getPhantomJsArchive()).thenReturn(phantomJSArchive);
     when(config.getOutputDirectory()).thenReturn(outputDirectory);
+    when(downloader.download(phantomJSArchive)).thenReturn(archive);
 
     when(phantomJSArchive.getExtractToPath()).thenReturn(EXTRACT_TO_PATH);
-    when(cachedFile.getFile()).thenReturn(archive);
 
     assertEquals(phantomJsBinary.getAbsolutePath(), webInstaller.install());
 
-    verify(downloader).download(phantomJSArchive, archive);
-    verify(extractor).extract(same(archive),extractToFile.capture());
-
-    assertEquals(phantomJsBinary, extractToFile.getValue());
-  }
-
-
-  @Test
-  public void shouldExtract() throws Exception  {
-    when(config.getPhantomJsArchive()).thenReturn(phantomJSArchive);
-    when(config.getOutputDirectory()).thenReturn(outputDirectory);
-
-    when(phantomJSArchive.getExtractToPath()).thenReturn(EXTRACT_TO_PATH);
-    when(cachedFile.getFile()).thenReturn(archive);
-    when(archive.exists()).thenReturn(true);
-
-    assertEquals(phantomJsBinary.getAbsolutePath(), webInstaller.install());
-
-    verifyNoMoreInteractions(downloader);
     verify(extractor).extract(same(archive),extractToFile.capture());
 
     assertEquals(phantomJsBinary, extractToFile.getValue());
@@ -123,26 +105,16 @@ public class WebInstallerTest {
 
   @Test
   public void shouldReturnPreviouslyInstalledPath() throws Exception {
-    // Create temporary file
-    if (!phantomJsBinary.exists()) {
-      phantomJsBinary.createNewFile();
-    }
+    phantomJsBinary = temporaryFolder.newFile(EXTRACT_TO_PATH);
 
     when(config.getPhantomJsArchive()).thenReturn(phantomJSArchive);
     when(config.getOutputDirectory()).thenReturn(outputDirectory);
 
     when(phantomJSArchive.getExtractToPath()).thenReturn(EXTRACT_TO_PATH);
-    when(cachedFile.getFile()).thenReturn(archive);
-    when(archive.exists()).thenReturn(true);
 
     assertEquals(phantomJsBinary.getAbsolutePath(), webInstaller.install());
 
     verifyNoMoreInteractions(downloader, extractor);
-
-    // Cleanup temporary file
-    if (phantomJsBinary != null && phantomJsBinary.exists()) {
-      phantomJsBinary.delete();
-    }
   }
 
   @Test
@@ -151,8 +123,7 @@ public class WebInstallerTest {
     when(config.getOutputDirectory()).thenReturn(outputDirectory);
 
     when(phantomJSArchive.getExtractToPath()).thenReturn(EXTRACT_TO_PATH);
-    when(cachedFile.getFile()).thenReturn(archive);
-    doThrow(new DownloadException("error")).when(downloader).download(phantomJSArchive, archive);
+    when(downloader.download(phantomJSArchive)).thenThrow(new DownloadException("error"));
 
     catchException(webInstaller).install();
     assertThat(caughtException(), is(instanceOf(InstallationException.class)));
@@ -164,7 +135,8 @@ public class WebInstallerTest {
     when(config.getOutputDirectory()).thenReturn(outputDirectory);
 
     when(phantomJSArchive.getExtractToPath()).thenReturn(EXTRACT_TO_PATH);
-    when(cachedFile.getFile()).thenReturn(archive);
+
+    when(downloader.download(phantomJSArchive)).thenReturn(archive);
 
     ExtractionException exception = new ExtractionException("error", new RuntimeException());
     doThrow(exception).when(extractor).extract(same(archive), any(File.class));
