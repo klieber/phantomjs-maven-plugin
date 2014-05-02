@@ -43,14 +43,11 @@ import com.github.klieber.phantomjs.util.Predicate;
 import com.github.klieber.phantomjs.util.Predicates;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.repository.ArtifactRepository;
-import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.RemoteRepository;
 
 import javax.inject.Inject;
@@ -81,7 +78,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Confi
 
   private enum Source {
     WEB,
-    MAVEN_CENTRAL
+    REPOSITORY
   };
 
   /**
@@ -238,7 +235,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Confi
     ArtifactBuilder artifactBuilder = new ArtifactBuilder();
     CachedFile cachedFile = new CachedArtifact(getPhantomJsArchive(), artifactBuilder, repositorySystemSession);
     Downloader downloader = null;
-    if (Source.MAVEN_CENTRAL.equals(source)) {
+    if (Source.REPOSITORY.equals(source)) {
       downloader = new RepositoryDownloader(artifactBuilder,repositorySystem,remoteRepositories,repositorySystemSession);
     } else if (this.baseUrl == null) {
       Map<Downloader, Predicate<String>> rules = new HashMap<Downloader, Predicate<String>>();
