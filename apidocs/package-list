@@ -1,2 +1,12 @@
+com.github.klieber.phantomjs
 com.github.klieber.phantomjs.archive
+com.github.klieber.phantomjs.cache
+com.github.klieber.phantomjs.config
+com.github.klieber.phantomjs.download
+com.github.klieber.phantomjs.exec
+com.github.klieber.phantomjs.extract
+com.github.klieber.phantomjs.install
+com.github.klieber.phantomjs.locate
 com.github.klieber.phantomjs.mojo
+com.github.klieber.phantomjs.resolve
+com.github.klieber.phantomjs.util
