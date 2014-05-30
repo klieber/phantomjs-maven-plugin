@@ -18,44 +18,9 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs.exec;
+import org.codehaus.plexus.util.FileUtils
 
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.Scanner;
+String buildLog = FileUtils.fileRead(new File(basedir, 'build.log'));
 
-public class PhantomJsExecutor {
+assert buildLog.contains('This script will exit with a non-zero code.'): 'phantomjs script execution failed.';
 
-  private static final String UNABLE_TO_EXECUTE = "Unable to execute phantomjs process";
-
-  private PhantomJsProcessBuilder runner;
-
-  public PhantomJsExecutor(PhantomJsProcessBuilder runner) {
-    this.runner = runner;
-  }
-
-  public int execute(PhantomJsOptions options) throws ExecutionException {
-    try {
-      Process process = this.runner.start(options);
-      inheritIO(process.getInputStream(), System.out);
-      inheritIO(process.getErrorStream(), System.err);
-      return process.waitFor();
-    } catch (InterruptedException e) {
-      throw new ExecutionException(UNABLE_TO_EXECUTE, e);
-    }
-  }
-
-
-  private static void inheritIO(final InputStream src, final PrintStream dest) {
-    new Thread(
-        new Runnable() {
-          public void run() {
-            Scanner sc = new Scanner(src);
-            while (sc.hasNextLine()) {
-              dest.println(sc.nextLine());
-            }
-          }
-        }
-    ).start();
-  }
-}

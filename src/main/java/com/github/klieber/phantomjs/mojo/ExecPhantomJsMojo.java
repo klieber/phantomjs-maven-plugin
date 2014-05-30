@@ -44,7 +44,8 @@ public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ExecPhantomJsMojo.class);
 
-  private static final String EXECUTION_FAILURE = "Failed to execute phantomjs command";
+  private static final String EXECUTION_FAILURE = "Failed to execute PhantomJS command";
+  private static final String ABNORMAL_EXIT_CODE = "PhantomJS execution did not exit normally (code = %d)";
 
   /**
    * Command line options for phantomjs
@@ -86,6 +87,17 @@ public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
   )
   private File configFile;
 
+  /**
+   * Fail on a non-zero exit code
+   *
+   * @since 0.4
+   */
+  @Parameter(
+      property = "phantomjs.failOnNonZeroExitCode",
+      defaultValue = "true"
+  )
+  private boolean failOnNonZeroExitCode;
+
   public void run() throws MojoFailureException {
     LOGGER.info("Executing phantomjs command");
 
@@ -102,7 +114,10 @@ public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
     options.setScript(this.script);
 
     try {
-      executor.execute(options);
+      int code = executor.execute(options);
+      if (failOnNonZeroExitCode && code != 0) {
+        throw new MojoFailureException(String.format(ABNORMAL_EXIT_CODE, code));
+      }
     } catch (ExecutionException e) {
       throw new MojoFailureException(EXECUTION_FAILURE, e);
     }
