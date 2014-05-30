@@ -74,7 +74,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Confi
   };
 
   private static final String GOOGLE_CODE = "https://phantomjs.googlecode.com/files/";
-  private static final String BITBUCKET = "http://cdn.bitbucket.org/ariya/phantomjs/downloads/";
+  private static final String BITBUCKET = "https://bitbucket.org/ariya/phantomjs/downloads/";
 
   private enum Source {
     URL,
