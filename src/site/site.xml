@@ -13,6 +13,10 @@
         <ribbonOrientation>right</ribbonOrientation>
         <ribbonColor>black</ribbonColor>
       </gitHub>
+      <ohloh>
+        <projectId>phantomjs-maven-plugin</projectId>
+        <widget>thin-badge</widget>
+      </ohloh>
     </fluidoSkin>
   </custom>
   <body>
