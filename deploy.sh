@@ -16,7 +16,7 @@ baseUrl="https://bitbucket.org/ariya/phantomjs/downloads"
 #baseUrl="https://phantomjs.googlecode.com/files"
 
 sonatypeUrl="https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-repoId=sonatype-nexus-staging
+repoId=ossrh
 
 deploy() {
   classifier=$1
