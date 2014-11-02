@@ -40,8 +40,8 @@ assert binary.canExecute()
 
 String buildLog = FileUtils.fileRead(new File(basedir, 'build.log'));
 
-assert buildLog.contains('Downloading: http://repo.maven.apache.org/maven2/com/github/klieber/phantomjs') : 'phantomjs binaries were not downloaded from repository.';
-assert buildLog.contains('Downloaded: http://repo.maven.apache.org/maven2/com/github/klieber/phantomjs') : 'phantomjs binaries were not downloaded from repository.';
+assert buildLog.contains('Downloading: https://repo.maven.apache.org/maven2/com/github/klieber/phantomjs') : 'phantomjs binaries were not downloaded from repository.';
+assert buildLog.contains('Downloaded: https://repo.maven.apache.org/maven2/com/github/klieber/phantomjs') : 'phantomjs binaries were not downloaded from repository.';
 assert buildLog.contains('Resolved artifact') : 'phantomjs binaries were not resolved.';
 assert !buildLog.contains('phantomjs.binary.path=null') && !buildLog.contains('"phantomjs.binary.path":"null"') : "phantomjs.binary property was not properly set"
 assert buildLog.contains('Hello, world!'): 'phantomjs script execution failed.';
