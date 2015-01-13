@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 @PrepareForTest({PhantomJSArchive.class,LocalRepository.class})
 public class CachedArtifactTest {
 
-  private static final String REPOSITORY_PATH = "/tmp";
+  private static final String REPOSITORY_PATH = System.getProperty("java.io.tmpdir");
   private static final String ARTIFACT_PATH = "a/b/artifact-1.2.jar";
 
   @Mock
@@ -82,6 +82,6 @@ public class CachedArtifactTest {
     when(localRepositoryManager.getPathForLocalArtifact(artifact)).thenReturn(ARTIFACT_PATH);
     when(localRepository.getBasedir()).thenReturn(basedir);
 
-    assertEquals(REPOSITORY_PATH + "/" + ARTIFACT_PATH, cachedArtifact.getFile().getAbsolutePath());
+    assertEquals(new File(REPOSITORY_PATH, ARTIFACT_PATH).getPath(), cachedArtifact.getFile().getAbsolutePath());
   }
 }
