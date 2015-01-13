@@ -51,7 +51,13 @@ public class PhantomJsProcessBuilder {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug(PHANTOMJS_COMMAND, Arrays.asList(shellCommandline));
     }
+
     ProcessBuilder processBuilder = new ProcessBuilder(shellCommandline);
+
+    if (commandline.getWorkingDirectory() != null) {
+      processBuilder.directory(commandline.getWorkingDirectory());
+    }
+
     try {
       return processBuilder.start();
     } catch(IOException e) {
@@ -70,6 +76,10 @@ public class PhantomJsProcessBuilder {
     }
     commandline.createArg().setValue(options.getScript());
     commandline.addArguments(options.getArguments().toArray(new String[options.getArguments().size()]));
+
+    if (options.getWorkingDirectory() != null) {
+      commandline.setWorkingDirectory(options.getWorkingDirectory());
+    }
 
     return commandline;
   }

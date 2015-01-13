@@ -28,6 +28,7 @@ import java.util.List;
 public class PhantomJsOptions {
 
   private File configFile;
+  private String workingDirectory;
   private String commandLineOptions;
   private String script;
   private List<String> arguments;
@@ -42,6 +43,14 @@ public class PhantomJsOptions {
 
   public void setConfigFile(File configFile) {
     this.configFile = configFile;
+  }
+
+  public String getWorkingDirectory() {
+    return workingDirectory;
+  }
+
+  public void setWorkingDirectory(String workingDirectory) {
+    this.workingDirectory = workingDirectory;
   }
 
   public String getCommandLineOptions() {

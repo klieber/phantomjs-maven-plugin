@@ -48,6 +48,17 @@ public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
   private static final String ABNORMAL_EXIT_CODE = "PhantomJS execution did not exit normally (code = %d)";
 
   /**
+   * Working Directory
+   *
+   * @since 0.5
+   */
+  @Parameter(
+      property = "phantomjs.workingDirectory",
+      defaultValue = "${project.basedir}"
+  )
+  private String workingDirectory;
+
+  /**
    * Command line options for phantomjs
    *
    * @since 0.2
@@ -109,6 +120,7 @@ public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
 
     PhantomJsOptions options = new PhantomJsOptions();
     options.setConfigFile(this.configFile);
+    options.setWorkingDirectory(this.workingDirectory);
     options.setCommandLineOptions(this.commandLineOptions);
     options.addArguments(this.arguments);
     options.setScript(this.script);
