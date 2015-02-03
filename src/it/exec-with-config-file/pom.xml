@@ -20,6 +20,7 @@
         <artifactId>@project.artifactId@</artifactId>
         <version>@project.version@</version>
         <configuration>
+          <workingDirectory>${project.basedir}</workingDirectory>
           <version>1.9.2</version>
           <configFile>config.json</configFile>
           <script>store-cookie.js</script>

@@ -26,6 +26,7 @@
               <goal>install</goal>
             </goals>
             <configuration>
+              <workingDirectory>${project.basedir}</workingDirectory>
               <version>1.9.2</version>
             </configuration>
           </execution>
@@ -46,7 +47,7 @@
           <webDriverClassName>org.openqa.selenium.phantomjs.PhantomJSDriver</webDriverClassName>
           <webDriverCapabilities>
             <phantomjs.binary.path>${phantomjs.binary}</phantomjs.binary.path>
-          </webDriverCapabilities> 
+          </webDriverCapabilities>
         </configuration>
       </plugin>
     </plugins>
