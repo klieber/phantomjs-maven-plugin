@@ -55,7 +55,6 @@ public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
   @Parameter(
       property = "phantomjs.workingDirectory",
       defaultValue = "${project.basedir}"
-
   )
   private String workingDirectory;
 
