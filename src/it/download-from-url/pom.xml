@@ -41,7 +41,6 @@
           <artifactId>@project.artifactId@</artifactId>
           <version>@project.version@</version>
           <configuration>
-            <workingDirectory>${project.basedir}</workingDirectory>
             <version>1.9.6</version>
             <script>hello.js</script>
             <source>URL</source>
