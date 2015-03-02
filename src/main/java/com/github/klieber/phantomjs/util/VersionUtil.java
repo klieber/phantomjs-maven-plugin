@@ -46,6 +46,6 @@ public class VersionUtil {
   }
 
   public static boolean isEqualTo(String versionA, String versionB) {
-    return compare(versionA, versionB) < 0;
+    return compare(versionA, versionB) == 0;
   }
 }

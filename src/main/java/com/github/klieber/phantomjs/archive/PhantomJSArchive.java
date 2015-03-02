@@ -21,8 +21,8 @@
 package com.github.klieber.phantomjs.archive;
 
 public abstract class PhantomJSArchive {
-	
-	private final String basename;
+
+  private final String basename;
 	private final String version;
 
 	public PhantomJSArchive(String version) {
@@ -37,6 +37,8 @@ public abstract class PhantomJSArchive {
 	protected String getArch() {
 		return null;
 	}
+
+  protected String getPatch() { return null; }
 	
 	public final String getArchiveName() {
 		return this.getArchiveNameSB().toString();
@@ -78,6 +80,9 @@ public abstract class PhantomJSArchive {
 		if (this.getArch() != null) {
 			sb.append("-").append(this.getArch());
 		}
+    if (this.getPatch() != null) {
+      sb.append("-").append(this.getPatch());
+    }
 		return sb.toString();
 	}
 }

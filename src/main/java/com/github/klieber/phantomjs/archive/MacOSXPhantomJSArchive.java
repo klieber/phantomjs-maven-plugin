@@ -20,6 +20,8 @@
  */
 package com.github.klieber.phantomjs.archive;
 
+import com.github.klieber.phantomjs.util.VersionUtil;
+
 public class MacOSXPhantomJSArchive extends PhantomJSArchive {
 
 	public MacOSXPhantomJSArchive(String version) {
@@ -40,4 +42,9 @@ public class MacOSXPhantomJSArchive extends PhantomJSArchive {
 	protected String getExecutable() {
 		return "bin/phantomjs";
 	}
+
+  @Override
+  public String getPatch() {
+    return VersionUtil.isEqualTo("2.0.0", this.getVersion()) ? "fix01" : super.getPatch();
+  }
 }
