@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kyle Lieber
+ * Copyright (c) 2015 Kyle Lieber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -18,39 +18,34 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs.archive;
+package com.github.klieber.phantomjs.util;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 
-import static org.junit.Assert.assertEquals;
+public class VersionUtil {
 
-public class WindowsPhantomJSArchiveTest {
-
-  private WindowsPhantomJSArchive archive;
-
-  @Before
-  public void before() {
-    archive = new WindowsPhantomJSArchive("1.9.2");
+  public static int compare(String versionA, String versionB) {
+    if (versionA == versionB) {
+      return 0;
+    }
+    if (versionA == null) {
+      return -1;
+    }
+    if (versionB == null) {
+      return 1;
+    }
+    return new ComparableVersion(versionA).compareTo(new ComparableVersion(versionB));
   }
 
-  @Test
-  public void testGetExtension() {
-    assertEquals("zip",archive.getExtension());
+  public static boolean isGreaterThan(String versionA, String versionB) {
+    return compare(versionA, versionB) > 0;
   }
 
-  @Test
-  public void testGetExecutable() {
-    assertEquals("phantomjs.exe", archive.getExecutable());
-    assertEquals("bin/phantomjs.exe", new WindowsPhantomJSArchive("2.0.0").getExecutable());
-    assertEquals("bin/phantomjs.exe", new WindowsPhantomJSArchive("2.3.0").getExecutable());
+  public static boolean isLessThan(String versionA, String versionB) {
+    return compare(versionA, versionB) < 0;
   }
 
-  @Test
-  public void testGetPlatform() {
-    assertEquals("windows",archive.getPlatform());
+  public static boolean isEqualTo(String versionA, String versionB) {
+    return compare(versionA, versionB) < 0;
   }
 }

@@ -20,6 +20,8 @@
  */
 package com.github.klieber.phantomjs.archive;
 
+import com.github.klieber.phantomjs.util.VersionUtil;
+
 public class WindowsPhantomJSArchive extends PhantomJSArchive {
 
 	public WindowsPhantomJSArchive(String version) {
@@ -38,6 +40,6 @@ public class WindowsPhantomJSArchive extends PhantomJSArchive {
 
 	@Override
 	protected String getExecutable() {
-		return "phantomjs.exe";
+		return VersionUtil.isLessThan(this.getVersion(), "2.0.0") ? "phantomjs.exe" : "bin/phantomjs.exe";
 	}
 }

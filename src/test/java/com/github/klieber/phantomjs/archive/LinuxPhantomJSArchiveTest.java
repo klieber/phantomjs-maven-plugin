@@ -28,11 +28,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(MockitoJUnitRunner.class)
 public class LinuxPhantomJSArchiveTest {
 
   private static final String ARCH = "x86_64";
-  @Mock
+
   private LinuxPhantomJSArchive archive;
 
   @Before

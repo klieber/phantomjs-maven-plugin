@@ -28,10 +28,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(MockitoJUnitRunner.class)
 public class MacOSXPhantomJSArchiveTest {
 
-  @Mock
   private MacOSXPhantomJSArchive archive;
 
   @Before
