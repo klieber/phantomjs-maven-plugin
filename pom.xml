@@ -3,7 +3,7 @@
 
   <groupId>com.github.klieber</groupId>
   <artifactId>phantomjs-maven-plugin</artifactId>
-  <version>0.5-SNAPSHOT</version>
+  <version>0.5</version>
   <packaging>maven-plugin</packaging>
 
   <name>PhantomJS Maven Plugin</name>
@@ -37,12 +37,12 @@
     </contributor>
     <contributor>
       <name>Kelly Robinson</name>
-      <email>krobinson@sonatype.com></email>
+      <email>krobinson@sonatype.com&gt;</email>
       <url>http://www.kellyrob99.com/blog</url>
     </contributor>
     <contributor>
       <name>Martin D'Aloia</name>
-      <email>fullinet@gmail.com></email>
+      <email>fullinet@gmail.com&gt;</email>
       <url>https://github.com/mdaloia</url>
     </contributor>
   </contributors>
@@ -58,7 +58,7 @@
     <url>https://github.com/klieber/phantomjs-maven-plugin</url>
     <connection>scm:git:git@github.com:klieber/phantomjs-maven-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:klieber/phantomjs-maven-plugin.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>phantomjs-maven-plugin-0.5</tag>
   </scm>
 
   <issueManagement>
