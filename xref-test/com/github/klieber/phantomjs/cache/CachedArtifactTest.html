@@ -50,7 +50,7 @@
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  @PrepareForTest({PhantomJSArchive.<strong class="jxr_keyword">class</strong>,LocalRepository.<strong class="jxr_keyword">class</strong>})
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../com/github/klieber/phantomjs/cache/CachedArtifactTest.html">CachedArtifactTest</a> {
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>    <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String REPOSITORY_PATH = <span class="jxr_string">"/tmp"</span>;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>    <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String REPOSITORY_PATH = System.getProperty(<span class="jxr_string">"java.io.tmpdir"</span>);
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>    <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String ARTIFACT_PATH = <span class="jxr_string">"a/b/artifact-1.2.jar"</span>;
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>    @Mock
@@ -90,11 +90,11 @@
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>      when(localRepositoryManager.getPathForLocalArtifact(artifact)).thenReturn(ARTIFACT_PATH);
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>      when(localRepository.getBasedir()).thenReturn(basedir);
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>      assertEquals(REPOSITORY_PATH + <span class="jxr_string">"/"</span> + ARTIFACT_PATH, cachedArtifact.getFile().getAbsolutePath());
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>      assertEquals(<strong class="jxr_keyword">new</strong> File(REPOSITORY_PATH, ARTIFACT_PATH).getPath(), cachedArtifact.getFile().getAbsolutePath());
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>    }
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2014. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2015. All rights reserved.</div>
 </body>
 </html>
