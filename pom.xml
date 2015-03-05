@@ -29,6 +29,24 @@
     </developer>
   </developers>
 
+  <contributors>
+    <contributor>
+      <name>Benjamin Bentmann</name>
+      <email>benjamin.bentmann@udo.edu</email>
+      <url>https://github.com/bentmann</url>
+    </contributor>
+    <contributor>
+      <name>Kelly Robinson</name>
+      <email>krobinson@sonatype.com></email>
+      <url>http://www.kellyrob99.com/blog</url>
+    </contributor>
+    <contributor>
+      <name>Martin D'Aloia</name>
+      <email>fullinet@gmail.com></email>
+      <url>https://github.com/mdaloia</url>
+    </contributor>
+  </contributors>
+
   <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>
