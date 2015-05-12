@@ -85,23 +85,25 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Phant
    * @since 0.2
    */
   @Parameter(
-      defaultValue = "false",
+      defaultValue = "true",
       property = "phantomjs.checkSystemPath",
       required = true
   )
   private boolean checkSystemPath;
 
   /**
-   * Require that the correct version of phantomjs is on the system path.
+   * Require that the correct version of phantomjs is on the system path. You may either specify a boolean value
+   * or starting with version 0.7 of the plugin you can also specify a version range following the same syntax
+   * as the <a href="http://maven.apache.org/enforcer/enforcer-rules/versionRanges.html">Maven Enforcer Plugin</a>.
    *
    * @since 0.2
    */
   @Parameter(
       defaultValue = "true",
       property = "phantomjs.enforceVersion",
-      required = true
+      required = false
   )
-  private boolean enforceVersion;
+  private String enforceVersion;
 
   /**
    * <p>The download source for the phantomjs binary.</p>
@@ -154,7 +156,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Phant
   }
 
   @Override
-  public boolean isEnforceVersion() {
+  public String getEnforceVersion() {
     return this.enforceVersion;
   }
 

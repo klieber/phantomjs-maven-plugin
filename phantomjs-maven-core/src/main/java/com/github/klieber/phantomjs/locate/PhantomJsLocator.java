@@ -16,7 +16,9 @@ import com.github.klieber.phantomjs.resolve.PhantomJsBinaryResolver;
 import com.github.klieber.phantomjs.util.ArtifactBuilder;
 import com.github.klieber.phantomjs.util.Predicate;
 import com.github.klieber.phantomjs.util.Predicates;
-import org.apache.maven.artifact.versioning.ComparableVersion;
+import com.github.klieber.phantomjs.util.VersionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,15 +29,17 @@ import java.util.Map;
 
 public class PhantomJsLocator implements Locator {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(PhantomJsLocator.class);
+
   private final PhantomJsLocatorOptions options;
   private final RepositoryDetails repositoryDetails;
 
-  private static final ComparableVersion LEGACY_VERSION = new ComparableVersion("1.9.2");
+  private static final String LEGACY_VERSION = "1.9.2";
 
   private static final Predicate<String> IS_LEGACY_VERSION = new Predicate<String>() {
     @Override
     public boolean apply(String version) {
-      return LEGACY_VERSION.compareTo(new ComparableVersion(version)) >= 0;
+      return VersionUtil.isGreaterThanOrEqualTo(LEGACY_VERSION, version);
     }
   };
 
@@ -55,21 +59,18 @@ public class PhantomJsLocator implements Locator {
   }
 
   private List<Locator> getLocators() {
-
-    PhantomJSArchive phantomJSArchive = getPhantomJsArchive();
-
     List<Locator> locators = new ArrayList<Locator>();
     if (this.options.isCheckSystemPath()) {
-      locators.add(getPathLocator(this.options.getVersion(), this.options.isEnforceVersion()));
+      locators.add(getPathLocator(getVersionSpec()));
     }
-    locators.add(getArchiveLocator(phantomJSArchive, this.options.getOutputDirectory()));
+    locators.add(getArchiveLocator(getPhantomJsArchive(),this.options.getOutputDirectory()));
     return locators;
   }
 
-  private Locator getPathLocator(String version, boolean enforceVersion) {
+  private Locator getPathLocator(String versionSpec) {
     String systemPath = System.getenv("PATH");
     List<String> paths = Arrays.asList(systemPath.split(File.pathSeparator));
-    return new PathLocator(new PhantomJsBinaryResolver(version, enforceVersion),paths);
+    return new PathLocator(new PhantomJsBinaryResolver(versionSpec),paths);
   }
 
   private Locator getArchiveLocator(PhantomJSArchive archive, File outputDirectory) {
@@ -102,5 +103,19 @@ public class PhantomJsLocator implements Locator {
 
   private PhantomJSArchive getPhantomJsArchive() {
     return new PhantomJSArchiveBuilder(options.getVersion()).build();
+  }
+
+  private String getVersionSpec() {
+    String version = this.options.getVersion();
+    String spec = this.options.getEnforceVersion();
+
+    if (spec == null || Boolean.parseBoolean(spec)) {
+      spec = "["+version+"]";
+    } else if (Boolean.FALSE.toString().equalsIgnoreCase(spec)) {
+      spec = "[0,]";
+    } else if (!VersionUtil.isWithin(version, spec)) {
+      LOGGER.warn("Version {} is not within requested range: {}", version, spec);
+    }
+    return spec;
   }
 }

@@ -12,7 +12,7 @@ public interface PhantomJsLocatorOptions {
   Source getSource();
   String getVersion();
   boolean isCheckSystemPath();
-  boolean isEnforceVersion();
+  String getEnforceVersion();
   String getBaseUrl();
   File getOutputDirectory();
 }
