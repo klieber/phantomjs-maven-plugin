@@ -2,12 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.klieber</groupId>
-  <artifactId>phantomjs-root</artifactId>
+  <artifactId>phantomjs-maven</artifactId>
   <version>0.7-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>PhantomJS Maven Root POM</name>
-  <description>PhantomJS Maven Root POM</description>
+  <name>PhantomJS Maven</name>
+  <description>A library and maven plugin for downloading, installing, and executing phantomjs.</description>
 
   <url>https://github.com/klieber/phantomjs-maven-plugin</url>
 
@@ -222,6 +222,7 @@
             <autoVersionSubmodules>true</autoVersionSubmodules>
             <useReleaseProfile>false</useReleaseProfile>
             <releaseProfiles>release</releaseProfiles>
+            <tagNameFormat>@{project.version}</tagNameFormat>
             <goals>deploy</goals>
           </configuration>
         </plugin>
