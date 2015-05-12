@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.github.klieber</groupId>
     <artifactId>phantomjs-maven</artifactId>
-    <version>0.7</version>
+    <version>0.8-SNAPSHOT</version>
   </parent>
 
   <artifactId>phantomjs-maven-plugin</artifactId>

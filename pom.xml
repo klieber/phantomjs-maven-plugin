@@ -3,7 +3,7 @@
 
   <groupId>com.github.klieber</groupId>
   <artifactId>phantomjs-maven</artifactId>
-  <version>0.7</version>
+  <version>0.8-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PhantomJS Maven</name>
@@ -58,7 +58,7 @@
     <url>https://github.com/klieber/phantomjs-maven-plugin</url>
     <connection>scm:git:git@github.com:klieber/phantomjs-maven-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:klieber/phantomjs-maven-plugin.git</developerConnection>
-    <tag>0.7</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
