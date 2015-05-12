@@ -1,8 +1,7 @@
 language: java
 jdk:
-  - openjdk6
   - oraclejdk7
   - oraclejdk8
 script: mvn verify -Prun-its
 after_success:
-  - mvn prepare-package jacoco:report coveralls:jacoco
+  - mvn clean prepare-package jacoco:report coveralls:report
