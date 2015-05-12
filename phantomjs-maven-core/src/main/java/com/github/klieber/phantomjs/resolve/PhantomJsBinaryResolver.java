@@ -22,6 +22,7 @@ package com.github.klieber.phantomjs.resolve;
 
 import com.github.klieber.phantomjs.exec.ExecutionException;
 import com.github.klieber.phantomjs.exec.PhantomJsProcessBuilder;
+import com.github.klieber.phantomjs.util.VersionUtil;
 import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,12 +46,10 @@ public class PhantomJsBinaryResolver implements BinaryResolver {
     "phantomjs.exe"
   );
 
-  private final String version;
-  private final boolean enforceVersion;
+  private final String versionSpec;
 
-  public PhantomJsBinaryResolver(String version, boolean enforceVersion) {
-    this.version = version;
-    this.enforceVersion = enforceVersion;
+  public PhantomJsBinaryResolver(String versionSpec) {
+    this.versionSpec = versionSpec;
   }
 
   @Override
@@ -69,9 +68,10 @@ public class PhantomJsBinaryResolver implements BinaryResolver {
     File file = new File(path, binary);
     if (file.exists()) {
       String versionString = getVersion(file.getAbsolutePath());
-      if (versionString != null && (!this.enforceVersion || this.version.equals(versionString))) {
-        LOGGER.info(FOUND_PHANTOMJS,versionString,binary);
-        return file.getAbsolutePath();
+      if (versionString != null && VersionUtil.isWithin(versionString, this.versionSpec)) {
+        String absolutePath = file.getAbsolutePath();
+        LOGGER.info(FOUND_PHANTOMJS,versionString,absolutePath);
+        return absolutePath;
       }
     }
     return null;
@@ -94,5 +94,4 @@ public class PhantomJsBinaryResolver implements BinaryResolver {
     }
     return null;
   }
-
 }

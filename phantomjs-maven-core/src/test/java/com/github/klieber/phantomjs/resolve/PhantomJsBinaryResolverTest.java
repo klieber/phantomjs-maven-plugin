@@ -76,15 +76,11 @@ public class PhantomJsBinaryResolverTest {
 
   @Test
   public void testShouldResolveBinWrongVersion() {
-    assertNull(getResolver("1.9.2", true).resolve(phantomJsHome.getParent()));
+    assertNull(getResolver("1.9.2").resolve(phantomJsHome.getParent()));
   }
 
   private PhantomJsBinaryResolver getResolver(String version) {
-    return getResolver(version, false);
-  }
-
-  private PhantomJsBinaryResolver getResolver(String version, boolean enforce) {
-    return new PhantomJsBinaryResolver(version, enforce);
+    return new PhantomJsBinaryResolver(version);
   }
 
   private void assumeUnixOs() {
