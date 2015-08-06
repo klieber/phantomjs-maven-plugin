@@ -76,6 +76,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <truezip.version>7.7.8</truezip.version>
     <junit.version>4.12</junit.version>
+    <maven.version>3.2.1</maven.version>
   </properties>
 
   <prerequisites>
@@ -97,12 +98,12 @@
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-plugin-api</artifactId>
-        <version>3.2.1</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-core</artifactId>
-        <version>3.2.1</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
