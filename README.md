@@ -142,7 +142,7 @@ public class ExampleTest {
 }
 ```
 
-The plugin can also execute phantomjs scripts for you as well.  The following downloads phantomjs automatically if it isn't already present on the system and then executes the script `hello.js` with the argument `Bob` ([see full example here](https://github.com/klieber/phantomjs-maven-plugin/tree/master/src/it/exec-with-args)):
+The plugin can also execute phantomjs scripts for you as well.  The following downloads phantomjs automatically if it isn't already present on the system and then executes the script `hello.js` with the argument `Bob` ([see full example here](https://github.com/klieber/phantomjs-maven-plugin/tree/master/phantomjs-maven-plugin/src/it/exec-with-args)):
 
 ```xml
 <project>
