@@ -111,7 +111,7 @@ Example using in a JUnit test:
         <version>2.17</version>
         <configuration>
           <systemPropertyVariables>
-            <phantomjs.binary>${phantomjs.binary}</phantomjs.binary>
+            <phantomjs.binary.path>${phantomjs.binary}</phantomjs.binary.path>
           </systemPropertyVariables>
         </configuration>
       </plugin>
