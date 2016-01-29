@@ -100,11 +100,13 @@ public class RepositoryDownloaderTest {
   @Test
   public void shouldDownload() throws DownloadException, ArtifactResolutionException {
     when(artifactBuilder.createArtifact(phantomJSArchive)).thenReturn(artifact);
-    when(repositorySystem.resolveArtifact(same(repositorySystemSession), artifactRequestCaptor.capture())).thenReturn(artifactResult);
+    when(
+        repositorySystem.resolveArtifact(same(repositorySystemSession), artifactRequestCaptor.capture())
+    ).thenReturn(artifactResult);
     when(artifactResult.getArtifact()).thenReturn(artifact);
     when(artifact.getFile()).thenReturn(archiveFile);
 
-    assertSame(archiveFile, repositoryDownloader.download(phantomJSArchive));
+    assertSame(archiveFile, repositoryDownloader.download());
 
     ArtifactRequest request = artifactRequestCaptor.getValue();
     assertSame(artifact, request.getArtifact());
@@ -114,9 +116,13 @@ public class RepositoryDownloaderTest {
   @Test
   public void shouldHandleArtifactResolutionException() throws DownloadException, ArtifactResolutionException {
     when(artifactBuilder.createArtifact(phantomJSArchive)).thenReturn(artifact);
-    when(repositorySystem.resolveArtifact(same(repositorySystemSession), artifactRequestCaptor.capture())).thenThrow(new ArtifactResolutionException(Collections.<ArtifactResult>emptyList()));
+    when(
+        repositorySystem.resolveArtifact(same(repositorySystemSession), artifactRequestCaptor.capture())
+    ).thenThrow(
+        new ArtifactResolutionException(Collections.<ArtifactResult>emptyList())
+    );
 
-    catchException(repositoryDownloader).download(phantomJSArchive);
+    catchException(repositoryDownloader).download();
     assertThat(caughtException(), is(instanceOf(DownloadException.class)));
   }
 }

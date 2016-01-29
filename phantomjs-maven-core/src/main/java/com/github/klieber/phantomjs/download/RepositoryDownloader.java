@@ -20,9 +20,8 @@
  */
 package com.github.klieber.phantomjs.download;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import com.github.klieber.phantomjs.locate.RepositoryDetails;
-import com.github.klieber.phantomjs.util.ArtifactBuilder;
+import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -39,19 +38,18 @@ public class RepositoryDownloader implements Downloader {
 
   private final static String RESOLVED_ARTIFACT = "Resolved artifact {} from {}";
 
-  private final ArtifactBuilder artifactBuilder;
   private final RepositoryDetails repositoryDetails;
+  private final Artifact artifact;
 
-  public RepositoryDownloader(ArtifactBuilder artifactBuilder,
-                              RepositoryDetails repositoryDetails) {
-    this.artifactBuilder = artifactBuilder;
+  public RepositoryDownloader(RepositoryDetails repositoryDetails, Artifact artifact) {
+    this.artifact = artifact;
     this.repositoryDetails = repositoryDetails;
   }
 
   @Override
-  public File download(PhantomJSArchive archive) throws DownloadException {
+  public File download() throws DownloadException {
     ArtifactRequest request = new ArtifactRequest();
-    request.setArtifact(artifactBuilder.createArtifact(archive));
+    request.setArtifact(artifact);
     request.setRepositories(repositoryDetails.getRemoteRepositories());
 
     try {

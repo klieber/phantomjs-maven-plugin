@@ -26,23 +26,30 @@ import com.github.klieber.phantomjs.install.Installer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
 public class ArchiveLocator implements Locator {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ArchiveLocator.class);
 
   private final Installer installer;
   private final PhantomJSArchive phantomJSArchive;
+  private final File outputDirectory;
 
-  public ArchiveLocator(Installer installer, PhantomJSArchive phantomJSArchive) {
+  public ArchiveLocator(Installer installer,
+                        PhantomJSArchive phantomJSArchive,
+                        File outputDirectory) {
     this.installer = installer;
     this.phantomJSArchive = phantomJSArchive;
+    this.outputDirectory = outputDirectory;
   }
 
   @Override
   public String locate() {
     String location = null;
     try {
-      location = installer.install(phantomJSArchive);
+      File target = new File(outputDirectory, phantomJSArchive.getExtractToPath());
+      location = installer.install(target);
     } catch(InstallationException e) {
       LOGGER.error("Unable to locate phantomjs binary",e);
     }

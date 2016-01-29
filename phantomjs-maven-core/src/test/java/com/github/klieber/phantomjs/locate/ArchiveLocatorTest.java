@@ -24,8 +24,12 @@ import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import com.github.klieber.phantomjs.install.InstallationException;
 import com.github.klieber.phantomjs.install.Installer;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -43,28 +47,36 @@ public class ArchiveLocatorTest {
   @Mock
   private PhantomJSArchive archive;
 
-  @Mock
   private File outputDirectory;
+
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
   @Mock
   private Installer installer;
+
+  @Captor
+  private ArgumentCaptor<File> targetFileCaptor;
 
   private ArchiveLocator locator;
 
   @Before
   public void before() {
-    locator = new ArchiveLocator(installer, archive);
+    outputDirectory = temporaryFolder.getRoot();
+    locator = new ArchiveLocator(installer, archive, outputDirectory);
   }
 
   @Test
   public void shouldLocate() throws Exception  {
-    when(installer.install(archive)).thenReturn(LOCATION);
+    when(installer.install(targetFileCaptor.capture())).thenReturn(LOCATION);
     assertEquals(LOCATION, locator.locate());
   }
 
   @Test
   public void testLocateShouldHandleException() throws Exception  {
-    when(installer.install(archive)).thenThrow(new InstallationException("error",new RuntimeException()));
+    when(installer.install(targetFileCaptor.capture())).thenThrow(
+        new InstallationException("error",new RuntimeException())
+    );
     assertNull(locator.locate());
   }
 }

@@ -20,7 +20,6 @@
  */
 package com.github.klieber.phantomjs.install;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import com.github.klieber.phantomjs.download.DownloadException;
 import com.github.klieber.phantomjs.download.Downloader;
 import com.github.klieber.phantomjs.extract.ExtractionException;
@@ -34,30 +33,25 @@ public class PhantomJsInstaller implements Installer {
 
   private final Downloader downloader;
   private final Extractor extractor;
-  private final File outputDirectory;
 
-  public PhantomJsInstaller(Downloader downloader, Extractor extractor, File outputDirectory) {
+  public PhantomJsInstaller(Downloader downloader,
+                            Extractor extractor) {
     this.downloader = downloader;
     this.extractor = extractor;
-    this.outputDirectory = outputDirectory;
   }
 
   @Override
-  public String install(PhantomJSArchive phantomJSArchive) throws InstallationException {
-
-    File extractTo = new File(outputDirectory, phantomJSArchive.getExtractToPath());
-
-    if (!extractTo.exists()) {
+  public String install(File target) throws InstallationException {
+    if (!target.exists()) {
       try {
-        File archive = downloader.download(phantomJSArchive);
-        extractor.extract(archive, extractTo);
+        File archive = downloader.download();
+        extractor.extract(archive, target);
       } catch(DownloadException e) {
         throw new InstallationException(UNABLE_TO_INSTALL, e);
       } catch(ExtractionException e) {
         throw new InstallationException(UNABLE_TO_INSTALL, e);
       }
-
     }
-    return extractTo.getAbsolutePath();
+    return target.getAbsolutePath();
   }
 }

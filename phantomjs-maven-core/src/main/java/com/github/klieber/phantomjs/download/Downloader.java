@@ -20,10 +20,8 @@
  */
 package com.github.klieber.phantomjs.download;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-
 import java.io.File;
 
 public interface Downloader {
-  File download(PhantomJSArchive archive) throws DownloadException;
+  File download() throws DownloadException;
 }

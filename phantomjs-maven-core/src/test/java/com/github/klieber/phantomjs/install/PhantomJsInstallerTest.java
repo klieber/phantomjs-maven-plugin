@@ -45,9 +45,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.same;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -56,14 +54,10 @@ import static org.mockito.Mockito.when;
 @PrepareForTest(PhantomJSArchive.class)
 public class PhantomJsInstallerTest {
 
-  private static final String EXTRACT_TO_PATH = "phantomjs";
-
-  private File phantomJsBinary;
-
-  private File outputDirectory;
+  private static final String ABSOLUTE_PATH = "/foo/bar";
 
   @Mock
-  private PhantomJSArchive phantomJSArchive;
+  private File targetFile;
 
   @Mock
   private File archive;
@@ -84,56 +78,45 @@ public class PhantomJsInstallerTest {
 
   @Before
   public void before() throws IOException {
-    outputDirectory = temporaryFolder.getRoot();
-    phantomJsInstaller = new PhantomJsInstaller(downloader,extractor, outputDirectory);
-    phantomJsBinary = new File(outputDirectory, EXTRACT_TO_PATH);
+    phantomJsInstaller = new PhantomJsInstaller(downloader, extractor);
   }
 
   @Test
   public void shouldDownloadAndExtract() throws Exception {
-    when(downloader.download(phantomJSArchive)).thenReturn(archive);
+    when(targetFile.getAbsolutePath()).thenReturn(ABSOLUTE_PATH);
+    when(downloader.download()).thenReturn(archive);
 
-    when(phantomJSArchive.getExtractToPath()).thenReturn(EXTRACT_TO_PATH);
+    assertEquals(ABSOLUTE_PATH, phantomJsInstaller.install(targetFile));
 
-    assertEquals(phantomJsBinary.getAbsolutePath(), phantomJsInstaller.install(phantomJSArchive));
-
-    verify(extractor).extract(same(archive),extractToFile.capture());
-
-    assertEquals(phantomJsBinary, extractToFile.getValue());
+    verify(extractor).extract(archive, targetFile);
   }
 
   @Test
   public void shouldReturnPreviouslyInstalledPath() throws Exception {
-    phantomJsBinary = temporaryFolder.newFile(EXTRACT_TO_PATH);
+    when(targetFile.exists()).thenReturn(true);
+    when(targetFile.getAbsolutePath()).thenReturn(ABSOLUTE_PATH);
 
-    when(phantomJSArchive.getExtractToPath()).thenReturn(EXTRACT_TO_PATH);
-
-    assertEquals(phantomJsBinary.getAbsolutePath(), phantomJsInstaller.install(phantomJSArchive));
+    assertEquals(ABSOLUTE_PATH, phantomJsInstaller.install(targetFile));
 
     verifyNoMoreInteractions(downloader, extractor);
   }
 
   @Test
   public void shouldHandleDownloadException() throws Exception {
+    when(downloader.download()).thenThrow(new DownloadException("error"));
 
-    when(phantomJSArchive.getExtractToPath()).thenReturn(EXTRACT_TO_PATH);
-    when(downloader.download(phantomJSArchive)).thenThrow(new DownloadException("error"));
-
-    catchException(phantomJsInstaller).install(phantomJSArchive);
+    catchException(phantomJsInstaller).install(targetFile);
     assertThat(caughtException(), is(instanceOf(InstallationException.class)));
   }
 
   @Test
   public void shouldHandleExtractionException() throws Exception {
-
-    when(phantomJSArchive.getExtractToPath()).thenReturn(EXTRACT_TO_PATH);
-
-    when(downloader.download(phantomJSArchive)).thenReturn(archive);
+    when(downloader.download()).thenReturn(archive);
 
     ExtractionException exception = new ExtractionException("error", new RuntimeException());
-    doThrow(exception).when(extractor).extract(same(archive), any(File.class));
+    doThrow(exception).when(extractor).extract(archive, targetFile);
 
-    catchException(phantomJsInstaller).install(phantomJSArchive);
+    catchException(phantomJsInstaller).install(targetFile);
     assertThat(caughtException(), is(instanceOf(InstallationException.class)));
   }
 }
