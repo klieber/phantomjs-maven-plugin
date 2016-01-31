@@ -20,7 +20,7 @@
         <artifactId>@project.artifactId@</artifactId>
         <version>@project.version@</version>
         <configuration>
-          <version>1.9.2</version>
+          <version>2.1.1</version>
           <script>hello.js</script>
           <arguments>
             <argument>Bob</argument>
