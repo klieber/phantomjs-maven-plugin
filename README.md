@@ -112,6 +112,7 @@ Example using in a JUnit test:
         <configuration>
           <systemPropertyVariables>
             <phantomjs.binary>${phantomjs.binary}</phantomjs.binary>
+            <phantomjs.binary.path>${phantomjs.binary}</phantomjs.binary.path>
           </systemPropertyVariables>
         </configuration>
       </plugin>
