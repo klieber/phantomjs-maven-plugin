@@ -22,7 +22,7 @@ A maven plugin for installing the [phantomjs](http://phantomjs.org) binary on yo
           </execution>
         </executions>
         <configuration>
-          <version>1.9.7</version>
+          <version>2.1.1</version>
         </configuration>
       </plugin>
     </plugins>
