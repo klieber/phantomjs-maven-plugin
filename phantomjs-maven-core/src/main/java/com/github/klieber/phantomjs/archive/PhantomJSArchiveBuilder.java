@@ -21,39 +21,62 @@
 package com.github.klieber.phantomjs.archive;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.github.klieber.phantomjs.archive.mapping.ArchiveSpec;
+import com.github.klieber.phantomjs.archive.mapping.ArchiveMapping;
+import com.github.klieber.phantomjs.archive.mapping.ArchiveMappings;
+import com.github.klieber.phantomjs.os.OperatingSystem;
+import com.github.klieber.phantomjs.util.VersionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.URL;
+
 public class PhantomJSArchiveBuilder {
-	
-	private final String platform;
-	private final String arch;
-	private final String version;
-	
-	public PhantomJSArchiveBuilder(String platform, String arch, String version) {
-		this.platform = platform;
-		this.arch     = arch;
-		this.version  = version;
-	}
-	
-	public PhantomJSArchiveBuilder(String version) {
-		this(
-				System.getProperty("os.name").toLowerCase(),
-				System.getProperty("os.arch").toLowerCase(),
-				version
-		);
-	}
-	
-	public PhantomJSArchive build() {
-		PhantomJSArchive archive = null;
-  	if (platform.contains("win")) {
-  		archive = new WindowsPhantomJSArchive(version);
-  	} else if (platform.contains("mac")) {
-  		archive = new MacOSXPhantomJSArchive(version);
-  	} else if (platform.contains("nux")) {
-  		String modifier = arch.contains("64") ? "x86_64" : "i686"; 
- 			archive = new LinuxPhantomJSArchive(version, modifier);
-  	}
-  	if (archive == null) {
-  		throw new IllegalArgumentException("unknown platform: " + platform);
-  	}
-  	return archive;
-	}
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(PhantomJSArchiveBuilder.class);
+
+  private final OperatingSystem operatingSystem;
+  private final String version;
+
+  public PhantomJSArchiveBuilder(OperatingSystem operatingSystem,
+                                 String version) {
+    this.operatingSystem = operatingSystem;
+    this.version = version;
+  }
+
+  public PhantomJSArchive build() {
+
+    PhantomJSArchive archive = null;
+
+    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    URL resource = PhantomJSArchiveBuilder.class.getResource("/archive-mapping.yaml");
+    try {
+      ArchiveMappings archiveMappings = mapper.readValue(resource, ArchiveMappings.class);
+      for (ArchiveMapping archiveMapping : archiveMappings.getMappings()) {
+        if (archiveMapping.getSpec().matches(this.version, this.operatingSystem)) {
+          archive = new PhantomJSArchiveImpl(archiveMapping.getFormat(), this.version);
+          break;
+        }
+      }
+    } catch (IOException e) {
+      LOGGER.error("Unable to read archive-mapping.yaml", e);
+    }
+    if (archive == null) {
+      throw new UnsupportedPlatformException(this.operatingSystem);
+    }
+    return archive;
+  }
+
+  private boolean matches(ArchiveSpec condition) {
+    return
+      VersionUtil.isWithin(versionNumberOnly(), condition.getVersionSpec()) &&
+        condition.getOperatingSystemSpec().matches(operatingSystem);
+  }
+
+  private String versionNumberOnly() {
+    return this.version.replaceAll("[^0-9.]", "");
+  }
 }

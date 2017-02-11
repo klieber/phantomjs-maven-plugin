@@ -1,0 +1,99 @@
+mappings:
+  - spec:
+      version: "[2.5.0,)"
+      operatingSystem:
+        name: "linux"
+        architecture: "x86_64"
+        distribution: "ubuntu"
+        distributionVersion: "16.04"
+    archive:
+      fileTemplate: phantomjs-{version}-{classifier}.{extension}
+      executableTemplate: phantomjs-{version}-ubuntu-xenial/bin/phantomjs
+      classifier: "linux-ubuntu-xenial-x86_64"
+      extension: "tar.gz"
+  - spec:
+      version: "[2.5.0,)"
+      operatingSystem:
+        name: "linux"
+        architecture: "x86_64"
+        distribution: "ubuntu"
+        distributionVersion: "14.04"
+    archive:
+      fileTemplate: phantomjs-{version}-{classifier}.{extension}
+      executableTemplate: phantomjs-{version}-ubuntu-trusty/bin/phantomjs
+      classifier: "linux-ubuntu-trusty-x86_64"
+      extension: "tar.gz"
+  - spec:
+      version: "(,2.5.0)"
+      operatingSystem:
+        name: "linux"
+        architecture: "x86_64"
+    archive:
+      fileTemplate: phantomjs-{version}-{classifier}.{extension}
+      executableTemplate: phantomjs-{version}-{classifier}/bin/phantomjs
+      classifier: "linux-x86_64"
+      extension: "tar.bz2"
+  - spec:
+      version: "(,2.5.0)"
+      operatingSystem:
+        name: "linux"
+        architecture: "i686"
+    archive:
+      fileTemplate: phantomjs-{version}-{classifier}.{extension}
+      executableTemplate: phantomjs-{version}-{classifier}/bin/phantomjs
+      classifier: "linux-i686"
+      extension: "tar.bz2"
+  - spec:
+      version: "[2.5.0,)"
+      operatingSystem:
+        name: "mac"
+    archive:
+      fileTemplate: phantomjs-{version}-{classifier}.{extension}
+      executableTemplate: phantomjs-{version}-{classifier}/bin/phantomjs
+      classifier: "macos"
+      extension: "zip"
+  - spec:
+      version: "(2.0.0,2.5.0)"
+      operatingSystem:
+        name: "mac"
+    archive:
+      fileTemplate: phantomjs-{version}-{classifier}.{extension}
+      executableTemplate: phantomjs-{version}-{classifier}/bin/phantomjs
+      classifier: "macosx"
+      extension: "zip"
+  - spec:
+      version: "[2.0.0]"
+      operatingSystem:
+        name: "mac"
+    archive:
+      fileTemplate: phantomjs-{version}-{classifier}.{extension}
+      executableTemplate: phantomjs-{version}-{classifier}/bin/phantomjs
+      classifier: "macosx-fix01"
+      extension: "zip"
+  - spec:
+      version: "(,2.0.0)"
+      operatingSystem:
+        name: "mac"
+    archive:
+      fileTemplate: phantomjs-{version}-{classifier}.{extension}
+      executableTemplate: phantomjs-{version}-{classifier}/bin/phantomjs
+      classifier: "macosx"
+      extension: "zip"
+  - spec:
+      version: "[2.0.0,)"
+      operatingSystem:
+        name: "win"
+    archive:
+      fileTemplate: phantomjs-{version}-{classifier}.{extension}
+      executableTemplate: phantomjs-{version}-{classifier}/bin/phantomjs.exe
+      classifier: "windows"
+      extension: "zip"
+  - spec:
+      version: "(,2.0.0)"
+      operatingSystem:
+        name: "win"
+    archive:
+      fileTemplate: phantomjs-{version}-{classifier}.{extension}
+      executableTemplate: phantomjs-{version}-{classifier}/phantomjs.exe
+      classifier: "windows"
+      extension: "zip"

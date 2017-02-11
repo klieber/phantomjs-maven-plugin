@@ -1,5 +1,7 @@
 package com.github.klieber.phantomjs.locate;
 
+import com.github.klieber.phantomjs.os.OperatingSystem;
+import com.github.klieber.phantomjs.os.OperatingSystemFactory;
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import com.github.klieber.phantomjs.archive.PhantomJSArchiveBuilder;
 import com.github.klieber.phantomjs.cache.CachedArtifact;
@@ -102,7 +104,9 @@ public class PhantomJsLocator implements Locator {
   }
 
   private PhantomJSArchive getPhantomJsArchive() {
-    return new PhantomJSArchiveBuilder(options.getVersion()).build();
+    OperatingSystemFactory operatingSystemFactory = new OperatingSystemFactory();
+    OperatingSystem operatingSystem = operatingSystemFactory.create();
+    return new PhantomJSArchiveBuilder(operatingSystem, options.getVersion()).build();
   }
 
   private String getVersionSpec() {

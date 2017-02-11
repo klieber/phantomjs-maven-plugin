@@ -20,69 +20,76 @@
  */
 package com.github.klieber.phantomjs.archive;
 
+import com.github.klieber.phantomjs.os.OperatingSystem;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.internal.util.reflection.Whitebox;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
-import static com.googlecode.catchexception.apis.CatchExceptionHamcrestMatchers.hasMessage;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PhantomJSArchiveBuilderTest {
+
+  @Mock
+  private OperatingSystem operatingSystem;
 
   private PhantomJSArchiveBuilder builder;
 
   @Test
   public void testBuildWindowsPhantomJSArchive() {
-    builder = new PhantomJSArchiveBuilder("win","","");
+    when(operatingSystem.getName()).thenReturn("win");
+    builder = new PhantomJSArchiveBuilder(operatingSystem, "1.9.0");
     PhantomJSArchive archive = builder.build();
-    assertThat(archive,is(instanceOf(WindowsPhantomJSArchive.class)));
+    assertEquals("phantomjs-1.9.0-windows.zip", archive.getArchiveName());
   }
 
   @Test
   public void testBuildMacOSXPhantomJSArchive() {
-    builder = new PhantomJSArchiveBuilder("mac","","");
+    when(operatingSystem.getName()).thenReturn("mac");
+    builder = new PhantomJSArchiveBuilder(operatingSystem, "1.9.0");
     PhantomJSArchive archive = builder.build();
-    assertThat(archive,is(instanceOf(MacOSXPhantomJSArchive.class)));
+    assertEquals("phantomjs-1.9.0-macosx.zip",archive.getArchiveName());
+  }
+
+  @Test
+  public void testBuildMacOSX250PhantomJSArchive() {
+    when(operatingSystem.getName()).thenReturn("mac");
+    builder = new PhantomJSArchiveBuilder(operatingSystem, "2.5.0-beta");
+    PhantomJSArchive archive = builder.build();
+    assertEquals("phantomjs-2.5.0-beta-macos.zip",archive.getArchiveName());
   }
 
   @Test
   public void testBuildLinuxPhantomJSArchive() {
-    builder = new PhantomJSArchiveBuilder("linux","","");
+    when(operatingSystem.getName()).thenReturn("linux");
+    when(operatingSystem.getArchitecture()).thenReturn("i686");
+    builder = new PhantomJSArchiveBuilder(operatingSystem, "1.9.0");
     PhantomJSArchive archive = builder.build();
-    assertThat(archive,is(instanceOf(LinuxPhantomJSArchive.class)));
-    assertEquals("i686", archive.getArch());
+    assertEquals("phantomjs-1.9.0-linux-i686.tar.bz2", archive.getArchiveName());
   }
 
   @Test
   public void testBuildLinuxPhantomJSArchiveX64() {
-    builder = new PhantomJSArchiveBuilder("linux","64","1.9.2");
+    when(operatingSystem.getName()).thenReturn("linux");
+    when(operatingSystem.getArchitecture()).thenReturn("x86_64");
+    builder = new PhantomJSArchiveBuilder(operatingSystem, "1.9.2");
     PhantomJSArchive archive = builder.build();
-    assertThat(archive,is(instanceOf(LinuxPhantomJSArchive.class)));
-    assertEquals("x86_64",archive.getArch());
+    assertEquals("phantomjs-1.9.2-linux-x86_64.tar.bz2", archive.getArchiveName());
   }
 
   @Test
   public void testBuildInvalidPlatform() {
-    builder = new PhantomJSArchiveBuilder("invalid","","");
+    when(operatingSystem.getName()).thenReturn("invalid");
+    builder = new PhantomJSArchiveBuilder(operatingSystem, "");
     catchException(builder).build();
-    assertThat(caughtException(), allOf(
-        is(instanceOf(IllegalArgumentException.class)),
-        hasMessage("unknown platform: invalid")
-    ));
-  }
-
-  @Test
-  public void testConstructWithSystemValues() {
-    builder = new PhantomJSArchiveBuilder("1.9.2");
-    assertEquals(System.getProperty("os.name").toLowerCase(), Whitebox.getInternalState(builder,"platform"));
-    assertEquals(System.getProperty("os.arch").toLowerCase(), Whitebox.getInternalState(builder,"arch"));
+    assertThat(caughtException(), is(instanceOf(UnsupportedPlatformException.class)));
   }
 }

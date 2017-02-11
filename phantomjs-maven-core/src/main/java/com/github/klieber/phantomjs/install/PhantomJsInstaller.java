@@ -45,7 +45,7 @@ public class PhantomJsInstaller implements Installer {
   @Override
   public String install(PhantomJSArchive phantomJSArchive) throws InstallationException {
 
-    File extractTo = new File(outputDirectory, phantomJSArchive.getExtractToPath());
+    File extractTo = new File(outputDirectory, phantomJSArchive.getPathToExecutable());
 
     if (!extractTo.exists()) {
       try {

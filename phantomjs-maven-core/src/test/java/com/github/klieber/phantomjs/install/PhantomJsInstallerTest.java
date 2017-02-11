@@ -93,7 +93,7 @@ public class PhantomJsInstallerTest {
   public void shouldDownloadAndExtract() throws Exception {
     when(downloader.download(phantomJSArchive)).thenReturn(archive);
 
-    when(phantomJSArchive.getExtractToPath()).thenReturn(EXTRACT_TO_PATH);
+    when(phantomJSArchive.getPathToExecutable()).thenReturn(EXTRACT_TO_PATH);
 
     assertEquals(phantomJsBinary.getAbsolutePath(), phantomJsInstaller.install(phantomJSArchive));
 
@@ -106,7 +106,7 @@ public class PhantomJsInstallerTest {
   public void shouldReturnPreviouslyInstalledPath() throws Exception {
     phantomJsBinary = temporaryFolder.newFile(EXTRACT_TO_PATH);
 
-    when(phantomJSArchive.getExtractToPath()).thenReturn(EXTRACT_TO_PATH);
+    when(phantomJSArchive.getPathToExecutable()).thenReturn(EXTRACT_TO_PATH);
 
     assertEquals(phantomJsBinary.getAbsolutePath(), phantomJsInstaller.install(phantomJSArchive));
 
@@ -116,7 +116,7 @@ public class PhantomJsInstallerTest {
   @Test
   public void shouldHandleDownloadException() throws Exception {
 
-    when(phantomJSArchive.getExtractToPath()).thenReturn(EXTRACT_TO_PATH);
+    when(phantomJSArchive.getPathToExecutable()).thenReturn(EXTRACT_TO_PATH);
     when(downloader.download(phantomJSArchive)).thenThrow(new DownloadException("error"));
 
     catchException(phantomJsInstaller).install(phantomJSArchive);
@@ -126,7 +126,7 @@ public class PhantomJsInstallerTest {
   @Test
   public void shouldHandleExtractionException() throws Exception {
 
-    when(phantomJSArchive.getExtractToPath()).thenReturn(EXTRACT_TO_PATH);
+    when(phantomJSArchive.getPathToExecutable()).thenReturn(EXTRACT_TO_PATH);
 
     when(downloader.download(phantomJSArchive)).thenReturn(archive);
 

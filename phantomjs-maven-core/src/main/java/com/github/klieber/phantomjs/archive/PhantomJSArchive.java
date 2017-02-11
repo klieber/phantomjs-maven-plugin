@@ -20,68 +20,10 @@
  */
 package com.github.klieber.phantomjs.archive;
 
-public abstract class PhantomJSArchive {
-
-  private final String basename;
-	private final String version;
-
-	public PhantomJSArchive(String version) {
-		this.basename = "phantomjs";
-		this.version  = version;
-	}
-	
-	public abstract String getExtension();
-	protected abstract String getPlatform();
-	protected abstract String getExecutable();
-	
-	protected String getArch() {
-		return null;
-	}
-
-  protected String getPatch() { return null; }
-	
-	public final String getArchiveName() {
-		return this.getArchiveNameSB().toString();
-	}
-	
-	public final String getPathToExecutable() {
-		return this.getNameWithoutExtension()
-		.append("/")
-		.append(this.getExecutable())
-		.toString();
-	}
-	
-	public final String getExtractToPath() {
-		return this.getNameWithoutExtension().append("/").append(this.getExecutable()).toString();
-	}
-	
-	private StringBuilder getArchiveNameSB() {
-		return this.getNameWithoutExtension()
-			.append(".")
-			.append(this.getExtension());
-	}
-	
-	private StringBuilder getNameWithoutExtension() {
-		return new StringBuilder()
-			.append(this.basename)
-			.append("-")
-			.append(this.version)
-			.append("-")
-			.append(this.getClassifier());
-	}
-
-  public final String getVersion() {
-    return this.version;
-  }
-	
-	public final String getClassifier() {
-		StringBuilder sb = new StringBuilder().append(this.getPlatform());
-		if (this.getArch() != null) {
-			sb.append("-").append(this.getArch());
-		}
-    if (this.getPatch() != null) {
-      sb.append("-").append(this.getPatch());
-    }
-		return sb.toString();
-	}
+public interface PhantomJSArchive {
+  String getExtension();
+	String getArchiveName();
+	String getPathToExecutable();
+	String getVersion();
+	String getClassifier();
 }
