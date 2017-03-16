@@ -46,6 +46,26 @@ public class MacOSXPhantomJSArchiveTest {
 
   @Test
   public void testGetPlatform() {
-    assertEquals("macosx",archive.getPlatform());
+    assertEquals("macosx",archive.getPlatform(null));
+  }
+
+  @Test
+  public void testGetPlatformLowerThan25() {
+    assertEquals("macosx",archive.getPlatform("2.1.1"));
+  }
+
+  @Test
+  public void testGetPlatformNotSemver() {
+    assertEquals("macosx",archive.getPlatform("2.5"));
+    assertEquals("macosx",archive.getPlatform("test"));
+    assertEquals("macosx",archive.getPlatform(null));
+  }
+
+  @Test
+  public void testGetPlatformGreaterOrEqual25() {
+    assertEquals("macos",archive.getPlatform("2.5.0"));
+    assertEquals("macos",archive.getPlatform("2.6.0"));
+    assertEquals("macos",archive.getPlatform("2.5.0-beta"));
+    assertEquals("macos",archive.getPlatform("3.0.0"));
   }
 }

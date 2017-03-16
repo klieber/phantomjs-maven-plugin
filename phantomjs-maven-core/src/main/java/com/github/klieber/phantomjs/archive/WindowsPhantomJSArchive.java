@@ -34,7 +34,7 @@ public class WindowsPhantomJSArchive extends PhantomJSArchive {
 	}
 
 	@Override
-	protected String getPlatform() {
+	protected String getPlatform(String version) {
 		return "windows";
 	}
 
