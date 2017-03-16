@@ -48,7 +48,7 @@ public class LinuxPhantomJSArchiveTest {
 
   @Test
   public void testGetPlatform() {
-    assertEquals("linux",archive.getPlatform());
+    assertEquals("linux",archive.getPlatform("2.1.1"));
   }
 
   @Test

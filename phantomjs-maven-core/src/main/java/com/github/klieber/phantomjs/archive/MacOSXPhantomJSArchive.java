@@ -21,6 +21,8 @@
 package com.github.klieber.phantomjs.archive;
 
 import com.github.klieber.phantomjs.util.VersionUtil;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MacOSXPhantomJSArchive extends PhantomJSArchive {
 
@@ -34,7 +36,18 @@ public class MacOSXPhantomJSArchive extends PhantomJSArchive {
 	}
 
 	@Override
-	protected String getPlatform() {
+	protected String getPlatform(String version) {
+		if (version != null) {
+			Pattern pattern = Pattern.compile(VERSION_MATCHER);
+			Matcher matcher = pattern.matcher(version);
+			if (matcher.find()) {
+				Integer major = Integer.valueOf(matcher.group(1));
+				Integer minor = Integer.valueOf(matcher.group(2));
+				if (major > 2 || ( major == 2 && minor >= 5)) {
+					return "macos";
+				}
+			}
+		}
 		return "macosx";
 	}
 

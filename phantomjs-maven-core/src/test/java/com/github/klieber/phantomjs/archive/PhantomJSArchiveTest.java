@@ -89,7 +89,7 @@ public class PhantomJSArchiveTest {
       }
 
       @Override
-      protected String getPlatform() {
+      protected String getPlatform(String version) {
         return PLATFORM;
       }
 
@@ -108,7 +108,7 @@ public class PhantomJSArchiveTest {
       }
 
       @Override
-      protected String getPlatform() {
+      protected String getPlatform(String version) {
         return PLATFORM;
       }
 

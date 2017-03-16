@@ -35,7 +35,7 @@ public class LinuxPhantomJSArchive extends PhantomJSArchive {
 	}
 
 	@Override
-	protected String getPlatform() {
+	protected String getPlatform(String version) {
 		return "linux";
 	}
 

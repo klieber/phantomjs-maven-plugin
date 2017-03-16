@@ -48,6 +48,6 @@ public class WindowsPhantomJSArchiveTest {
 
   @Test
   public void testGetPlatform() {
-    assertEquals("windows",archive.getPlatform());
+    assertEquals("windows",archive.getPlatform("2.1.1"));
   }
 }
