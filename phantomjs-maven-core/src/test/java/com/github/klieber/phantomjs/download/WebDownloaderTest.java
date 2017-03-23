@@ -30,7 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,6 +82,8 @@ public class WebDownloaderTest {
   public void shouldFailDueToEmptyFile() throws Exception {
     when(phantomJSArchive.getArchiveName()).thenReturn(FILE_PATH);
     when(file.length()).thenReturn(0L);
+
+    doNothing().when(downloader).copyURLToFile(any(URL.class), eq(file));
 
     try {
       downloader.download(phantomJSArchive);

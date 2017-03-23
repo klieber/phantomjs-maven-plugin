@@ -25,14 +25,14 @@
  */
 package com.github.klieber.phantomjs.mojo;
 
+import io.codearte.catchexception.shade.mockito.internal.util.reflection.Whitebox;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.internal.util.reflection.Whitebox;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Properties;
 
@@ -68,7 +68,7 @@ public class AbstractPhantomJsMojoTest {
 
   @Test
   public void testSkipExecute() throws MojoFailureException {
-    Whitebox.setInternalState(mojo,"skip",true);
+    Whitebox.setInternalState(mojo, "skip", true);
     mojo.execute();
     verifyNoMoreInteractions(mojo);
   }
