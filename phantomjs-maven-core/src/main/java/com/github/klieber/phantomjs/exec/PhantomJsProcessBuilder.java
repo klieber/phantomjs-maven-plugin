@@ -131,7 +131,7 @@ public class PhantomJsProcessBuilder {
     return commandline;
   }
 
-  private String[] getCommandLineOptions(String commandLineOptions) throws ExecutionException {
+  protected String[] getCommandLineOptions(String commandLineOptions) throws ExecutionException {
     try {
       return CommandLineUtils.translateCommandline(commandLineOptions);
     } catch (Exception e) {

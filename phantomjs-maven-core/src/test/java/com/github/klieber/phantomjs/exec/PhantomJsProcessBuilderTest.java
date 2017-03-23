@@ -25,23 +25,20 @@
  */
 package com.github.klieber.phantomjs.exec;
 
-import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
-@RunWith(PowerMockRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class PhantomJsProcessBuilderTest {
 
   private static final String BINARY = "phantomjs";
@@ -55,7 +52,7 @@ public class PhantomJsProcessBuilderTest {
 
   @Before
   public void before() {
-    builder = new PhantomJsProcessBuilder(BINARY);
+    builder = spy(new PhantomJsProcessBuilder(BINARY));
   }
 
   @Test
@@ -78,12 +75,15 @@ public class PhantomJsProcessBuilderTest {
   }
 
   @Test
-  @PrepareForTest(CommandLineUtils.class)
   public void testStartCanHandleException() throws Exception {
-    mockStatic(CommandLineUtils.class);
-    when(CommandLineUtils.translateCommandline(COMMAND_LINE)).thenThrow(new RuntimeException());
+    //noinspection unchecked
+    when(builder.getCommandLineOptions(COMMAND_LINE)).thenThrow(ExecutionException.class);
 
-    catchException(builder.commandLineOptions(COMMAND_LINE)).start();
-    assertThat(caughtException()).isInstanceOf(ExecutionException.class);
+    try {
+      builder.commandLineOptions(COMMAND_LINE).start();
+      fail("Should have thrown an ExecutionException");
+    } catch (ExecutionException e) {
+      // expected
+    }
   }
 }

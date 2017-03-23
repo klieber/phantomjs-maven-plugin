@@ -26,30 +26,26 @@
 package com.github.klieber.phantomjs.download;
 
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import org.codehaus.plexus.util.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.doThrow;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({PhantomJSArchive.class,FileUtils.class})
+@RunWith(MockitoJUnitRunner.class)
 public class WebDownloaderTest {
 
   private static final String BASE_URL = "http://example.org";
@@ -65,8 +61,7 @@ public class WebDownloaderTest {
 
   @Before
   public void before() {
-    mockStatic(FileUtils.class);
-    downloader = new WebDownloader(BASE_URL, file);
+    downloader = spy(new WebDownloader(BASE_URL, file));
   }
 
   @Test
@@ -74,10 +69,11 @@ public class WebDownloaderTest {
     when(phantomJSArchive.getArchiveName()).thenReturn(FILE_PATH);
     when(file.length()).thenReturn(100L);
 
+    doNothing().when(downloader).copyURLToFile(any(URL.class), eq(file));
+
     downloader.download(phantomJSArchive);
 
-    verifyStatic();
-    FileUtils.copyURLToFile(any(URL.class), eq(file));
+    verify(downloader).copyURLToFile(any(URL.class), eq(file));
   }
 
 
@@ -87,25 +83,26 @@ public class WebDownloaderTest {
     when(phantomJSArchive.getArchiveName()).thenReturn(FILE_PATH);
     when(file.length()).thenReturn(0L);
 
-    catchException(downloader).download(phantomJSArchive);
-    assertThat(caughtException()).isInstanceOf(DownloadException.class);
-
-    verifyStatic();
-    FileUtils.copyURLToFile(any(URL.class), eq(file));
+    try {
+      downloader.download(phantomJSArchive);
+      fail("Should have thrown a DownloadException");
+    } catch (DownloadException e) {
+      // expected
+    }
   }
 
   @Test
   public void shouldFailDueToIOException() throws Exception {
     when(phantomJSArchive.getArchiveName()).thenReturn(FILE_PATH);
 
-    doThrow(new IOException()).when(FileUtils.class);
-    FileUtils.copyURLToFile(any(URL.class), eq(file));
+    doThrow(new IOException()).when(downloader).copyURLToFile(any(URL.class), eq(file));
 
-    catchException(downloader).download(phantomJSArchive);
-    assertThat(caughtException()).isInstanceOf(DownloadException.class);
-
-    verifyStatic();
-    FileUtils.copyURLToFile(any(URL.class), eq(file));
+    try {
+      downloader.download(phantomJSArchive);
+      fail("Should have thrown a DownloadException");
+    } catch (DownloadException e) {
+      // expected
+    }
   }
 
   @Test
@@ -113,7 +110,12 @@ public class WebDownloaderTest {
     when(phantomJSArchive.getArchiveName()).thenReturn(FILE_PATH);
 
     downloader = new WebDownloader("invalid-base-url", file);
-    catchException(downloader).download(phantomJSArchive);
-    assertThat(caughtException()).isInstanceOf(DownloadException.class);
+
+    try {
+      downloader.download(phantomJSArchive);
+      fail("Should have thrown a DownloadException");
+    } catch (DownloadException e) {
+      // expected
+    }
   }
 }
