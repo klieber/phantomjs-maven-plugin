@@ -35,9 +35,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -49,8 +48,8 @@ public class PhantomJsExtractorTest {
   private static final String PROJECT_ROOT = System.getProperty("user.dir");
 
   private static final String PATH_TO_EXECUTABLE = "bin/phantomjs";
-  private static final String ARCHIVE_PATH = PROJECT_ROOT+"/src/test/config/test-archive.tar.gz";
-  private static final String EXTRACT_TO_PATH = PROJECT_ROOT+"/target/temp/phantomjs";
+  private static final String ARCHIVE_PATH = PROJECT_ROOT + "/src/test/config/test-archive.tar.gz";
+  private static final String EXTRACT_TO_PATH = PROJECT_ROOT + "/target/temp/phantomjs";
 
   @Mock
   private PhantomJSArchive phantomJsArchive;
@@ -102,9 +101,8 @@ public class PhantomJsExtractorTest {
   @Test
   public void shouldFailToExtract() throws Exception {
     when(phantomJsArchive.getPathToExecutable()).thenReturn(PATH_TO_EXECUTABLE);
-
-    catchException(extractor).extract(new File(PROJECT_ROOT + "/target/doesnotexist"), extractTo);
-
-    assertThat(caughtException()).isInstanceOf(ExtractionException.class);
+    File invalidFile = new File(PROJECT_ROOT + "/target/doesnotexist");
+    assertThatThrownBy(() -> extractor.extract(invalidFile, extractTo))
+      .isInstanceOf(ExtractionException.class);
   }
 }

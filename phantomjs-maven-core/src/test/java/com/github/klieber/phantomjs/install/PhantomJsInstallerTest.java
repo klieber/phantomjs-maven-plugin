@@ -43,9 +43,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.File;
 import java.io.IOException;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.same;
@@ -85,7 +84,7 @@ public class PhantomJsInstallerTest {
   @Before
   public void before() throws IOException {
     outputDirectory = temporaryFolder.getRoot();
-    phantomJsInstaller = new PhantomJsInstaller(downloader,extractor, outputDirectory);
+    phantomJsInstaller = new PhantomJsInstaller(downloader, extractor, outputDirectory);
     phantomJsBinary = new File(outputDirectory, EXTRACT_TO_PATH);
   }
 
@@ -119,8 +118,8 @@ public class PhantomJsInstallerTest {
     when(phantomJSArchive.getPathToExecutable()).thenReturn(EXTRACT_TO_PATH);
     when(downloader.download(phantomJSArchive)).thenThrow(new DownloadException("error"));
 
-    catchException(phantomJsInstaller).install(phantomJSArchive);
-    assertThat(caughtException()).isInstanceOf(InstallationException.class);
+    assertThatThrownBy(() -> phantomJsInstaller.install(phantomJSArchive))
+      .isInstanceOf(InstallationException.class);
   }
 
   @Test
@@ -133,7 +132,7 @@ public class PhantomJsInstallerTest {
     ExtractionException exception = new ExtractionException("error", new RuntimeException());
     doThrow(exception).when(extractor).extract(same(archive), any(File.class));
 
-    catchException(phantomJsInstaller).install(phantomJSArchive);
-    assertThat(caughtException()).isInstanceOf(InstallationException.class);
+    assertThatThrownBy(() -> phantomJsInstaller.install(phantomJSArchive))
+      .isInstanceOf(InstallationException.class);
   }
 }

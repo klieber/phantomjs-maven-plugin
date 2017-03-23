@@ -25,7 +25,7 @@
  */
 package com.github.klieber.phantomjs.mojo;
 
-import io.codearte.catchexception.shade.mockito.internal.util.reflection.Whitebox;
+import com.github.klieber.phantomjs.test.Whitebox;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.junit.Test;

@@ -31,9 +31,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -90,7 +89,7 @@ public class PhantomJSArchiveBuilderTest {
   public void testBuildInvalidPlatform() {
     when(operatingSystem.getName()).thenReturn("invalid");
     builder = new PhantomJSArchiveBuilder(operatingSystem, "");
-    catchException(builder).build();
-    assertThat(caughtException()).isInstanceOf(UnsupportedPlatformException.class);
+    assertThatThrownBy(() -> builder.build())
+      .isInstanceOf(UnsupportedPlatformException.class);
   }
 }

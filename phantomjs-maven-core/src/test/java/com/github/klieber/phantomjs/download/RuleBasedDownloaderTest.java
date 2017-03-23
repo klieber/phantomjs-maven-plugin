@@ -36,9 +36,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -120,8 +118,7 @@ public class RuleBasedDownloaderTest {
 
     doThrow(new DownloadException("DownloaderA Failed")).when(downloaderA).download(phantomJsArchive);
 
-    catchException(this.ruleBasedDownloader).download(phantomJsArchive);
-    assertThat(caughtException())
+    assertThatThrownBy(() -> this.ruleBasedDownloader.download(phantomJsArchive))
       .isInstanceOf(DownloadException.class)
       .hasMessage("DownloaderA Failed");
 
@@ -135,9 +132,7 @@ public class RuleBasedDownloaderTest {
     when(predicateA.apply(VERSION)).thenReturn(false);
     when(predicateB.apply(VERSION)).thenReturn(false);
 
-    catchException(this.ruleBasedDownloader).download(phantomJsArchive);
-
-    assertThat(caughtException())
+    assertThatThrownBy(() -> this.ruleBasedDownloader.download(phantomJsArchive))
       .isInstanceOf(DownloadException.class)
       .hasMessage("No matching Downloader found.");
 
