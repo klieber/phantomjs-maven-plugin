@@ -9,9 +9,9 @@ A maven plugin for installing the [phantomjs](http://phantomjs.org) binary on yo
 <project>
   ...
   <!-- phantomjs-maven-plugin needs maven 3.1+ -->
-	<prerequisites>
-		<maven>3.1</maven>
-	</prerequisites>
+  <prerequisites>
+    <maven>3.1</maven>
+  </prerequisites>
   ...
   <build>
     <plugins>
