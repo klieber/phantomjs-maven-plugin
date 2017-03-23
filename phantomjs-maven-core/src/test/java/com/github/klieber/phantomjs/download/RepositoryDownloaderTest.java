@@ -48,9 +48,8 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.when;
 
@@ -121,7 +120,7 @@ public class RepositoryDownloaderTest {
       artifactRequestCaptor.capture()
     )).thenThrow(new ArtifactResolutionException(Collections.<ArtifactResult>emptyList()));
 
-    catchException(repositoryDownloader).download(phantomJSArchive);
-    assertThat(caughtException()).isInstanceOf(DownloadException.class);
+    assertThatThrownBy(() -> repositoryDownloader.download(phantomJSArchive))
+      .isInstanceOf(DownloadException.class);
   }
 }

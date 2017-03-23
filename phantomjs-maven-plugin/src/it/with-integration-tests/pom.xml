@@ -36,6 +36,7 @@
             </goals>
             <configuration>
               <version>1.9.2</version>
+              <checkSystemPath>false</checkSystemPath>
             </configuration>
           </execution>
         </executions>

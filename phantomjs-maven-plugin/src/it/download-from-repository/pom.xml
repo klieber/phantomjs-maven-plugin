@@ -22,6 +22,7 @@
           <version>@project.version@</version>
           <configuration>
             <version>2.1.1</version>
+            <checkSystemPath>false</checkSystemPath>
             <script>hello.js</script>
           </configuration>
         </plugin>

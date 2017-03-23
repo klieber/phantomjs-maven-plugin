@@ -27,7 +27,7 @@ package com.github.klieber.phantomjs.mojo;
 
 import com.github.klieber.phantomjs.exec.PhantomJsExecutor;
 import com.github.klieber.phantomjs.exec.PhantomJsProcessBuilder;
-import io.codearte.catchexception.shade.mockito.internal.util.reflection.Whitebox;
+import com.github.klieber.phantomjs.test.Whitebox;
 import junit.framework.TestCase;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
@@ -39,9 +39,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Properties;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.when;
 
@@ -86,8 +84,7 @@ public class ExecPhantomJsMojoTest extends TestCase {
     Whitebox.setInternalState(this.mojo, "failOnNonZeroExitCode", true);
     when(mavenProject.getProperties()).thenReturn(properties);
     when(executor.execute(isA(PhantomJsProcessBuilder.class))).thenReturn(1);
-    catchException(mojo).run();
-    assertThat(caughtException())
+    assertThatThrownBy(() -> mojo.run())
       .isInstanceOf(MojoFailureException.class)
       .hasMessage("PhantomJS execution did not exit normally (code = 1)");
   }

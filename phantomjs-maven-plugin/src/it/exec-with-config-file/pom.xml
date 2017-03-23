@@ -21,6 +21,7 @@
         <version>@project.version@</version>
         <configuration>
           <version>1.9.2</version>
+          <checkSystemPath>false</checkSystemPath>
           <configFile>config.json</configFile>
           <script>store-cookie.js</script>
         </configuration>

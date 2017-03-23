@@ -33,9 +33,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.InputStream;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -77,7 +75,6 @@ public class PhantomJsExecutorTest {
 
     doThrow(InterruptedException.class).when(process).waitFor();
 
-    catchException(executor).execute(builder);
-    assertThat(caughtException()).isInstanceOf(ExecutionException.class);
+    assertThatThrownBy(() -> executor.execute(builder)).isInstanceOf(ExecutionException.class);
   }
 }
