@@ -38,10 +38,7 @@ import java.io.File;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -87,7 +84,7 @@ public class PhantomJsExtractorTest {
   public void shouldExtract() throws Exception {
     when(phantomJsArchive.getPathToExecutable()).thenReturn(PATH_TO_EXECUTABLE);
     extractor.extract(archive, extractTo);
-    assertTrue(extractTo.exists());
+    assertThat(extractTo.exists()).isTrue();
   }
 
   @Test
@@ -108,8 +105,8 @@ public class PhantomJsExtractorTest {
   public void shouldFailToExtract() throws Exception {
     when(phantomJsArchive.getPathToExecutable()).thenReturn(PATH_TO_EXECUTABLE);
 
-    catchException(extractor).extract(new File(PROJECT_ROOT+"/target/doesnotexist"), extractTo);
+    catchException(extractor).extract(new File(PROJECT_ROOT + "/target/doesnotexist"), extractTo);
 
-    assertThat(caughtException(), is(instanceOf(ExtractionException.class)));
+    assertThat(caughtException()).isInstanceOf(ExtractionException.class);
   }
 }

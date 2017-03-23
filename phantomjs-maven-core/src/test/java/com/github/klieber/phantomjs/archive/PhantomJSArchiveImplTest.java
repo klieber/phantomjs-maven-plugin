@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -61,7 +61,7 @@ public class PhantomJSArchiveImplTest {
   @Test
   public void testGetExtension() {
     when(archiveFormat.getExtension()).thenReturn(EXTENSION);
-    assertEquals(EXTENSION, archive.getExtension());
+    assertThat(archive.getExtension()).isEqualTo(EXTENSION);
   }
 
   @Test
@@ -69,7 +69,7 @@ public class PhantomJSArchiveImplTest {
     when(archiveFormat.getFileTemplate()).thenReturn(ARCHIVE_FILE_TEMPLATE);
     when(archiveFormat.getClassifier()).thenReturn(CLASSIFIER);
     when(archiveFormat.getExtension()).thenReturn(EXTENSION);
-    assertEquals(ARCHIVE_NAME, archive.getArchiveName());
+    assertThat(archive.getArchiveName()).isEqualTo(ARCHIVE_NAME);
   }
 
   @Test
@@ -77,17 +77,17 @@ public class PhantomJSArchiveImplTest {
     when(archiveFormat.getExecutableTemplate()).thenReturn(EXECUTABLE_TEMPLATE);
     when(archiveFormat.getClassifier()).thenReturn(CLASSIFIER);
     when(archiveFormat.getExtension()).thenReturn(EXTENSION);
-    assertEquals(PATH_TO_EXECUTABLE, archive.getPathToExecutable());
+    assertThat(archive.getPathToExecutable()).isEqualTo(PATH_TO_EXECUTABLE);
   }
 
   @Test
   public void testGetVersion() {
-    assertEquals(VERSION,archive.getVersion());
+    assertThat(archive.getVersion()).isEqualTo(VERSION);
   }
 
   @Test
   public void testGetClassifier() {
     when(archiveFormat.getClassifier()).thenReturn(CLASSIFIER);
-    assertEquals(CLASSIFIER,archive.getClassifier());
+    assertThat(archive.getClassifier()).isEqualTo(CLASSIFIER);
   }
 }

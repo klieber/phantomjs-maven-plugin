@@ -27,7 +27,7 @@ package com.github.klieber.phantomjs.os;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SystemPropertiesTest {
 
@@ -37,7 +37,7 @@ public class SystemPropertiesTest {
   public void getOsName() {
     String original = System.getProperty("os.name");
     System.setProperty("os.name", "MacOs");
-    assertEquals("macos", systemProperties.getOsName());
+    assertThat(systemProperties.getOsName()).isEqualTo("macos");
     System.setProperty("os.name", original);
   }
 
@@ -45,7 +45,7 @@ public class SystemPropertiesTest {
   public void getOsVersion() {
     String original = System.getProperty("os.version");
     System.setProperty("os.version", "10");
-    assertEquals("10", systemProperties.getOsVersion());
+    assertThat(systemProperties.getOsVersion()).isEqualTo("10");
     System.setProperty("os.version", original);
   }
 
@@ -53,7 +53,7 @@ public class SystemPropertiesTest {
   public void getOsArch() {
     String original = System.getProperty("os.arch");
     System.setProperty("os.arch", "x64");
-    assertEquals("x64", systemProperties.getOsArch());
+    assertThat(systemProperties.getOsArch()).isEqualTo("x64");
     System.setProperty("os.arch", original);
   }
 

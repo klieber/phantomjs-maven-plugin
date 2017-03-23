@@ -34,8 +34,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,20 +61,20 @@ public class PathLocatorTest {
   @Test
   public void shouldLocateA() {
     when(binaryResolver.resolve(PATH_A)).thenReturn(LOCATION_A);
-    assertEquals(LOCATION_A, pathLocator.locate());
+    assertThat(pathLocator.locate()).isEqualTo(LOCATION_A);
     verify(binaryResolver, never()).resolve(PATH_B);
   }
 
   @Test
   public void shouldLocateB() {
     when(binaryResolver.resolve(PATH_B)).thenReturn(LOCATION_B);
-    assertEquals(LOCATION_B, pathLocator.locate());
+    assertThat(pathLocator.locate()).isEqualTo(LOCATION_B);
     verify(binaryResolver).resolve(PATH_A);
   }
 
   @Test
   public void shouldNotLocateAnything() {
-    assertNull(pathLocator.locate());
+    assertThat(pathLocator.locate()).isNull();
     verify(binaryResolver).resolve(PATH_A);
     verify(binaryResolver).resolve(PATH_B);
   }

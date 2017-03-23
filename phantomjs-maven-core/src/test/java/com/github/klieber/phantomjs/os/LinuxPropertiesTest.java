@@ -30,7 +30,7 @@ import org.junit.Test;
 import java.io.File;
 import java.net.URL;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LinuxPropertiesTest {
 
@@ -38,12 +38,12 @@ public class LinuxPropertiesTest {
 
   @Test
   public void testGetDistribution() {
-    assertEquals("ubuntu", linuxProperties.getDistribution());
+    assertThat(linuxProperties.getDistribution()).isEqualTo("ubuntu");
   }
 
   @Test
   public void testGetDistributionVersion() {
-    assertEquals("16.04", linuxProperties.getDistributionVersion());
+    assertThat(linuxProperties.getDistributionVersion()).isEqualTo("16.04");
   }
 
   private static File createMockFile() {

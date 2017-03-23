@@ -32,8 +32,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.lang.reflect.Constructor;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -47,13 +46,13 @@ public class PredicatesTest {
   @Test
   public void shouldNegateTheTruePredicate() {
     when(predicate.apply(STRING)).thenReturn(true);
-    assertFalse(Predicates.not(predicate).apply(STRING));
+    assertThat(Predicates.not(predicate).apply(STRING)).isFalse();
   }
 
   @Test
   public void shouldNegateTheFalsePredicate() {
     when(predicate.apply(STRING)).thenReturn(false);
-    assertTrue(Predicates.not(predicate).apply(STRING));
+    assertThat(Predicates.not(predicate).apply(STRING)).isTrue();
   }
 
   @Test

@@ -46,10 +46,7 @@ import java.io.IOException;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.same;
@@ -100,11 +97,11 @@ public class PhantomJsInstallerTest {
 
     when(phantomJSArchive.getPathToExecutable()).thenReturn(EXTRACT_TO_PATH);
 
-    assertEquals(phantomJsBinary.getAbsolutePath(), phantomJsInstaller.install(phantomJSArchive));
+    assertThat(phantomJsInstaller.install(phantomJSArchive)).isEqualTo(phantomJsBinary.getAbsolutePath());
 
-    verify(extractor).extract(same(archive),extractToFile.capture());
+    verify(extractor).extract(same(archive), extractToFile.capture());
 
-    assertEquals(phantomJsBinary, extractToFile.getValue());
+    assertThat(extractToFile.getValue()).isEqualTo(phantomJsBinary);
   }
 
   @Test
@@ -113,7 +110,7 @@ public class PhantomJsInstallerTest {
 
     when(phantomJSArchive.getPathToExecutable()).thenReturn(EXTRACT_TO_PATH);
 
-    assertEquals(phantomJsBinary.getAbsolutePath(), phantomJsInstaller.install(phantomJSArchive));
+    assertThat(phantomJsInstaller.install(phantomJSArchive)).isEqualTo(phantomJsBinary.getAbsolutePath());
 
     verifyNoMoreInteractions(downloader, extractor);
   }
@@ -125,7 +122,7 @@ public class PhantomJsInstallerTest {
     when(downloader.download(phantomJSArchive)).thenThrow(new DownloadException("error"));
 
     catchException(phantomJsInstaller).install(phantomJSArchive);
-    assertThat(caughtException(), is(instanceOf(InstallationException.class)));
+    assertThat(caughtException()).isInstanceOf(InstallationException.class);
   }
 
   @Test
@@ -139,6 +136,6 @@ public class PhantomJsInstallerTest {
     doThrow(exception).when(extractor).extract(same(archive), any(File.class));
 
     catchException(phantomJsInstaller).install(phantomJSArchive);
-    assertThat(caughtException(), is(instanceOf(InstallationException.class)));
+    assertThat(caughtException()).isInstanceOf(InstallationException.class);
   }
 }

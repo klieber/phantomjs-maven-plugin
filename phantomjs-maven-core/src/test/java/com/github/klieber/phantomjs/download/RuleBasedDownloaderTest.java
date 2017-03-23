@@ -34,17 +34,12 @@ import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
-import static com.googlecode.catchexception.apis.CatchExceptionHamcrestMatchers.hasMessage;
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -71,9 +66,6 @@ public class RuleBasedDownloaderTest {
   @Mock
   private PhantomJSArchive phantomJsArchive;
 
-  @Mock
-  private File file;
-
   private RuleBasedDownloader ruleBasedDownloader;
 
   @Before
@@ -86,7 +78,7 @@ public class RuleBasedDownloaderTest {
   }
 
   @Test
-  public void shouldUseDownloaderA() throws Exception  {
+  public void shouldUseDownloaderA() throws Exception {
     when(phantomJsArchive.getVersion()).thenReturn(VERSION);
     when(predicateA.apply(VERSION)).thenReturn(true);
     when(predicateB.apply(VERSION)).thenReturn(false);
@@ -98,7 +90,7 @@ public class RuleBasedDownloaderTest {
   }
 
   @Test
-  public void shouldUseDownloaderB() throws Exception  {
+  public void shouldUseDownloaderB() throws Exception {
     when(phantomJsArchive.getVersion()).thenReturn(VERSION);
     when(predicateA.apply(VERSION)).thenReturn(false);
     when(predicateB.apply(VERSION)).thenReturn(true);
@@ -110,7 +102,7 @@ public class RuleBasedDownloaderTest {
   }
 
   @Test
-  public void shouldUseDownloaderBAfterAFails() throws Exception  {
+  public void shouldUseDownloaderBAfterAFails() throws Exception {
     when(phantomJsArchive.getVersion()).thenReturn(VERSION);
     when(predicateA.apply(VERSION)).thenReturn(true);
     when(predicateB.apply(VERSION)).thenReturn(true);
@@ -124,7 +116,7 @@ public class RuleBasedDownloaderTest {
   }
 
   @Test
-  public void shouldFailDownloadDueToDownloaderAFailure() throws Exception  {
+  public void shouldFailDownloadDueToDownloaderAFailure() throws Exception {
     when(phantomJsArchive.getVersion()).thenReturn(VERSION);
     when(predicateA.apply(VERSION)).thenReturn(true);
     when(predicateB.apply(VERSION)).thenReturn(false);
@@ -132,27 +124,25 @@ public class RuleBasedDownloaderTest {
     doThrow(new DownloadException("DownloaderA Failed")).when(downloaderA).download(phantomJsArchive);
 
     catchException(this.ruleBasedDownloader).download(phantomJsArchive);
-    assertThat(caughtException(), allOf(
-        is(instanceOf(DownloadException.class)),
-        hasMessage("DownloaderA Failed")
-    ));
+    assertThat(caughtException())
+      .isInstanceOf(DownloadException.class)
+      .hasMessage("DownloaderA Failed");
 
     verify(downloaderA).download(phantomJsArchive);
     verifyNoMoreInteractions(downloaderB);
   }
 
   @Test
-  public void shouldFailDownloadDueToNoMatches() throws Exception  {
+  public void shouldFailDownloadDueToNoMatches() throws Exception {
     when(phantomJsArchive.getVersion()).thenReturn(VERSION);
     when(predicateA.apply(VERSION)).thenReturn(false);
     when(predicateB.apply(VERSION)).thenReturn(false);
 
     catchException(this.ruleBasedDownloader).download(phantomJsArchive);
 
-    assertThat(caughtException(),allOf(
-        is(instanceOf(DownloadException.class)),
-        hasMessage("No matching Downloader found.")
-    ));
+    assertThat(caughtException())
+      .isInstanceOf(DownloadException.class)
+      .hasMessage("No matching Downloader found.");
 
     verifyNoMoreInteractions(downloaderA);
     verifyNoMoreInteractions(downloaderB);
