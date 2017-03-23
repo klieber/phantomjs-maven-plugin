@@ -31,7 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -79,7 +79,6 @@ public class RuleBasedDownloaderTest {
   public void shouldUseDownloaderA() throws Exception {
     when(phantomJsArchive.getVersion()).thenReturn(VERSION);
     when(predicateA.apply(VERSION)).thenReturn(true);
-    when(predicateB.apply(VERSION)).thenReturn(false);
 
     this.ruleBasedDownloader.download(phantomJsArchive);
 
