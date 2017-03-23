@@ -197,18 +197,6 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.powermock</groupId>
-        <artifactId>powermock-module-junit4</artifactId>
-        <version>1.6.2</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.powermock</groupId>
-        <artifactId>powermock-api-mockito</artifactId>
-        <version>1.6.2</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>eu.codearte.catch-exception</groupId>
         <artifactId>catch-exception</artifactId>
         <version>1.4.4</version>
@@ -233,14 +221,6 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
     </dependency>
     <dependency>
       <groupId>eu.codearte.catch-exception</groupId>

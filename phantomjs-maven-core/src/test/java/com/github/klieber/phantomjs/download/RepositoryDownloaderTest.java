@@ -42,8 +42,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.util.Collections;
@@ -55,8 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({PhantomJSArchive.class,ArtifactResult.class})
+@RunWith(MockitoJUnitRunner.class)
 public class RepositoryDownloaderTest {
 
   @Mock
@@ -80,7 +78,6 @@ public class RepositoryDownloaderTest {
   @Captor
   private ArgumentCaptor<ArtifactRequest> artifactRequestCaptor;
 
-  @Mock
   private ArtifactResult artifactResult;
 
   @Mock
@@ -94,6 +91,9 @@ public class RepositoryDownloaderTest {
 
   @Before
   public void before() {
+    artifactResult = new ArtifactResult(new ArtifactRequest());
+    artifactResult.setArtifact(artifact);
+
     when(repositoryDetails.getRepositorySystem()).thenReturn(repositorySystem);
     when(repositoryDetails.getRemoteRepositories()).thenReturn(remoteRepositories);
     when(repositoryDetails.getRepositorySystemSession()).thenReturn(repositorySystemSession);
@@ -104,7 +104,6 @@ public class RepositoryDownloaderTest {
     when(artifactBuilder.createArtifact(phantomJSArchive)).thenReturn(artifact);
     when(repositorySystem.resolveArtifact(same(repositorySystemSession), artifactRequestCaptor.capture())).thenReturn(
       artifactResult);
-    when(artifactResult.getArtifact()).thenReturn(artifact);
     when(artifact.getFile()).thenReturn(archiveFile);
 
     assertThat(repositoryDownloader.download(phantomJSArchive)).isSameAs(archiveFile);

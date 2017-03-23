@@ -31,8 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -45,8 +44,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(PhantomJSArchive.class)
+@RunWith(MockitoJUnitRunner.class)
 public class RuleBasedDownloaderTest {
 
   private static final String VERSION = "1.2";

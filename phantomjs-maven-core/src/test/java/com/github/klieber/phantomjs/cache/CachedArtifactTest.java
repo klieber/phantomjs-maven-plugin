@@ -35,16 +35,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({PhantomJSArchive.class,LocalRepository.class})
+@RunWith(MockitoJUnitRunner.class)
 public class CachedArtifactTest {
 
   private static final String REPOSITORY_PATH = System.getProperty("java.io.tmpdir");
@@ -55,9 +53,6 @@ public class CachedArtifactTest {
 
   @Mock
   private RepositorySystemSession repositorySystemSession;
-
-  @Mock
-  private LocalRepository localRepository;
 
   @Mock
   private LocalRepositoryManager localRepositoryManager;
@@ -83,9 +78,8 @@ public class CachedArtifactTest {
     when(artifactBuilder.createArtifact(phantomJSArchive)).thenReturn(artifact);
 
     when(repositorySystemSession.getLocalRepositoryManager()).thenReturn(localRepositoryManager);
-    when(localRepositoryManager.getRepository()).thenReturn(localRepository);
+    when(localRepositoryManager.getRepository()).thenReturn(new LocalRepository(basedir));
     when(localRepositoryManager.getPathForLocalArtifact(artifact)).thenReturn(ARTIFACT_PATH);
-    when(localRepository.getBasedir()).thenReturn(basedir);
 
     assertThat(cachedArtifact.getFile().getAbsolutePath())
       .isEqualTo(new File(REPOSITORY_PATH, ARTIFACT_PATH).getPath());

@@ -58,7 +58,7 @@ public class WebDownloader implements Downloader {
         URL downloadLocation = new URL(url);
 
         LOGGER.info(DOWNLOADING, url);
-        FileUtils.copyURLToFile(downloadLocation, target);
+        copyURLToFile(downloadLocation, target);
 
         if (target.length() <= 0) {
           throw new DownloadException(UNABLE_TO_DOWNLOAD+url);
@@ -70,6 +70,10 @@ public class WebDownloader implements Downloader {
       }
     }
     return this.target;
+  }
+
+  protected void copyURLToFile(URL url, File file) throws IOException {
+    FileUtils.copyURLToFile(url, file);
   }
 
   private String buildDownloadUrl(PhantomJSArchive archive) {

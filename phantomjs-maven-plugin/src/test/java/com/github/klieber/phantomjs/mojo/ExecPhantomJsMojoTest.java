@@ -34,8 +34,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.powermock.reflect.Whitebox;
 
 import java.util.Properties;
 
@@ -62,7 +62,7 @@ public class ExecPhantomJsMojoTest extends TestCase {
   @Before
   public void before() {
     this.mojo = new ExecPhantomJsMojo(executor);
-    Whitebox.setInternalState(this.mojo, mavenProject);
+    Whitebox.setInternalState(this.mojo, "mavenProject", mavenProject);
   }
 
   @Test
