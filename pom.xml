@@ -20,6 +20,14 @@
     </license>
   </licenses>
 
+
+  <organization>
+    <name>Kyle Lieber</name>
+    <url>http://kylelieber.com</url>
+  </organization>
+
+  <inceptionYear>2013</inceptionYear>
+
   <developers>
     <developer>
       <id>klieber</id>
@@ -309,7 +317,7 @@
           <groupId>org.sonatype.plugins</groupId>
           <artifactId>sisu-maven-plugin</artifactId>
           <version>1.4</version>
-        </plugin> 
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
@@ -343,6 +351,23 @@
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>0.7.4.201502262128</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>1.12</version>
+          <configuration>
+            <licenseName>mit</licenseName>
+            <licenseFile>LICENSE</licenseFile>
+            <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+            <roots>
+              <root>src/main/java</root>
+              <root>src/test</root>
+            </roots>
+            <includes>
+              <include>*/*.java</include>
+            </includes>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
