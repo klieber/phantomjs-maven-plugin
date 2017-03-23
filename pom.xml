@@ -20,6 +20,14 @@
     </license>
   </licenses>
 
+
+  <organization>
+    <name>Kyle Lieber</name>
+    <url>http://kylelieber.com</url>
+  </organization>
+
+  <inceptionYear>2013</inceptionYear>
+
   <developers>
     <developer>
       <id>klieber</id>
@@ -75,6 +83,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <truezip.version>7.7.8</truezip.version>
+    <jackson.version>2.8.3</jackson.version>
     <junit.version>4.12</junit.version>
   </properties>
 
@@ -139,6 +148,21 @@
         <groupId>de.schlichtherle.truezip</groupId>
         <artifactId>truezip-file</artifactId>
         <version>${truezip.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-yaml</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -293,7 +317,7 @@
           <groupId>org.sonatype.plugins</groupId>
           <artifactId>sisu-maven-plugin</artifactId>
           <version>1.4</version>
-        </plugin> 
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
@@ -327,6 +351,23 @@
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>0.7.4.201502262128</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>1.12</version>
+          <configuration>
+            <licenseName>mit</licenseName>
+            <licenseFile>LICENSE</licenseFile>
+            <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+            <roots>
+              <root>src/main/java</root>
+              <root>src/test</root>
+            </roots>
+            <includes>
+              <include>*/*.java</include>
+            </includes>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
