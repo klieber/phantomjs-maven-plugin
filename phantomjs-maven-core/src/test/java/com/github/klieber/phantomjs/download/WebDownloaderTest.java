@@ -40,9 +40,7 @@ import java.net.URL;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
@@ -90,7 +88,7 @@ public class WebDownloaderTest {
     when(file.length()).thenReturn(0L);
 
     catchException(downloader).download(phantomJSArchive);
-    assertThat(caughtException(), is(instanceOf(DownloadException.class)));
+    assertThat(caughtException()).isInstanceOf(DownloadException.class);
 
     verifyStatic();
     FileUtils.copyURLToFile(any(URL.class), eq(file));
@@ -104,7 +102,7 @@ public class WebDownloaderTest {
     FileUtils.copyURLToFile(any(URL.class), eq(file));
 
     catchException(downloader).download(phantomJSArchive);
-    assertThat(caughtException(),is(instanceOf(DownloadException.class)));
+    assertThat(caughtException()).isInstanceOf(DownloadException.class);
 
     verifyStatic();
     FileUtils.copyURLToFile(any(URL.class), eq(file));
@@ -116,6 +114,6 @@ public class WebDownloaderTest {
 
     downloader = new WebDownloader("invalid-base-url", file);
     catchException(downloader).download(phantomJSArchive);
-    assertThat(caughtException(),is(instanceOf(DownloadException.class)));
+    assertThat(caughtException()).isInstanceOf(DownloadException.class);
   }
 }

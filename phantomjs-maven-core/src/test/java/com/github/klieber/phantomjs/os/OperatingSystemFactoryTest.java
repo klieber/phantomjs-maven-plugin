@@ -31,8 +31,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -49,22 +48,22 @@ public class OperatingSystemFactoryTest {
 
   @Test
   public void testCreateMacOperatingSystem() {
-    OperatingSystem operatingSystem = createMockOs("macos", "10","x86_64");
-    assertEquals("macos", operatingSystem.getName());
-    assertEquals("10", operatingSystem.getVersion());
-    assertEquals("x86_64", operatingSystem.getArchitecture());
-    assertNull(operatingSystem.getDistribution());
-    assertNull(operatingSystem.getDistributionVersion());
+    OperatingSystem operatingSystem = createMockOs("macos", "10", "x86_64");
+    assertThat(operatingSystem.getName()).isEqualTo("macos");
+    assertThat(operatingSystem.getVersion()).isEqualTo("10");
+    assertThat(operatingSystem.getArchitecture()).isEqualTo("x86_64");
+    assertThat(operatingSystem.getDistribution()).isNull();
+    assertThat(operatingSystem.getDistributionVersion()).isNull();
   }
 
   @Test
   public void testCreateWinOperatingSystem() {
     OperatingSystem operatingSystem = createMockOs("win", "7", "x64");
-    assertEquals("win", operatingSystem.getName());
-    assertEquals("7", operatingSystem.getVersion());
-    assertEquals("x86_64", operatingSystem.getArchitecture());
-    assertNull(operatingSystem.getDistribution());
-    assertNull(operatingSystem.getDistributionVersion());
+    assertThat(operatingSystem.getName()).isEqualTo("win");
+    assertThat(operatingSystem.getVersion()).isEqualTo("7");
+    assertThat(operatingSystem.getArchitecture()).isEqualTo("x86_64");
+    assertThat(operatingSystem.getDistribution()).isNull();
+    assertThat(operatingSystem.getDistributionVersion()).isNull();
   }
 
 
@@ -74,11 +73,11 @@ public class OperatingSystemFactoryTest {
     when(linuxProperties.getDistributionVersion()).thenReturn("16.04");
 
     OperatingSystem operatingSystem = createMockOs("linux", "4", "i686");
-    assertEquals("linux", operatingSystem.getName());
-    assertEquals("4", operatingSystem.getVersion());
-    assertEquals("i686", operatingSystem.getArchitecture());
-    assertEquals("ubuntu", operatingSystem.getDistribution());
-    assertEquals("16.04", operatingSystem.getDistributionVersion());
+    assertThat(operatingSystem.getName()).isEqualTo("linux");
+    assertThat(operatingSystem.getVersion()).isEqualTo("4");
+    assertThat(operatingSystem.getArchitecture()).isEqualTo("i686");
+    assertThat(operatingSystem.getDistribution()).isEqualTo("ubuntu");
+    assertThat(operatingSystem.getDistributionVersion()).isEqualTo("16.04");
   }
 
   private OperatingSystem createMockOs(String name, String version, String arch) {

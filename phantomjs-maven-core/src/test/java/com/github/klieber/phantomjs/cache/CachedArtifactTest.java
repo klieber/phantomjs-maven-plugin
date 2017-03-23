@@ -40,7 +40,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
@@ -87,6 +87,7 @@ public class CachedArtifactTest {
     when(localRepositoryManager.getPathForLocalArtifact(artifact)).thenReturn(ARTIFACT_PATH);
     when(localRepository.getBasedir()).thenReturn(basedir);
 
-    assertEquals(new File(REPOSITORY_PATH, ARTIFACT_PATH).getPath(), cachedArtifact.getFile().getAbsolutePath());
+    assertThat(cachedArtifact.getFile().getAbsolutePath())
+      .isEqualTo(new File(REPOSITORY_PATH, ARTIFACT_PATH).getPath());
   }
 }

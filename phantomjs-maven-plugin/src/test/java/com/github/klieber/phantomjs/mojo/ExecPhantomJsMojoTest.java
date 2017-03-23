@@ -41,11 +41,7 @@ import java.util.Properties;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
-import static com.googlecode.catchexception.apis.CatchExceptionHamcrestMatchers.hasMessage;
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.when;
 
@@ -57,9 +53,6 @@ public class ExecPhantomJsMojoTest extends TestCase {
 
   @Mock
   private PhantomJsExecutor executor;
-
-  @Mock
-  private PhantomJsProcessBuilder processBuilder;
 
   @Mock
   private Properties properties;
@@ -94,9 +87,8 @@ public class ExecPhantomJsMojoTest extends TestCase {
     when(mavenProject.getProperties()).thenReturn(properties);
     when(executor.execute(isA(PhantomJsProcessBuilder.class))).thenReturn(1);
     catchException(mojo).run();
-    assertThat(caughtException(), allOf(
-        is(instanceOf(MojoFailureException.class)),
-        hasMessage("PhantomJS execution did not exit normally (code = 1)")
-    ));
+    assertThat(caughtException())
+      .isInstanceOf(MojoFailureException.class)
+      .hasMessage("PhantomJS execution did not exit normally (code = 1)");
   }
 }

@@ -51,10 +51,7 @@ import java.util.List;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.when;
 
@@ -105,23 +102,27 @@ public class RepositoryDownloaderTest {
   @Test
   public void shouldDownload() throws DownloadException, ArtifactResolutionException {
     when(artifactBuilder.createArtifact(phantomJSArchive)).thenReturn(artifact);
-    when(repositorySystem.resolveArtifact(same(repositorySystemSession), artifactRequestCaptor.capture())).thenReturn(artifactResult);
+    when(repositorySystem.resolveArtifact(same(repositorySystemSession), artifactRequestCaptor.capture())).thenReturn(
+      artifactResult);
     when(artifactResult.getArtifact()).thenReturn(artifact);
     when(artifact.getFile()).thenReturn(archiveFile);
 
-    assertSame(archiveFile, repositoryDownloader.download(phantomJSArchive));
+    assertThat(repositoryDownloader.download(phantomJSArchive)).isSameAs(archiveFile);
 
     ArtifactRequest request = artifactRequestCaptor.getValue();
-    assertSame(artifact, request.getArtifact());
-    assertSame(remoteRepositories, request.getRepositories());
+    assertThat(request.getArtifact()).isSameAs(artifact);
+    assertThat(request.getRepositories()).isSameAs(remoteRepositories);
   }
 
   @Test
   public void shouldHandleArtifactResolutionException() throws DownloadException, ArtifactResolutionException {
     when(artifactBuilder.createArtifact(phantomJSArchive)).thenReturn(artifact);
-    when(repositorySystem.resolveArtifact(same(repositorySystemSession), artifactRequestCaptor.capture())).thenThrow(new ArtifactResolutionException(Collections.<ArtifactResult>emptyList()));
+    when(repositorySystem.resolveArtifact(
+      same(repositorySystemSession),
+      artifactRequestCaptor.capture()
+    )).thenThrow(new ArtifactResolutionException(Collections.<ArtifactResult>emptyList()));
 
     catchException(repositoryDownloader).download(phantomJSArchive);
-    assertThat(caughtException(), is(instanceOf(DownloadException.class)));
+    assertThat(caughtException()).isInstanceOf(DownloadException.class);
   }
 }

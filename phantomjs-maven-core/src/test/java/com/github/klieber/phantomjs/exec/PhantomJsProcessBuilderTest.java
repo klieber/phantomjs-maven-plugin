@@ -37,11 +37,7 @@ import java.io.File;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
@@ -64,21 +60,21 @@ public class PhantomJsProcessBuilderTest {
 
   @Test
   public void testStart() throws Exception {
-    assertNotNull(builder.start());
+    assertThat(builder.start()).isNotNull();
   }
 
   @Test
   public void testStartWithConfigFile() throws Exception {
     when(file.exists()).thenReturn(true);
-    assertSame(builder, builder.configFile(file));
-    assertNotNull(builder.start());
+    assertThat(builder.configFile(file)).isSameAs(builder);
+    assertThat(builder.start()).isNotNull();
   }
 
   @Test
   public void testStartWithMissingConfigFile() throws Exception {
     when(file.exists()).thenReturn(false);
-    assertSame(builder, builder.configFile(file));
-    assertNotNull(builder.start());
+    assertThat(builder.configFile(file)).isSameAs(builder);
+    assertThat(builder.start()).isNotNull();
   }
 
   @Test
@@ -88,6 +84,6 @@ public class PhantomJsProcessBuilderTest {
     when(CommandLineUtils.translateCommandline(COMMAND_LINE)).thenThrow(new RuntimeException());
 
     catchException(builder.commandLineOptions(COMMAND_LINE)).start();
-    assertThat(caughtException(), is(instanceOf(ExecutionException.class)));
+    assertThat(caughtException()).isInstanceOf(ExecutionException.class);
   }
 }

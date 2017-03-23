@@ -33,8 +33,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -59,22 +58,22 @@ public class CompositeLocatorTest {
   }
 
   @Test
-  public void shouldLocateLocationA() throws Exception  {
+  public void shouldLocateLocationA() throws Exception {
     when(locatorA.locate()).thenReturn(LOCATION_A);
-    assertEquals(LOCATION_A, compositeLocator.locate());
+    assertThat(compositeLocator.locate()).isEqualTo(LOCATION_A);
     verifyNoMoreInteractions(locatorB);
   }
 
   @Test
-  public void shouldLocateLocationB() throws Exception  {
+  public void shouldLocateLocationB() throws Exception {
     when(locatorB.locate()).thenReturn(LOCATION_B);
-    assertEquals(LOCATION_B, compositeLocator.locate());
+    assertThat(compositeLocator.locate()).isEqualTo(LOCATION_B);
     verify(locatorA).locate();
   }
 
   @Test
-  public void shouldNotLocateAnything() throws Exception  {
-    assertNull(compositeLocator.locate());
+  public void shouldNotLocateAnything() throws Exception {
+    assertThat(compositeLocator.locate()).isNull();
     verify(locatorA).locate();
     verify(locatorB).locate();
   }

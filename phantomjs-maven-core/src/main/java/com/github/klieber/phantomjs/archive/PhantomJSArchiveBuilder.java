@@ -28,9 +28,9 @@ package com.github.klieber.phantomjs.archive;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.github.klieber.phantomjs.archive.mapping.ArchiveSpec;
 import com.github.klieber.phantomjs.archive.mapping.ArchiveMapping;
 import com.github.klieber.phantomjs.archive.mapping.ArchiveMappings;
+import com.github.klieber.phantomjs.archive.mapping.ArchiveSpec;
 import com.github.klieber.phantomjs.os.OperatingSystem;
 import com.github.klieber.phantomjs.util.VersionUtil;
 import org.slf4j.Logger;

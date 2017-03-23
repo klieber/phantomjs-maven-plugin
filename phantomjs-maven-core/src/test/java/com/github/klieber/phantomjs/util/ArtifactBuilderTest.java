@@ -34,7 +34,7 @@ import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
@@ -79,10 +79,10 @@ public class ArtifactBuilderTest {
   }
 
   private void verifyArtifact(Artifact artifact, String groupId, String artifactId) {
-    assertEquals(groupId, artifact.getGroupId());
-    assertEquals(artifactId, artifact.getArtifactId());
-    assertEquals(CLASSIFIER, artifact.getClassifier());
-    assertEquals(EXTENSION, artifact.getExtension());
-    assertEquals(VERSION, artifact.getVersion());
+    assertThat(artifact.getGroupId()).isEqualTo(groupId);
+    assertThat(artifact.getArtifactId()).isEqualTo(artifactId);
+    assertThat(artifact.getClassifier()).isEqualTo(CLASSIFIER);
+    assertThat(artifact.getExtension()).isEqualTo(EXTENSION);
+    assertThat(artifact.getVersion()).isEqualTo(VERSION);
   }
 }

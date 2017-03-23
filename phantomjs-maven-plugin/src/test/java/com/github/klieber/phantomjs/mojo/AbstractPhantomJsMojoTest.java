@@ -36,7 +36,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -76,18 +76,18 @@ public class AbstractPhantomJsMojoTest {
   @Test
   public void testGetPhantomJsBinary() {
     Whitebox.setInternalState(mojo,"phantomJsBinary", BINARY_PATH);
-    assertEquals(BINARY_PATH, mojo.getPhantomJsBinary());
+    assertThat(mojo.getPhantomJsBinary()).isEqualTo(BINARY_PATH);
   }
 
   @Test
   public void testGetPhantomJsBinaryFromProject() {
     when(project.getProperties()).thenReturn(properties);
     when(properties.getProperty(PROPERTY_NAME)).thenReturn(BINARY_PATH);
-    Whitebox.setInternalState(mojo,"mavenProject",project);
-    Whitebox.setInternalState(mojo,"propertyName", PROPERTY_NAME);
-    assertEquals(BINARY_PATH, mojo.getPhantomJsBinary());
-    verify(project,times(1)).getProperties();
-    verify(properties,times(1)).getProperty(PROPERTY_NAME);
+    Whitebox.setInternalState(mojo, "mavenProject", project);
+    Whitebox.setInternalState(mojo, "propertyName", PROPERTY_NAME);
+    assertThat(mojo.getPhantomJsBinary()).isEqualTo(BINARY_PATH);
+    verify(project, times(1)).getProperties();
+    verify(properties, times(1)).getProperty(PROPERTY_NAME);
   }
 
   @Test

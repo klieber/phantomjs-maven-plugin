@@ -25,8 +25,6 @@
  */
 package com.github.klieber.phantomjs.locate;
 
-import com.github.klieber.phantomjs.os.OperatingSystem;
-import com.github.klieber.phantomjs.os.OperatingSystemFactory;
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import com.github.klieber.phantomjs.archive.PhantomJSArchiveBuilder;
 import com.github.klieber.phantomjs.cache.CachedArtifact;
@@ -39,6 +37,8 @@ import com.github.klieber.phantomjs.extract.Extractor;
 import com.github.klieber.phantomjs.extract.PhantomJsExtractor;
 import com.github.klieber.phantomjs.install.Installer;
 import com.github.klieber.phantomjs.install.PhantomJsInstaller;
+import com.github.klieber.phantomjs.os.OperatingSystem;
+import com.github.klieber.phantomjs.os.OperatingSystemFactory;
 import com.github.klieber.phantomjs.resolve.PhantomJsBinaryResolver;
 import com.github.klieber.phantomjs.util.ArtifactBuilder;
 import com.github.klieber.phantomjs.util.Predicate;

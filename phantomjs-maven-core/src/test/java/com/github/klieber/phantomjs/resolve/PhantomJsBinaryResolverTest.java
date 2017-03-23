@@ -36,8 +36,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assume.assumeTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -54,7 +53,7 @@ public class PhantomJsBinaryResolverTest {
 
   @BeforeClass
   public static void beforeClass() throws FileNotFoundException {
-    phantomJsHome = new File(PROJECT_ROOT+"/target/", "phantomjs");
+    phantomJsHome = new File(PROJECT_ROOT + "/target/", "phantomjs");
     PrintWriter writer = new PrintWriter(phantomJsHome);
     writer.println("#!/bin/sh");
     writer.println("echo 1.9.0");
@@ -71,17 +70,18 @@ public class PhantomJsBinaryResolverTest {
 
   @Test
   public void testShouldNotResolve() {
-    assertNull(getResolver("1.9.2").resolve("/tmp"));
+    assertThat(getResolver("1.9.2").resolve("/tmp")).isNull();
   }
 
   @Test
   public void testShouldResolveBin() {
-    assertEquals(phantomJsHome.getAbsolutePath(), getResolver("1.9.0").resolve(phantomJsHome.getParent()));
+    assertThat(getResolver("1.9.0").resolve(phantomJsHome.getParent()))
+      .isEqualTo(phantomJsHome.getAbsolutePath());
   }
 
   @Test
   public void testShouldResolveBinWrongVersion() {
-    assertNull(getResolver("1.9.2").resolve(phantomJsHome.getParent()));
+    assertThat(getResolver("1.9.2").resolve(phantomJsHome.getParent())).isNull();
   }
 
   private PhantomJsBinaryResolver getResolver(String version) {

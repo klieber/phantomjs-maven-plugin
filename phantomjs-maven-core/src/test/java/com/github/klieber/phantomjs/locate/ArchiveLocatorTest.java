@@ -34,10 +34,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.io.File;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -47,9 +44,6 @@ public class ArchiveLocatorTest {
 
   @Mock
   private PhantomJSArchive archive;
-
-  @Mock
-  private File outputDirectory;
 
   @Mock
   private Installer installer;
@@ -62,14 +56,14 @@ public class ArchiveLocatorTest {
   }
 
   @Test
-  public void shouldLocate() throws Exception  {
+  public void shouldLocate() throws Exception {
     when(installer.install(archive)).thenReturn(LOCATION);
-    assertEquals(LOCATION, locator.locate());
+    assertThat(locator.locate()).isEqualTo(LOCATION);
   }
 
   @Test
-  public void testLocateShouldHandleException() throws Exception  {
-    when(installer.install(archive)).thenThrow(new InstallationException("error",new RuntimeException()));
-    assertNull(locator.locate());
+  public void testLocateShouldHandleException() throws Exception {
+    when(installer.install(archive)).thenThrow(new InstallationException("error", new RuntimeException()));
+    assertThat(locator.locate()).isNull();
   }
 }

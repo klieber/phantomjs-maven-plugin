@@ -33,11 +33,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,7 +49,7 @@ public class PhantomJSArchiveBuilderTest {
     when(operatingSystem.getName()).thenReturn("win");
     builder = new PhantomJSArchiveBuilder(operatingSystem, "1.9.0");
     PhantomJSArchive archive = builder.build();
-    assertEquals("phantomjs-1.9.0-windows.zip", archive.getArchiveName());
+    assertThat(archive.getArchiveName()).isEqualTo("phantomjs-1.9.0-windows.zip");
   }
 
   @Test
@@ -61,7 +57,7 @@ public class PhantomJSArchiveBuilderTest {
     when(operatingSystem.getName()).thenReturn("mac");
     builder = new PhantomJSArchiveBuilder(operatingSystem, "1.9.0");
     PhantomJSArchive archive = builder.build();
-    assertEquals("phantomjs-1.9.0-macosx.zip",archive.getArchiveName());
+    assertThat(archive.getArchiveName()).isEqualTo("phantomjs-1.9.0-macosx.zip");
   }
 
   @Test
@@ -69,7 +65,7 @@ public class PhantomJSArchiveBuilderTest {
     when(operatingSystem.getName()).thenReturn("mac");
     builder = new PhantomJSArchiveBuilder(operatingSystem, "2.5.0-beta");
     PhantomJSArchive archive = builder.build();
-    assertEquals("phantomjs-2.5.0-beta-macos.zip",archive.getArchiveName());
+    assertThat(archive.getArchiveName()).isEqualTo("phantomjs-2.5.0-beta-macos.zip");
   }
 
   @Test
@@ -78,7 +74,7 @@ public class PhantomJSArchiveBuilderTest {
     when(operatingSystem.getArchitecture()).thenReturn("i686");
     builder = new PhantomJSArchiveBuilder(operatingSystem, "1.9.0");
     PhantomJSArchive archive = builder.build();
-    assertEquals("phantomjs-1.9.0-linux-i686.tar.bz2", archive.getArchiveName());
+    assertThat(archive.getArchiveName()).isEqualTo("phantomjs-1.9.0-linux-i686.tar.bz2");
   }
 
   @Test
@@ -87,7 +83,7 @@ public class PhantomJSArchiveBuilderTest {
     when(operatingSystem.getArchitecture()).thenReturn("x86_64");
     builder = new PhantomJSArchiveBuilder(operatingSystem, "1.9.2");
     PhantomJSArchive archive = builder.build();
-    assertEquals("phantomjs-1.9.2-linux-x86_64.tar.bz2", archive.getArchiveName());
+    assertThat(archive.getArchiveName()).isEqualTo("phantomjs-1.9.2-linux-x86_64.tar.bz2");
   }
 
   @Test
@@ -95,6 +91,6 @@ public class PhantomJSArchiveBuilderTest {
     when(operatingSystem.getName()).thenReturn("invalid");
     builder = new PhantomJSArchiveBuilder(operatingSystem, "");
     catchException(builder).build();
-    assertThat(caughtException(), is(instanceOf(UnsupportedPlatformException.class)));
+    assertThat(caughtException()).isInstanceOf(UnsupportedPlatformException.class);
   }
 }
