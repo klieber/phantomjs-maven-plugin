@@ -25,15 +25,15 @@
  */
 package com.github.klieber.phantomjs.mojo;
 
+import com.github.klieber.phantomjs.exec.ExecutionException;
 import com.github.klieber.phantomjs.exec.PhantomJsExecutor;
 import com.github.klieber.phantomjs.exec.PhantomJsProcessBuilder;
-import com.github.klieber.phantomjs.test.Whitebox;
 import junit.framework.TestCase;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -55,37 +55,43 @@ public class ExecPhantomJsMojoTest extends TestCase {
   @Mock
   private Properties properties;
 
+  @InjectMocks
   private ExecPhantomJsMojo mojo;
-
-  @Before
-  public void before() {
-    this.mojo = new ExecPhantomJsMojo(executor);
-    Whitebox.setInternalState(this.mojo, "mavenProject", mavenProject);
-  }
 
   @Test
   public void testRun() throws Exception {
-    Whitebox.setInternalState(this.mojo, "failOnNonZeroExitCode", true);
     when(mavenProject.getProperties()).thenReturn(properties);
     when(executor.execute(isA(PhantomJsProcessBuilder.class))).thenReturn(0);
+    mojo.setFailOnNonZeroExitCode(true);
     mojo.run();
   }
 
   @Test
   public void testRunNoFailureOnNonZero() throws Exception {
-    Whitebox.setInternalState(this.mojo, "failOnNonZeroExitCode", false);
     when(mavenProject.getProperties()).thenReturn(properties);
     when(executor.execute(isA(PhantomJsProcessBuilder.class))).thenReturn(1);
+    mojo.setFailOnNonZeroExitCode(false);
     mojo.run();
   }
 
   @Test
   public void testRunFailureOnNonZero() throws Exception {
-    Whitebox.setInternalState(this.mojo, "failOnNonZeroExitCode", true);
     when(mavenProject.getProperties()).thenReturn(properties);
     when(executor.execute(isA(PhantomJsProcessBuilder.class))).thenReturn(1);
+    mojo.setFailOnNonZeroExitCode(true);
     assertThatThrownBy(() -> mojo.run())
       .isInstanceOf(MojoFailureException.class)
       .hasMessage("PhantomJS execution did not exit normally (code = 1)");
+  }
+
+  @Test
+  public void testRunFailureOnExecutionException() throws Exception {
+    when(mavenProject.getProperties()).thenReturn(properties);
+    when(executor.execute(isA(PhantomJsProcessBuilder.class))).thenThrow(ExecutionException.class);
+    mojo.setFailOnNonZeroExitCode(true);
+    assertThatThrownBy(() -> mojo.run())
+      .isInstanceOf(MojoFailureException.class)
+      .hasMessage("Failed to execute PhantomJS command")
+      .hasCauseInstanceOf(ExecutionException.class);
   }
 }

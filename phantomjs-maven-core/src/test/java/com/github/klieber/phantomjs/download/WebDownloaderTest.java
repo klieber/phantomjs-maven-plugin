@@ -25,10 +25,12 @@
  */
 package com.github.klieber.phantomjs.download;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
+import com.github.klieber.phantomjs.archive.Archive;
+import com.github.klieber.phantomjs.cache.ArchiveCache;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -52,48 +54,53 @@ public class WebDownloaderTest {
   private static final String DOWNLOAD_URL = "http://example.org/" + FILE_PATH;
 
   @Mock
-  private PhantomJSArchive phantomJSArchive;
+  private Archive archive;
+
+  @Mock
+  private ArchiveCache archiveCache;
 
   @Mock
   private File file;
 
+  @InjectMocks
   private WebDownloader downloader;
 
   @Before
   public void before() {
-    downloader = spy(new WebDownloader(file));
+    when(archiveCache.getFile(archive)).thenReturn(file);
+    downloader = spy(new WebDownloader(archiveCache));
   }
 
   @Test
   public void shouldDownload() throws Exception {
-    when(phantomJSArchive.getUrl()).thenReturn(DOWNLOAD_URL);
+    when(archive.getUrl()).thenReturn(DOWNLOAD_URL);
     when(file.length()).thenReturn(100L);
 
     doNothing().when(downloader).copyURLToFile(any(URL.class), eq(file));
 
-    downloader.download(phantomJSArchive);
+    downloader.download(archive);
 
     verify(downloader).copyURLToFile(any(URL.class), eq(file));
   }
 
   @Test
   public void shouldFailDueToEmptyFile() throws Exception {
-    when(phantomJSArchive.getUrl()).thenReturn(DOWNLOAD_URL);
+    when(archive.getUrl()).thenReturn(DOWNLOAD_URL);
     when(file.length()).thenReturn(0L);
     doNothing().when(downloader).copyURLToFile(any(URL.class), eq(file));
-    assertThatThrownBy(() -> downloader.download(phantomJSArchive)).isInstanceOf(DownloadException.class);
+    assertThatThrownBy(() -> downloader.download(archive)).isInstanceOf(DownloadException.class);
   }
 
   @Test
   public void shouldFailDueToIOException() throws Exception {
-    when(phantomJSArchive.getUrl()).thenReturn(DOWNLOAD_URL);
+    when(archive.getUrl()).thenReturn(DOWNLOAD_URL);
     doThrow(new IOException()).when(downloader).copyURLToFile(any(URL.class), eq(file));
-    assertThatThrownBy(() -> downloader.download(phantomJSArchive)).isInstanceOf(DownloadException.class);
+    assertThatThrownBy(() -> downloader.download(archive)).isInstanceOf(DownloadException.class);
   }
 
   @Test
   public void shouldFailDueToMalformedUrl() throws Exception {
-    when(phantomJSArchive.getUrl()).thenReturn("invalid-base-url");
-    assertThatThrownBy(() -> downloader.download(phantomJSArchive)).isInstanceOf(DownloadException.class);
+    when(archive.getUrl()).thenReturn("invalid-base-url");
+    assertThatThrownBy(() -> downloader.download(archive)).isInstanceOf(DownloadException.class);
   }
 }

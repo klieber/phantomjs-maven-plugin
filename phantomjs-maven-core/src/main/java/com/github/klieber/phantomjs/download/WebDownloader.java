@@ -25,7 +25,9 @@
  */
 package com.github.klieber.phantomjs.download;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
+import com.github.klieber.phantomjs.archive.Archive;
+import com.github.klieber.phantomjs.cache.ArchiveCache;
+import com.google.common.annotations.VisibleForTesting;
 import org.codehaus.plexus.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,18 +40,19 @@ public class WebDownloader implements Downloader {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WebDownloader.class);
 
-  private static final String DOWNLOADING = "Downloading phantomjs binary from {}";
-  private static final String UNABLE_TO_DOWNLOAD = "Unable to download phantomjs binary from ";
+  private static final String DOWNLOADING = "Downloading archive from {}";
+  private static final String UNABLE_TO_DOWNLOAD = "Unable to download archive from ";
 
-  private final File target;
+  private final ArchiveCache archiveCache;
 
-  public WebDownloader(File target) {
-    this.target = target;
+  public WebDownloader(ArchiveCache archiveCache) {
+    this.archiveCache = archiveCache;
   }
 
   @Override
-  public File download(PhantomJSArchive archive) throws DownloadException {
-    if (!this.target.exists()) {
+  public File download(Archive archive) throws DownloadException {
+    File target = archiveCache.getFile(archive);
+    if (!target.exists()) {
       String url = archive.getUrl();
       try {
         URL downloadLocation = new URL(url);
@@ -64,10 +67,11 @@ public class WebDownloader implements Downloader {
         throw new DownloadException(UNABLE_TO_DOWNLOAD+url, e);
       }
     }
-    return this.target;
+    return target;
   }
 
-  protected void copyURLToFile(URL url, File file) throws IOException {
+  @VisibleForTesting
+  void copyURLToFile(URL url, File file) throws IOException {
     FileUtils.copyURLToFile(url, file);
   }
 }

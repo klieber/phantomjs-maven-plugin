@@ -27,7 +27,7 @@ package com.github.klieber.phantomjs.archive.mapping;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.klieber.phantomjs.os.OperatingSystem;
+import com.github.klieber.phantomjs.sys.os.OperatingSystem;
 import com.github.klieber.phantomjs.util.VersionUtil;
 
 public class ArchiveSpec {

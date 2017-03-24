@@ -25,11 +25,14 @@
  */
 package com.github.klieber.phantomjs.mojo;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.StringUtils;
+
+import javax.inject.Inject;
 
 /**
  * Abstract base class for phantomjs-maven-plugin mojos.
@@ -70,8 +73,12 @@ public abstract class AbstractPhantomJsMojo extends AbstractMojo {
   )
   private boolean skip;
 
-  @Parameter(defaultValue = "${project}", readonly = true)
-  private MavenProject mavenProject;
+  private final MavenProject mavenProject;
+
+  @Inject
+  public AbstractPhantomJsMojo(MavenProject mavenProject) {
+    this.mavenProject = mavenProject;
+  }
 
   public final void execute() throws MojoFailureException {
     if (!skip) {
@@ -81,14 +88,37 @@ public abstract class AbstractPhantomJsMojo extends AbstractMojo {
 
   protected abstract void run() throws MojoFailureException;
 
+  protected MavenProject getMavenProject() {
+    return this.mavenProject;
+  }
+
   protected String getPhantomJsBinary() {
     if (StringUtils.isBlank(this.phantomJsBinary)) {
-      this.phantomJsBinary = mavenProject.getProperties().getProperty(this.propertyName);
+      this.phantomJsBinary = getPhantomJsBinaryProperty();
     }
     return this.phantomJsBinary;
   }
 
-  protected void setPhantomJsBinary(String binary) {
+  protected String getPhantomJsBinaryProperty() {
+    return mavenProject.getProperties().getProperty(this.propertyName);
+  }
+
+  protected void setPhantomJsBinaryProperty(String binary) {
     mavenProject.getProperties().setProperty(this.propertyName, binary);
+  }
+
+  @VisibleForTesting
+  void setPhantomJsBinary(String phantomJsBinary) {
+    this.phantomJsBinary = phantomJsBinary;
+  }
+
+  @VisibleForTesting
+  void setPropertyName(String propertyName) {
+    this.propertyName = propertyName;
+  }
+
+  @VisibleForTesting
+  void setSkip(boolean skip) {
+    this.skip = skip;
   }
 }

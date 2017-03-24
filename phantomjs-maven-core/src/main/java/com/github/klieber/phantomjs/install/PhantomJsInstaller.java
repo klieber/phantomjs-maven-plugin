@@ -25,11 +25,11 @@
  */
 package com.github.klieber.phantomjs.install;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
+import com.github.klieber.phantomjs.archive.Archive;
 import com.github.klieber.phantomjs.download.DownloadException;
 import com.github.klieber.phantomjs.download.Downloader;
 import com.github.klieber.phantomjs.extract.ExtractionException;
-import com.github.klieber.phantomjs.extract.Extractor;
+import com.github.klieber.phantomjs.extract.ArchiveExtractor;
 
 import java.io.File;
 
@@ -38,31 +38,36 @@ public class PhantomJsInstaller implements Installer {
   private static final String UNABLE_TO_INSTALL = "Unable to install phantomjs.";
 
   private final Downloader downloader;
-  private final Extractor extractor;
+  private final ArchiveExtractor extractor;
   private final File outputDirectory;
 
-  public PhantomJsInstaller(Downloader downloader, Extractor extractor, File outputDirectory) {
+  public PhantomJsInstaller(Downloader downloader, ArchiveExtractor extractor, File outputDirectory) {
     this.downloader = downloader;
     this.extractor = extractor;
     this.outputDirectory = outputDirectory;
   }
 
   @Override
-  public String install(PhantomJSArchive phantomJSArchive) throws InstallationException {
+  public String install(Archive archive) throws InstallationException {
+    String executable = archive.getPathToExecutable();
 
-    File extractTo = new File(outputDirectory, phantomJSArchive.getPathToExecutable());
+    File extractTo = new File(outputDirectory, executable);
 
     if (!extractTo.exists()) {
-      try {
-        File archive = downloader.download(phantomJSArchive);
-        extractor.extract(archive, extractTo);
-      } catch(DownloadException e) {
-        throw new InstallationException(UNABLE_TO_INSTALL, e);
-      } catch(ExtractionException e) {
-        throw new InstallationException(UNABLE_TO_INSTALL, e);
-      }
-
+      downloadAndExtract(archive, executable, extractTo);
     }
     return extractTo.getAbsolutePath();
+  }
+
+  private void downloadAndExtract(Archive executableArchive,
+                                  String executable,
+                                  File extractTo) throws InstallationException {
+    try {
+      File archive = downloader.download(executableArchive);
+      extractor.extract(archive, executable, extractTo);
+      extractTo.setExecutable(true);
+    } catch(DownloadException | ExtractionException e) {
+      throw new InstallationException(UNABLE_TO_INSTALL, e);
+    }
   }
 }

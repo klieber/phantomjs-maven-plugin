@@ -25,8 +25,8 @@
  */
 package com.github.klieber.phantomjs.download;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import com.github.klieber.phantomjs.locate.RepositoryDetails;
+import com.github.klieber.phantomjs.archive.Archive;
+import com.github.klieber.phantomjs.resolve.RepositoryDetails;
 import com.github.klieber.phantomjs.util.ArtifactBuilder;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -50,7 +50,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -72,7 +72,7 @@ public class RepositoryDownloaderTest {
   private RepositoryDetails repositoryDetails;
 
   @Mock
-  private PhantomJSArchive phantomJSArchive;
+  private Archive archive;
 
   @Captor
   private ArgumentCaptor<ArtifactRequest> artifactRequestCaptor;
@@ -100,12 +100,12 @@ public class RepositoryDownloaderTest {
 
   @Test
   public void shouldDownload() throws DownloadException, ArtifactResolutionException {
-    when(artifactBuilder.createArtifact(phantomJSArchive)).thenReturn(artifact);
+    when(artifactBuilder.createArtifact(archive)).thenReturn(artifact);
     when(repositorySystem.resolveArtifact(same(repositorySystemSession), artifactRequestCaptor.capture())).thenReturn(
       artifactResult);
     when(artifact.getFile()).thenReturn(archiveFile);
 
-    assertThat(repositoryDownloader.download(phantomJSArchive)).isSameAs(archiveFile);
+    assertThat(repositoryDownloader.download(archive)).isSameAs(archiveFile);
 
     ArtifactRequest request = artifactRequestCaptor.getValue();
     assertThat(request.getArtifact()).isSameAs(artifact);
@@ -114,13 +114,13 @@ public class RepositoryDownloaderTest {
 
   @Test
   public void shouldHandleArtifactResolutionException() throws DownloadException, ArtifactResolutionException {
-    when(artifactBuilder.createArtifact(phantomJSArchive)).thenReturn(artifact);
+    when(artifactBuilder.createArtifact(archive)).thenReturn(artifact);
     when(repositorySystem.resolveArtifact(
       same(repositorySystemSession),
       artifactRequestCaptor.capture()
     )).thenThrow(new ArtifactResolutionException(Collections.<ArtifactResult>emptyList()));
 
-    assertThatThrownBy(() -> repositoryDownloader.download(phantomJSArchive))
+    assertThatThrownBy(() -> repositoryDownloader.download(archive))
       .isInstanceOf(DownloadException.class);
   }
 }

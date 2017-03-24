@@ -28,13 +28,16 @@ package com.github.klieber.phantomjs.mojo;
 import com.github.klieber.phantomjs.exec.ExecutionException;
 import com.github.klieber.phantomjs.exec.PhantomJsExecutor;
 import com.github.klieber.phantomjs.exec.PhantomJsProcessBuilder;
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
 
@@ -113,13 +116,12 @@ public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
   )
   private boolean failOnNonZeroExitCode;
 
-  private PhantomJsExecutor executor;
+  private final PhantomJsExecutor executor;
 
-  public ExecPhantomJsMojo() {
-    this(new PhantomJsExecutor());
-  }
-
-  public ExecPhantomJsMojo(PhantomJsExecutor executor) {
+  @Inject
+  public ExecPhantomJsMojo(MavenProject mavenProject,
+                           PhantomJsExecutor executor) {
+    super(mavenProject);
     this.executor = executor;
   }
 
@@ -143,5 +145,10 @@ public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
     } catch (ExecutionException e) {
       throw new MojoFailureException(EXECUTION_FAILURE, e);
     }
+  }
+
+  @VisibleForTesting
+  void setFailOnNonZeroExitCode(boolean failOnNonZeroExitCode) {
+    this.failOnNonZeroExitCode = failOnNonZeroExitCode;
   }
 }

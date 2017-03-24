@@ -25,8 +25,8 @@
  */
 package com.github.klieber.phantomjs.download;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import com.github.klieber.phantomjs.locate.RepositoryDetails;
+import com.github.klieber.phantomjs.archive.Archive;
+import com.github.klieber.phantomjs.resolve.RepositoryDetails;
 import com.github.klieber.phantomjs.util.ArtifactBuilder;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
@@ -54,18 +54,27 @@ public class RepositoryDownloader implements Downloader {
   }
 
   @Override
-  public File download(PhantomJSArchive archive) throws DownloadException {
+  public File download(Archive archive) throws DownloadException {
+    ArtifactResult result = resolveArtifact(createRequest(archive));
+    File artifact = result.getArtifact().getFile();
+    LOGGER.info(RESOLVED_ARTIFACT, artifact, result.getRepository());
+    return artifact;
+  }
+
+  private ArtifactRequest createRequest(Archive archive) {
     ArtifactRequest request = new ArtifactRequest();
     request.setArtifact(artifactBuilder.createArtifact(archive));
     request.setRepositories(repositoryDetails.getRemoteRepositories());
+    return request;
+  }
 
+  private ArtifactResult resolveArtifact(ArtifactRequest artifactRequest) throws DownloadException {
     try {
-      ArtifactResult result = repositoryDetails.getRepositorySystem().resolveArtifact(
-          repositoryDetails.getRepositorySystemSession(),
-          request);
-      LOGGER.info(RESOLVED_ARTIFACT, result.getArtifact().getFile(), result.getRepository());
-      return result.getArtifact().getFile();
-    } catch(ArtifactResolutionException e) {
+      return repositoryDetails.getRepositorySystem().resolveArtifact(
+        repositoryDetails.getRepositorySystemSession(),
+        artifactRequest
+      );
+    } catch (ArtifactResolutionException e) {
       throw new DownloadException(UNABLE_TO_RESOLVE, e);
     }
   }
