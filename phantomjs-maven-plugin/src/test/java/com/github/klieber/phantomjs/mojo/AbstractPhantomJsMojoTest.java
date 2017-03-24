@@ -25,21 +25,21 @@
  */
 package com.github.klieber.phantomjs.mojo;
 
-import com.github.klieber.phantomjs.test.Whitebox;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -54,11 +54,13 @@ public class AbstractPhantomJsMojoTest {
   @Mock
   private Properties properties;
 
-  @Spy
-  private AbstractPhantomJsMojo mojo = new AbstractPhantomJsMojo() {
-    @Override
-    protected void run() throws MojoFailureException { }
-  };
+  private MockPhantomJsMojo mojo;
+
+  @Before
+  public void before() {
+    mojo = spy(new MockPhantomJsMojo(project));
+    when(project.getProperties()).thenReturn(properties);
+  }
 
   @Test
   public void testExecute() throws MojoFailureException {
@@ -68,23 +70,26 @@ public class AbstractPhantomJsMojoTest {
 
   @Test
   public void testSkipExecute() throws MojoFailureException {
-    Whitebox.setInternalState(mojo, "skip", true);
+    mojo.setSkip(true);
     mojo.execute();
-    verifyNoMoreInteractions(mojo);
+    verify(mojo, never()).run();
+  }
+
+  @Test
+  public void testGetMavenProject() throws MojoFailureException {
+    assertThat(mojo.getMavenProject()).isSameAs(project);
   }
 
   @Test
   public void testGetPhantomJsBinary() {
-    Whitebox.setInternalState(mojo,"phantomJsBinary", BINARY_PATH);
+    mojo.setPhantomJsBinary(BINARY_PATH);
     assertThat(mojo.getPhantomJsBinary()).isEqualTo(BINARY_PATH);
   }
 
   @Test
   public void testGetPhantomJsBinaryFromProject() {
-    when(project.getProperties()).thenReturn(properties);
     when(properties.getProperty(PROPERTY_NAME)).thenReturn(BINARY_PATH);
-    Whitebox.setInternalState(mojo, "mavenProject", project);
-    Whitebox.setInternalState(mojo, "propertyName", PROPERTY_NAME);
+    mojo.setPropertyName(PROPERTY_NAME);
     assertThat(mojo.getPhantomJsBinary()).isEqualTo(BINARY_PATH);
     verify(project, times(1)).getProperties();
     verify(properties, times(1)).getProperty(PROPERTY_NAME);
@@ -92,10 +97,20 @@ public class AbstractPhantomJsMojoTest {
 
   @Test
   public void testSetPhantomJsBinary() {
-    when(project.getProperties()).thenReturn(properties);
-    Whitebox.setInternalState(mojo,"mavenProject",project);
-    Whitebox.setInternalState(mojo, "propertyName", PROPERTY_NAME);
-    mojo.setPhantomJsBinary(BINARY_PATH);
+    mojo.setPropertyName(PROPERTY_NAME);
+    mojo.setPhantomJsBinaryProperty(BINARY_PATH);
     verify(properties).setProperty(PROPERTY_NAME, BINARY_PATH);
+  }
+
+  static class MockPhantomJsMojo extends AbstractPhantomJsMojo {
+
+    MockPhantomJsMojo(MavenProject mavenProject) {
+      super(mavenProject);
+    }
+
+    @Override
+    protected void run() {
+
+    }
   }
 }

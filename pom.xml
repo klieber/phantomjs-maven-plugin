@@ -21,7 +21,6 @@
     </license>
   </licenses>
 
-
   <organization>
     <name>Kyle Lieber</name>
     <url>http://kylelieber.com</url>
@@ -353,10 +352,10 @@
             <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
             <roots>
               <root>src/main/java</root>
-              <root>src/test</root>
+              <root>src/test/java</root>
             </roots>
             <includes>
-              <include>*/*.java</include>
+              <include>**/*.java</include>
             </includes>
           </configuration>
         </plugin>

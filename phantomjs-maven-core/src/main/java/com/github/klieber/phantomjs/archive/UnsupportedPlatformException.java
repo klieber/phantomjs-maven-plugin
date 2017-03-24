@@ -25,7 +25,7 @@
  */
 package com.github.klieber.phantomjs.archive;
 
-import com.github.klieber.phantomjs.os.OperatingSystem;
+import com.github.klieber.phantomjs.sys.os.OperatingSystem;
 
 public class UnsupportedPlatformException extends RuntimeException {
 

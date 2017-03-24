@@ -26,7 +26,6 @@
 package com.github.klieber.phantomjs.util;
 
 import org.apache.maven.artifact.versioning.ArtifactVersion;
-import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
@@ -37,40 +36,45 @@ public class VersionUtil {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(VersionUtil.class);
 
-  public static int compare(String versionA, String versionB) {
-    if (versionA == versionB) {
-      return 0;
+  public static boolean isWithin(String version, String versionSpec) {
+    boolean within = false;
+    try {
+      return VersionUtil.isWithin(version, VersionRange.createFromVersionSpec(versionSpec));
+    } catch (InvalidVersionSpecificationException e) {
+      LOGGER.warn("Invalid version specification: {}", versionSpec);
     }
-    if (versionA == null) {
-      return -1;
+    return within;
+  }
+
+  public static String getVersionSpec(String version, String spec) {
+    if (spec == null || Boolean.parseBoolean(spec)) {
+      spec = '[' + version + ']';
+    } else if (Boolean.FALSE.toString().equalsIgnoreCase(spec)) {
+      spec = "[0,]";
+    } else if (!VersionUtil.isWithin(version, spec)) {
+      LOGGER.warn("Version {} is not within requested range: {}", version, spec);
     }
-    if (versionB == null) {
-      return 1;
-    }
-    return new ComparableVersion(versionA).compareTo(new ComparableVersion(versionB));
+    return spec;
   }
 
-  public static boolean isGreaterThan(String versionA, String versionB) {
-    return compare(versionA, versionB) > 0;
-  }
-
-  public static boolean isLessThan(String versionA, String versionB) {
-    return compare(versionA, versionB) < 0;
-  }
-
-  public static boolean isGreaterThanOrEqualTo(String versionA, String versionB) {
-    return !VersionUtil.isLessThan(versionA, versionB);
-  }
-
-  public static boolean isLessThanOrEqualTo(String versionA, String versionB) {
+  private static boolean isLessThanOrEqualTo(ArtifactVersion versionA, ArtifactVersion versionB) {
     return !VersionUtil.isGreaterThan(versionA, versionB);
   }
 
-  public static boolean isEqualTo(String versionA, String versionB) {
-    return compare(versionA, versionB) == 0;
+  private static boolean isGreaterThan(ArtifactVersion versionA, ArtifactVersion versionB) {
+    return compare(versionA, versionB) > 0;
   }
 
-  public static int compare(ArtifactVersion versionA, ArtifactVersion versionB) {
+  private static boolean isWithin(String version, VersionRange versionRange) {
+    ArtifactVersion artifactVersion = new DefaultArtifactVersion(version);
+    ArtifactVersion recommendedVersion = versionRange.getRecommendedVersion();
+    // treat recommended version as minimum version
+    return recommendedVersion != null ?
+      VersionUtil.isLessThanOrEqualTo(recommendedVersion, artifactVersion) :
+      versionRange.containsVersion(artifactVersion);
+  }
+
+  private static int compare(ArtifactVersion versionA, ArtifactVersion versionB) {
     if (versionA == versionB) {
       return 0;
     }
@@ -81,40 +85,5 @@ public class VersionUtil {
       return 1;
     }
     return versionA.compareTo(versionB);
-  }
-
-  public static boolean isGreaterThanOrEqualTo(ArtifactVersion versionA, ArtifactVersion versionB) {
-    return !VersionUtil.isLessThan(versionA, versionB);
-  }
-
-  public static boolean isLessThan(ArtifactVersion versionA, ArtifactVersion versionB) {
-    return compare(versionA, versionB) < 0;
-  }
-
-  public static boolean isLessThanOrEqualTo(ArtifactVersion versionA, ArtifactVersion versionB) {
-    return !VersionUtil.isGreaterThan(versionA, versionB);
-  }
-
-  public static boolean isGreaterThan(ArtifactVersion versionA, ArtifactVersion versionB) {
-    return compare(versionA, versionB) > 0;
-  }
-
-  public static boolean isWithin(String version, VersionRange versionRange) {
-    ArtifactVersion artifactVersion = new DefaultArtifactVersion(version);
-    ArtifactVersion recommendedVersion = versionRange.getRecommendedVersion();
-    // treat recommended version as minimum version
-    return recommendedVersion != null ?
-        VersionUtil.isLessThanOrEqualTo(recommendedVersion, artifactVersion) :
-        versionRange.containsVersion(artifactVersion);
-  }
-
-  public static boolean isWithin(String version, String versionSpec) {
-    boolean within = false;
-    try {
-      return VersionUtil.isWithin(version, VersionRange.createFromVersionSpec(versionSpec));
-    } catch (InvalidVersionSpecificationException e) {
-      LOGGER.warn("Invalid version specification: {}", versionSpec);
-    }
-    return within;
   }
 }

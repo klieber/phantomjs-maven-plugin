@@ -25,10 +25,12 @@
  */
 package com.github.klieber.phantomjs.exec;
 
+import javax.inject.Named;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
+@Named
 public class PhantomJsExecutor {
 
   private static final String UNABLE_TO_EXECUTE = "Unable to execute phantomjs process";

@@ -34,7 +34,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -79,11 +79,7 @@ public class PhantomJsProcessBuilderTest {
     //noinspection unchecked
     when(builder.getCommandLineOptions(COMMAND_LINE)).thenThrow(ExecutionException.class);
 
-    try {
-      builder.commandLineOptions(COMMAND_LINE).start();
-      fail("Should have thrown an ExecutionException");
-    } catch (ExecutionException e) {
-      // expected
-    }
+    assertThatThrownBy(() -> builder.commandLineOptions(COMMAND_LINE).start())
+      .isInstanceOf(ExecutionException.class);
   }
 }

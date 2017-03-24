@@ -25,7 +25,7 @@
  */
 package com.github.klieber.phantomjs.util;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
+import com.github.klieber.phantomjs.archive.Archive;
 import org.eclipse.aether.artifact.Artifact;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 public class ArtifactBuilderTest {
 
   @Mock
-  private PhantomJSArchive phantomJSArchive;
+  private Archive archive;
 
   private ArtifactBuilder builder = new ArtifactBuilder();
 
@@ -53,15 +53,15 @@ public class ArtifactBuilderTest {
 
   @Before
   public void before() {
-    when(phantomJSArchive.getClassifier()).thenReturn(CLASSIFIER);
-    when(phantomJSArchive.getExtension()).thenReturn(EXTENSION);
-    when(phantomJSArchive.getVersion()).thenReturn(VERSION);
+    when(archive.getClassifier()).thenReturn(CLASSIFIER);
+    when(archive.getExtension()).thenReturn(EXTENSION);
+    when(archive.getVersion()).thenReturn(VERSION);
   }
 
   @Test
   public void shouldCreateArtifactWithDefaults() {
     verifyArtifact(
-        builder.createArtifact(phantomJSArchive),
+        builder.createArtifact(archive),
         ArtifactBuilder.GROUP_ID,
         ArtifactBuilder.ARTIFACT_ID
     );
@@ -70,7 +70,7 @@ public class ArtifactBuilderTest {
   @Test
   public void shouldCreateArtifactWithCustom() {
     verifyArtifact(
-        builder.createArtifact(CUSTOM_GROUP_ID,CUSTOM_ARTIFACT_ID,phantomJSArchive),
+        builder.createArtifact(CUSTOM_GROUP_ID, CUSTOM_ARTIFACT_ID, archive),
         CUSTOM_GROUP_ID,
         CUSTOM_ARTIFACT_ID
     );

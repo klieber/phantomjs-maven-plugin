@@ -25,6 +25,7 @@
  */
 package com.github.klieber.phantomjs.exec;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ public class PhantomJsProcessBuilder {
   private static final Logger LOGGER = LoggerFactory.getLogger(PhantomJsProcessBuilder.class);
 
   private static final String PHANTOMJS_COMMAND = "phantomjs command: {}";
-  private static final String UNABLE_TO_BUILD_CMD_LINE_OPTIONS = "Unable to build command line options.";
+  private static final String UNABLE_TO_BUILD_CMD_LINE_OPTIONS = "Unable to create command line options.";
   private static final String UNABLE_TO_START = "Unable to start phantomjs process.";
 
   private final String phantomJsBinary;
@@ -131,7 +132,8 @@ public class PhantomJsProcessBuilder {
     return commandline;
   }
 
-  protected String[] getCommandLineOptions(String commandLineOptions) throws ExecutionException {
+  @VisibleForTesting
+  String[] getCommandLineOptions(String commandLineOptions) throws ExecutionException {
     try {
       return CommandLineUtils.translateCommandline(commandLineOptions);
     } catch (Exception e) {

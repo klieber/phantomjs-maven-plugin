@@ -25,16 +25,19 @@
  */
 package com.github.klieber.phantomjs.util;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
+import com.github.klieber.phantomjs.archive.Archive;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 
+import javax.inject.Named;
+
+@Named
 public class ArtifactBuilder {
 
   public static final String GROUP_ID = "com.github.klieber";
   public static final String ARTIFACT_ID = "phantomjs";
 
-  public Artifact createArtifact(String groupId, String artifactId, PhantomJSArchive archive) {
+  public Artifact createArtifact(String groupId, String artifactId, Archive archive) {
     return new DefaultArtifact(
         groupId,
         artifactId,
@@ -44,7 +47,7 @@ public class ArtifactBuilder {
     );
   }
 
-  public Artifact createArtifact(PhantomJSArchive archive) {
+  public Artifact createArtifact(Archive archive) {
     return createArtifact(GROUP_ID, ARTIFACT_ID, archive);
   }
 }

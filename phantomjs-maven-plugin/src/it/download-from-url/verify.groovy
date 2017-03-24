@@ -20,7 +20,7 @@ assert binary.canExecute()
 
 String buildLog = FileUtils.fileRead(new File(basedir, 'build.log'));
 
-assert buildLog.contains('Downloading phantomjs binary') : 'phantomjs binaries were not downloaded.';
+assert buildLog.contains('Downloading archive') : 'phantomjs binaries were not downloaded.';
 assert !buildLog.contains('phantomjs.binary.path=null') && !buildLog.contains('"phantomjs.binary.path":"null"') : "phantomjs.binary property was not properly set"
 assert buildLog.contains('Hello, world!'): 'phantomjs script execution failed.';
 

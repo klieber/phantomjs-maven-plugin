@@ -25,21 +25,19 @@
  */
 package com.github.klieber.phantomjs.mojo;
 
-import com.github.klieber.phantomjs.locate.Locator;
-import com.github.klieber.phantomjs.locate.PhantomJsLocator;
-import com.github.klieber.phantomjs.locate.PhantomJsLocatorOptions;
-import com.github.klieber.phantomjs.locate.RepositoryDetails;
+import com.github.klieber.phantomjs.resolve.PhantomJsResolver;
+import com.github.klieber.phantomjs.resolve.PhantomJsResolverOptions;
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.repository.RemoteRepository;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.util.List;
 
 /**
  * Maven plugin for downloading and installing phantomjs binaries.
@@ -47,7 +45,7 @@ import java.util.List;
  * @since 0.1
  */
 @Mojo(name = "install", defaultPhase = LifecyclePhase.PROCESS_TEST_SOURCES)
-public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements PhantomJsLocatorOptions {
+public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements PhantomJsResolverOptions {
 
   private static final String UNABLE_TO_INSTALL = "Failed to install phantomjs.";
 
@@ -57,8 +55,8 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Phant
    * @since 0.1
    */
   @Parameter(
-      property = "phantomjs.version",
-      required = true
+    property = "phantomjs.version",
+    required = true
   )
   private String version;
 
@@ -68,7 +66,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Phant
    * @since 0.1
    */
   @Parameter(
-      property = "phantomjs.baseUrl"
+    property = "phantomjs.baseUrl"
   )
   private String baseUrl;
 
@@ -78,9 +76,9 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Phant
    * @since 0.1
    */
   @Parameter(
-      defaultValue = "${project.build.directory}/phantomjs-maven-plugin",
-      property = "phantomjs.outputDir",
-      required = true
+    defaultValue = "${project.build.directory}/phantomjs-maven-plugin",
+    property = "phantomjs.outputDir",
+    required = true
   )
   private File outputDirectory;
 
@@ -90,9 +88,9 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Phant
    * @since 0.2
    */
   @Parameter(
-      defaultValue = "true",
-      property = "phantomjs.checkSystemPath",
-      required = true
+    defaultValue = "true",
+    property = "phantomjs.checkSystemPath",
+    required = true
   )
   private boolean checkSystemPath;
 
@@ -104,9 +102,9 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Phant
    * @since 0.2
    */
   @Parameter(
-      defaultValue = "true",
-      property = "phantomjs.enforceVersion",
-      required = false
+    defaultValue = "true",
+    property = "phantomjs.enforceVersion",
+    required = false
   )
   private String enforceVersion;
 
@@ -114,35 +112,35 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Phant
    * <p>The download source for the phantomjs binary.</p>
    * <p>Valid values:</p>
    * <ul>
-   *   <li>REPOSITORY : download a copy from the maven central repository.</li>
-   *   <li>URL : download directly from a url</li>
+   * <li>REPOSITORY : download a copy from the maven central repository.</li>
+   * <li>URL : download directly from a url</li>
    * </ul>
+   *
    * @since 0.3
    */
   @Parameter(
-      defaultValue = "REPOSITORY",
-      property = "phantomjs.source",
-      required = true
+    defaultValue = "REPOSITORY",
+    property = "phantomjs.source",
+    required = true
   )
-  private PhantomJsLocatorOptions.Source source;
+  private PhantomJsResolverOptions.Source source;
 
   @Parameter(
-      defaultValue = "${repositorySystemSession}",
-      readonly = true
+    defaultValue = "${repositorySystemSession}",
+    readonly = true
   )
   private RepositorySystemSession repositorySystemSession;
 
-  @Parameter(
-      defaultValue = "${project.remoteProjectRepositories}",
-      readonly = true
-  )
-  private List<RemoteRepository> remoteRepositories;
-
-  private RepositorySystem repositorySystem;
+  private final RepositorySystem repositorySystem;
+  private final PhantomJsResolver phantomJsResolver;
 
   @Inject
-  public InstallPhantomJsMojo(RepositorySystem repositorySystem) {
+  public InstallPhantomJsMojo(MavenProject mavenProject,
+                              RepositorySystem repositorySystem,
+                              PhantomJsResolver phantomJsResolver) {
+    super(mavenProject);
     this.repositorySystem = repositorySystem;
+    this.phantomJsResolver = phantomJsResolver;
   }
 
   @Override
@@ -176,17 +174,52 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Phant
   }
 
   public void run() throws MojoFailureException {
-    RepositoryDetails repositoryDetails = new RepositoryDetails();
-    repositoryDetails.setRepositorySystem(this.repositorySystem);
-    repositoryDetails.setRepositorySystemSession(this.repositorySystemSession);
-    repositoryDetails.setRemoteRepositories(this.remoteRepositories);
-
-    Locator locator = new PhantomJsLocator(this, repositoryDetails);
-    String location = locator.locate();
+    String location = phantomJsResolver
+      .options(this)
+      .repositorySystem(repositorySystem)
+      .repositorySystemSession(repositorySystemSession)
+      .remoteRepositories(getMavenProject().getRemoteProjectRepositories())
+      .resolve();
 
     if (location == null) {
       throw new MojoFailureException(UNABLE_TO_INSTALL);
     }
-    this.setPhantomJsBinary(location);
+
+    this.setPhantomJsBinaryProperty(location);
+  }
+
+  @VisibleForTesting
+  void setVersion(String version) {
+    this.version = version;
+  }
+
+  @VisibleForTesting
+  void setBaseUrl(String baseUrl) {
+    this.baseUrl = baseUrl;
+  }
+
+  @VisibleForTesting
+  void setOutputDirectory(File outputDirectory) {
+    this.outputDirectory = outputDirectory;
+  }
+
+  @VisibleForTesting
+  void setCheckSystemPath(boolean checkSystemPath) {
+    this.checkSystemPath = checkSystemPath;
+  }
+
+  @VisibleForTesting
+  void setEnforceVersion(String enforceVersion) {
+    this.enforceVersion = enforceVersion;
+  }
+
+  @VisibleForTesting
+  void setSource(PhantomJsResolverOptions.Source source) {
+    this.source = source;
+  }
+
+  @VisibleForTesting
+  void setRepositorySystemSession(RepositorySystemSession repositorySystemSession) {
+    this.repositorySystemSession = repositorySystemSession;
   }
 }

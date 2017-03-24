@@ -25,8 +25,8 @@
  */
 package com.github.klieber.phantomjs.install;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
+import com.github.klieber.phantomjs.archive.Archive;
 
 public interface Installer {
-  String install(PhantomJSArchive archive) throws InstallationException;
+  String install(Archive archive) throws InstallationException;
 }
