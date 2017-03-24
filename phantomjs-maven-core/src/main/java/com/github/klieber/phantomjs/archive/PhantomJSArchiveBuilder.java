@@ -30,9 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.klieber.phantomjs.archive.mapping.ArchiveMapping;
 import com.github.klieber.phantomjs.archive.mapping.ArchiveMappings;
-import com.github.klieber.phantomjs.archive.mapping.ArchiveSpec;
 import com.github.klieber.phantomjs.os.OperatingSystem;
-import com.github.klieber.phantomjs.util.VersionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,13 +73,4 @@ public class PhantomJSArchiveBuilder {
     return archive;
   }
 
-  private boolean matches(ArchiveSpec condition) {
-    return
-      VersionUtil.isWithin(versionNumberOnly(), condition.getVersionSpec()) &&
-        condition.getOperatingSystemSpec().matches(operatingSystem);
-  }
-
-  private String versionNumberOnly() {
-    return this.version.replaceAll("[^0-9.]", "");
-  }
 }

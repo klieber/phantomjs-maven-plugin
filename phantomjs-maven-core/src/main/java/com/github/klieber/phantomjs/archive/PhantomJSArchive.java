@@ -26,6 +26,7 @@
 package com.github.klieber.phantomjs.archive;
 
 public interface PhantomJSArchive {
+  String getUrl();
   String getExtension();
 	String getArchiveName();
 	String getPathToExecutable();

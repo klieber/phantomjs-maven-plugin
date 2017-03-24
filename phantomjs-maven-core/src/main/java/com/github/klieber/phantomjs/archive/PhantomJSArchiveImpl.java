@@ -27,7 +27,7 @@ package com.github.klieber.phantomjs.archive;
 
 import com.github.klieber.phantomjs.archive.mapping.ArchiveFormat;
 
-public class PhantomJSArchiveImpl implements PhantomJSArchive {
+public class PhantomJSArchiveImpl extends AbstractPhantomJSArchive {
 
   private final ArchiveFormat archiveFormat;
   private final String version;
@@ -36,6 +36,11 @@ public class PhantomJSArchiveImpl implements PhantomJSArchive {
                               String version) {
     this.archiveFormat = archiveFormat;
     this.version = version;
+  }
+
+  @Override
+  public String getBaseUrl() {
+    return applyTemplate(this.archiveFormat.getBaseUrlTemplate());
   }
 
   @Override

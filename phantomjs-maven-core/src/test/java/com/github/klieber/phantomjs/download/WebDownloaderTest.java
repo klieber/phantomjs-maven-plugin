@@ -36,7 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -48,8 +48,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class WebDownloaderTest {
 
-  private static final String BASE_URL = "http://example.org";
   private static final String FILE_PATH = "file.zip";
+  private static final String DOWNLOAD_URL = "http://example.org/" + FILE_PATH;
 
   @Mock
   private PhantomJSArchive phantomJSArchive;
@@ -61,12 +61,12 @@ public class WebDownloaderTest {
 
   @Before
   public void before() {
-    downloader = spy(new WebDownloader(BASE_URL, file));
+    downloader = spy(new WebDownloader(file));
   }
 
   @Test
   public void shouldDownload() throws Exception {
-    when(phantomJSArchive.getArchiveName()).thenReturn(FILE_PATH);
+    when(phantomJSArchive.getUrl()).thenReturn(DOWNLOAD_URL);
     when(file.length()).thenReturn(100L);
 
     doNothing().when(downloader).copyURLToFile(any(URL.class), eq(file));
@@ -76,48 +76,24 @@ public class WebDownloaderTest {
     verify(downloader).copyURLToFile(any(URL.class), eq(file));
   }
 
-
-
   @Test
   public void shouldFailDueToEmptyFile() throws Exception {
-    when(phantomJSArchive.getArchiveName()).thenReturn(FILE_PATH);
+    when(phantomJSArchive.getUrl()).thenReturn(DOWNLOAD_URL);
     when(file.length()).thenReturn(0L);
-
     doNothing().when(downloader).copyURLToFile(any(URL.class), eq(file));
-
-    try {
-      downloader.download(phantomJSArchive);
-      fail("Should have thrown a DownloadException");
-    } catch (DownloadException e) {
-      // expected
-    }
+    assertThatThrownBy(() -> downloader.download(phantomJSArchive)).isInstanceOf(DownloadException.class);
   }
 
   @Test
   public void shouldFailDueToIOException() throws Exception {
-    when(phantomJSArchive.getArchiveName()).thenReturn(FILE_PATH);
-
+    when(phantomJSArchive.getUrl()).thenReturn(DOWNLOAD_URL);
     doThrow(new IOException()).when(downloader).copyURLToFile(any(URL.class), eq(file));
-
-    try {
-      downloader.download(phantomJSArchive);
-      fail("Should have thrown a DownloadException");
-    } catch (DownloadException e) {
-      // expected
-    }
+    assertThatThrownBy(() -> downloader.download(phantomJSArchive)).isInstanceOf(DownloadException.class);
   }
 
   @Test
   public void shouldFailDueToMalformedUrl() throws Exception {
-    when(phantomJSArchive.getArchiveName()).thenReturn(FILE_PATH);
-
-    downloader = new WebDownloader("invalid-base-url", file);
-
-    try {
-      downloader.download(phantomJSArchive);
-      fail("Should have thrown a DownloadException");
-    } catch (DownloadException e) {
-      // expected
-    }
+    when(phantomJSArchive.getUrl()).thenReturn("invalid-base-url");
+    assertThatThrownBy(() -> downloader.download(phantomJSArchive)).isInstanceOf(DownloadException.class);
   }
 }

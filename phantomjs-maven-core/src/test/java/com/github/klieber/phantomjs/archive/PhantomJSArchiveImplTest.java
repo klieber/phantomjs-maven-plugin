@@ -45,6 +45,8 @@ public class PhantomJSArchiveImplTest {
   private static final String ARCHIVE_NAME_WITHOUT_EXTENSION = "phantomjs-"+VERSION+"-"+CLASSIFIER;
   private static final String ARCHIVE_NAME = ARCHIVE_NAME_WITHOUT_EXTENSION + "."+EXTENSION;
   private static final String PATH_TO_EXECUTABLE = ARCHIVE_NAME_WITHOUT_EXTENSION+"/bin/phantomjs";
+  private static final String BASE_URL = "http://example.org/files/"+VERSION+'/';
+  private static final String BASE_URL_TEMPLATE = "http://example.org/files/{version}/";
   private static final String ARCHIVE_FILE_TEMPLATE = "phantomjs-{version}-{classifier}.{extension}";
   private static final String EXECUTABLE_TEMPLATE = "phantomjs-{version}-{classifier}/bin/phantomjs";
 
@@ -56,6 +58,21 @@ public class PhantomJSArchiveImplTest {
   @Before
   public void before() {
     archive = new PhantomJSArchiveImpl(archiveFormat, VERSION);
+  }
+
+  @Test
+  public void testGetUrl() {
+    when(archiveFormat.getBaseUrlTemplate()).thenReturn(BASE_URL_TEMPLATE);
+    when(archiveFormat.getFileTemplate()).thenReturn(ARCHIVE_FILE_TEMPLATE);
+    when(archiveFormat.getClassifier()).thenReturn(CLASSIFIER);
+    when(archiveFormat.getExtension()).thenReturn(EXTENSION);
+    assertThat(archive.getUrl()).isEqualTo(BASE_URL+ARCHIVE_NAME);
+  }
+
+  @Test
+  public void testGetBaseUrl() {
+    when(archiveFormat.getBaseUrlTemplate()).thenReturn(BASE_URL_TEMPLATE);
+    assertThat(archive.getBaseUrl()).isEqualTo(BASE_URL);
   }
 
   @Test
