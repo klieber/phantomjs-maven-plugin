@@ -30,20 +30,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ArchiveFormat {
 
+  private final String baseUrlTemplate;
   private final String fileTemplate;
   private final String executableTemplate;
   private final String classifier;
   private final String extension;
 
   @JsonCreator
-  public ArchiveFormat(@JsonProperty("file") String fileTemplate,
-                       @JsonProperty("executable") String executableTemplate,
+  public ArchiveFormat(@JsonProperty("baseUrlTemplate") String baseUrlTemplate,
+                       @JsonProperty("fileTemplate") String fileTemplate,
+                       @JsonProperty("executableTemplate") String executableTemplate,
                        @JsonProperty("classifier") String classifier,
                        @JsonProperty("extension") String extension) {
+    this.baseUrlTemplate = baseUrlTemplate;
     this.fileTemplate = fileTemplate;
     this.executableTemplate = executableTemplate;
     this.classifier = classifier;
     this.extension = extension;
+  }
+
+  public String getBaseUrlTemplate() {
+    return baseUrlTemplate;
   }
 
   public String getFileTemplate() {

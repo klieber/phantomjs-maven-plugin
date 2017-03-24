@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 public class WebDownloader implements Downloader {
@@ -42,18 +41,16 @@ public class WebDownloader implements Downloader {
   private static final String DOWNLOADING = "Downloading phantomjs binary from {}";
   private static final String UNABLE_TO_DOWNLOAD = "Unable to download phantomjs binary from ";
 
-  private final String baseUrl;
   private final File target;
 
-  public WebDownloader(String baseUrl, File target) {
-    this.baseUrl = baseUrl;
+  public WebDownloader(File target) {
     this.target = target;
   }
 
   @Override
   public File download(PhantomJSArchive archive) throws DownloadException {
     if (!this.target.exists()) {
-      String url = buildDownloadUrl(archive);
+      String url = archive.getUrl();
       try {
         URL downloadLocation = new URL(url);
 
@@ -63,8 +60,6 @@ public class WebDownloader implements Downloader {
         if (target.length() <= 0) {
           throw new DownloadException(UNABLE_TO_DOWNLOAD+url);
         }
-      } catch (MalformedURLException e) {
-        throw new DownloadException(UNABLE_TO_DOWNLOAD+url, e);
       } catch (IOException e) {
         throw new DownloadException(UNABLE_TO_DOWNLOAD+url, e);
       }
@@ -74,15 +69,5 @@ public class WebDownloader implements Downloader {
 
   protected void copyURLToFile(URL url, File file) throws IOException {
     FileUtils.copyURLToFile(url, file);
-  }
-
-  private String buildDownloadUrl(PhantomJSArchive archive) {
-    StringBuilder url = new StringBuilder();
-    url.append(baseUrl);
-    if (!baseUrl.endsWith("/")) {
-      url.append("/");
-    }
-    url.append(archive.getArchiveName());
-    return url.toString();
   }
 }
