@@ -1,0 +1,13 @@
+version: "3"
+services:
+  maven:
+    image: maven:3.3.9-jdk-8
+    command: mvn clean verify
+    working_dir: /usr/src/project
+    volumes:
+      - .:/usr/src/project
+      - mvn-home:/root/.m2
+    stdin_open: true
+    tty: true
+volumes:
+  mvn-home:
