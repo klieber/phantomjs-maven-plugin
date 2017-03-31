@@ -32,29 +32,51 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VersionUtil {
+public final class VersionUtil {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(VersionUtil.class);
+
+  private static final String VERSION_NOT_IN_RANGE = "Version {} is not within requested range: {}";
+  private static final String INVALID_VERSION_SPECIFICATION = "Invalid version specification: {}";
+  private static final String MATCH_ALL = "[0,]";
+
+  private VersionUtil() {
+
+  }
+
+  public static String getVersionSpec(String version, String enforceVersion) {
+    String spec = enforceVersion;
+    if (enforceVersion == null || Boolean.parseBoolean(enforceVersion)) {
+      spec = '[' + version + ']';
+    } else if (Boolean.FALSE.toString().equalsIgnoreCase(enforceVersion)) {
+      spec = MATCH_ALL;
+    } else if (!VersionUtil.isWithin(version, enforceVersion)) {
+      LOGGER.warn(VERSION_NOT_IN_RANGE, version, enforceVersion);
+    }
+    return spec;
+  }
 
   public static boolean isWithin(String version, String versionSpec) {
     boolean within = false;
     try {
-      return VersionUtil.isWithin(version, VersionRange.createFromVersionSpec(versionSpec));
+      within = VersionUtil.isWithin(version, VersionRange.createFromVersionSpec(versionSpec));
     } catch (InvalidVersionSpecificationException e) {
-      LOGGER.warn("Invalid version specification: {}", versionSpec);
+      LOGGER.warn(INVALID_VERSION_SPECIFICATION, versionSpec);
     }
     return within;
   }
 
-  public static String getVersionSpec(String version, String spec) {
-    if (spec == null || Boolean.parseBoolean(spec)) {
-      spec = '[' + version + ']';
-    } else if (Boolean.FALSE.toString().equalsIgnoreCase(spec)) {
-      spec = "[0,]";
-    } else if (!VersionUtil.isWithin(version, spec)) {
-      LOGGER.warn("Version {} is not within requested range: {}", version, spec);
+  private static boolean isWithin(String version, VersionRange versionRange) {
+    ArtifactVersion artifactVersion = new DefaultArtifactVersion(version);
+    boolean within = false;
+    if (versionRange != null) {
+      ArtifactVersion recommendedVersion = versionRange.getRecommendedVersion();
+      // treat recommended version as minimum version
+      within = recommendedVersion != null ?
+        VersionUtil.isLessThanOrEqualTo(recommendedVersion, artifactVersion) :
+        versionRange.containsVersion(artifactVersion);
     }
-    return spec;
+    return within;
   }
 
   private static boolean isLessThanOrEqualTo(ArtifactVersion versionA, ArtifactVersion versionB) {
@@ -63,15 +85,6 @@ public class VersionUtil {
 
   private static boolean isGreaterThan(ArtifactVersion versionA, ArtifactVersion versionB) {
     return compare(versionA, versionB) > 0;
-  }
-
-  private static boolean isWithin(String version, VersionRange versionRange) {
-    ArtifactVersion artifactVersion = new DefaultArtifactVersion(version);
-    ArtifactVersion recommendedVersion = versionRange.getRecommendedVersion();
-    // treat recommended version as minimum version
-    return recommendedVersion != null ?
-      VersionUtil.isLessThanOrEqualTo(recommendedVersion, artifactVersion) :
-      versionRange.containsVersion(artifactVersion);
   }
 
   private static int compare(ArtifactVersion versionA, ArtifactVersion versionB) {
