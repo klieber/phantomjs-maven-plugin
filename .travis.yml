@@ -1,6 +1,16 @@
 language: java
+sudo: false
+addons:
+  sonarqube:
+    organization: "klieber-github"
+    token:
+      secure: "NIWa7GR42liyZIu0Uooa8NpkKk64tVl/8Vj7IWqcrCnhx90vfmTd1YCYbyqwJ6xcUFjZKBvJJOAcBvFSuV7S1wRIYPDEmC8GPG8Nm22SactoooDRkmaEqlF5jvsJudppn+zRhfV0bBDKiokIltHK9sk/HqqoFt71dsrzCRsGUV8="
 jdk:
   - oraclejdk8
-script: mvn verify -Prun-its
+script: mvn verify sonar:sonar -Prun-its
 after_success:
   - mvn clean prepare-package jacoco:report coveralls:report
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.sonar/cache'
