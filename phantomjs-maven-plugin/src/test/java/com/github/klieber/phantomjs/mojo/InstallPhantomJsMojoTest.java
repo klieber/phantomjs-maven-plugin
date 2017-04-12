@@ -116,11 +116,12 @@ public class InstallPhantomJsMojoTest {
     when(mavenProject.getProperties()).thenReturn(new Properties());
 
     when(
-      phantomJsResolver.options(mojo)
-                       .repositorySystem(repositorySystem)
-                       .repositorySystemSession(repositorySystemSession)
-                       .remoteRepositories(remoteRepositories)
-                       .resolve()
+      phantomJsResolver
+        .options(mojo)
+        .repositorySystem(repositorySystem)
+        .remoteRepositories(remoteRepositories)
+        .repositorySystemSession(repositorySystemSession)
+        .resolve()
     ).thenReturn("/usr/bin/phantomjs");
 
     mojo.setPropertyName("phantomjs.binary");
@@ -138,11 +139,12 @@ public class InstallPhantomJsMojoTest {
     when(mavenProject.getRemoteProjectRepositories()).thenReturn(remoteRepositories);
 
     when(
-      phantomJsResolver.options(mojo)
-                       .repositorySystem(repositorySystem)
-                       .repositorySystemSession(repositorySystemSession)
-                       .remoteRepositories(remoteRepositories)
-                       .resolve()
+      phantomJsResolver
+        .options(mojo)
+        .repositorySystem(repositorySystem)
+        .remoteRepositories(remoteRepositories)
+        .repositorySystemSession(repositorySystemSession)
+        .resolve()
     ).thenReturn(null);
 
     mojo.setRepositorySystemSession(repositorySystemSession);

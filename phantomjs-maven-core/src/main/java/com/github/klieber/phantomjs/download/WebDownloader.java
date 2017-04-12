@@ -53,21 +53,26 @@ public class WebDownloader implements Downloader {
   public File download(Archive archive) throws DownloadException {
     File target = archiveCache.getFile(archive);
     if (!target.exists()) {
-      String url = archive.getUrl();
-      try {
-        URL downloadLocation = new URL(url);
-
-        LOGGER.info(DOWNLOADING, url);
-        copyURLToFile(downloadLocation, target);
-
-        if (target.length() <= 0) {
-          throw new DownloadException(UNABLE_TO_DOWNLOAD+url);
-        }
-      } catch (IOException e) {
-        throw new DownloadException(UNABLE_TO_DOWNLOAD+url, e);
-      }
+      download(archive.getUrl(), target);
     }
     return target;
+  }
+
+  private void download(String url, File target) throws DownloadException {
+    LOGGER.info(DOWNLOADING, url);
+    copyURLToFile(url, target);
+
+    if (target.length() <= 0) {
+      throw new DownloadException(UNABLE_TO_DOWNLOAD + url);
+    }
+  }
+
+  private void copyURLToFile(String url, File file) throws DownloadException {
+    try {
+      copyURLToFile(new URL(url), file);
+    } catch (IOException e) {
+      throw new DownloadException(UNABLE_TO_DOWNLOAD + url, e);
+    }
   }
 
   @VisibleForTesting

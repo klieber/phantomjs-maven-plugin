@@ -27,9 +27,10 @@ package com.github.klieber.phantomjs.resolve;
 
 import com.github.klieber.phantomjs.archive.Archive;
 import com.github.klieber.phantomjs.archive.ArchiveFactory;
+import com.github.klieber.phantomjs.download.Downloader;
+import com.github.klieber.phantomjs.download.DownloaderFactory;
 import com.github.klieber.phantomjs.install.Installer;
 import com.github.klieber.phantomjs.install.InstallerFactory;
-import com.github.klieber.phantomjs.sys.SystemProperties;
 import com.github.klieber.phantomjs.test.MockPhantomJsBinary;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -38,16 +39,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
+import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ResolverFactoryTest {
+public class ArchiveResolverFactoryTest {
 
   private static final String VERSION = "2.0.0";
+
+  private static final String BASE_URL = "http://example.org/files";
 
   @ClassRule
   public static final MockPhantomJsBinary phantomJsBinary = new MockPhantomJsBinary(VERSION);
@@ -59,13 +61,16 @@ public class ResolverFactoryTest {
   private Installer installer;
 
   @Mock
+  private DownloaderFactory downloaderFactory;
+
+  @Mock
+  private Downloader downloader;
+
+  @Mock
   private ArchiveFactory archiveFactory;
 
   @Mock
   private Archive archive;
-
-  @Mock
-  private SystemProperties systemProperties;
 
   @Mock
   private PhantomJsResolverOptions options;
@@ -73,42 +78,25 @@ public class ResolverFactoryTest {
   @Mock
   private RepositoryDetails repositoryDetails;
 
+  @Mock
+  private File outputDirectory;
+
   @InjectMocks
-  private ResolverFactory resolverFactory;
+  private ArchiveResolverFactory resolverFactory;
 
   @Test
-  public void testGetLocator() {
-    Resolver resolver = resolverFactory.create(options, repositoryDetails);
-    assertThat(resolver).isInstanceOf(CompositeResolver.class);
-  }
-
-  @Test
-  public void testCreate_PathResolver() {
-    assumeUnixOs();
-
-    when(systemProperties.getPath()).thenReturn(Collections.singletonList(phantomJsBinary.get().getParent()));
-
-    when(options.isCheckSystemPath()).thenReturn(true);
+  public void testCreate() {
     when(options.getVersion()).thenReturn(VERSION);
-    when(options.getEnforceVersion()).thenReturn("true");
-    Resolver resolver = resolverFactory.create(options, repositoryDetails);
-    assertThat(resolver).isInstanceOf(CompositeResolver.class);
-    String path = resolver.resolve();
-  }
+    when(options.getOutputDirectory()).thenReturn(outputDirectory);
+    when(options.getSource()).thenReturn(PhantomJsResolverOptions.Source.REPOSITORY);
+    when(options.getBaseUrl()).thenReturn(BASE_URL);
 
-  @Test
-  public void testGetArchiveLocator() {
-    when(options.isCheckSystemPath()).thenReturn(false);
-    when(archiveFactory.create(options)).thenReturn(archive);
-    when(installerFactory.create(options, repositoryDetails)).thenReturn(installer);
+    when(archiveFactory.create(VERSION, BASE_URL)).thenReturn(archive);
+    when(downloaderFactory.create(PhantomJsResolverOptions.Source.REPOSITORY, repositoryDetails))
+      .thenReturn(downloader);
+    when(installerFactory.create(downloader, outputDirectory)).thenReturn(installer);
 
     Resolver resolver = resolverFactory.create(options, repositoryDetails);
-    assertThat(resolver).isInstanceOf(CompositeResolver.class);
-    String path = resolver.resolve();
-  }
-
-  private void assumeUnixOs() {
-    String os = System.getProperty("os.name").toLowerCase();
-    assumeTrue(os.contains("nux") || os.contains("mac"));
+    assertThat(resolver).isInstanceOf(ArchiveResolver.class);
   }
 }

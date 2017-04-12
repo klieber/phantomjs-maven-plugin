@@ -23,12 +23,47 @@
  * THE SOFTWARE.
  * #L%
  */
-package com.github.klieber.phantomjs.cache;
+package com.github.klieber.phantomjs.resolve;
 
-import com.github.klieber.phantomjs.archive.Archive;
+import com.github.klieber.phantomjs.sys.SystemProperties;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.io.File;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assume.assumeTrue;
+import static org.mockito.Mockito.when;
 
-public interface ArchiveCache {
-  File getFile(Archive archive);
+@RunWith(MockitoJUnitRunner.class)
+public class PathResolverFactoryTest {
+
+  private static final String VERSION = "2.0.0";
+
+  @Mock
+  private SystemProperties systemProperties;
+
+  @Mock
+  private PhantomJsResolverOptions options;
+
+  @InjectMocks
+  private PathResolverFactory resolverFactory;
+
+  @Test
+  public void testCreate() {
+    assumeUnixOs();
+
+    when(options.getVersion()).thenReturn(VERSION);
+    when(options.getEnforceVersion()).thenReturn("true");
+
+    Resolver resolver = resolverFactory.create(options);
+
+    assertThat(resolver).isInstanceOf(PathResolver.class);
+  }
+
+  private void assumeUnixOs() {
+    String os = System.getProperty("os.name").toLowerCase();
+    assumeTrue(os.contains("nux") || os.contains("mac"));
+  }
 }

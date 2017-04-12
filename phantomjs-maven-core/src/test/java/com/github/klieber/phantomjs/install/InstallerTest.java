@@ -28,11 +28,8 @@ package com.github.klieber.phantomjs.install;
 import com.github.klieber.phantomjs.archive.Archive;
 import com.github.klieber.phantomjs.download.DownloadException;
 import com.github.klieber.phantomjs.download.Downloader;
-import com.github.klieber.phantomjs.download.DownloaderFactory;
 import com.github.klieber.phantomjs.extract.ArchiveExtractor;
 import com.github.klieber.phantomjs.extract.ExtractionException;
-import com.github.klieber.phantomjs.resolve.PhantomJsResolverOptions;
-import com.github.klieber.phantomjs.resolve.RepositoryDetails;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,13 +54,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PhantomJsInstallerTest {
+public class InstallerTest {
 
   private static final String EXTRACT_TO_PATH = "phantomjs";
 
-  private File phantomJsBinary;
-
-  private File outputDirectory;
+  private File executable;
 
   @Mock
   private Archive archive;
@@ -72,19 +67,10 @@ public class PhantomJsInstallerTest {
   private File archiveFile;
 
   @Mock
-  private DownloaderFactory downloaderFactory;
-
-  @Mock
   private Downloader downloader;
 
   @Mock
   private ArchiveExtractor extractor;
-
-  @Mock
-  private PhantomJsResolverOptions options;
-
-  @Mock
-  private RepositoryDetails repositoryDetails;
 
   @Captor
   private ArgumentCaptor<File> extractToFile;
@@ -92,17 +78,13 @@ public class PhantomJsInstallerTest {
   @Rule
   public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-  private Installer phantomJsInstaller;
+  private Installer installer;
 
   @Before
   public void before() throws IOException {
-    outputDirectory = temporaryFolder.getRoot();
-
-    when(downloaderFactory.create(options, repositoryDetails)).thenReturn(downloader);
-    when(options.getOutputDirectory()).thenReturn(outputDirectory);
-
-    phantomJsInstaller = new InstallerFactory(extractor, downloaderFactory).create(options, repositoryDetails);
-    phantomJsBinary = new File(outputDirectory, EXTRACT_TO_PATH);
+    File outputDirectory = temporaryFolder.getRoot();
+    installer = new InstallerFactory(extractor).create(downloader, outputDirectory);
+    executable = new File(outputDirectory, EXTRACT_TO_PATH);
   }
 
   @Test
@@ -111,20 +93,20 @@ public class PhantomJsInstallerTest {
 
     when(archive.getPathToExecutable()).thenReturn(EXTRACT_TO_PATH);
 
-    assertThat(phantomJsInstaller.install(archive)).isEqualTo(phantomJsBinary.getAbsolutePath());
+    assertThat(installer.install(archive)).isEqualTo(executable.getAbsolutePath());
 
     verify(extractor).extract(same(archiveFile), eq(EXTRACT_TO_PATH), extractToFile.capture());
 
-    assertThat(extractToFile.getValue()).isEqualTo(phantomJsBinary);
+    assertThat(extractToFile.getValue()).isEqualTo(executable);
   }
 
   @Test
   public void shouldReturnPreviouslyInstalledPath() throws Exception {
-    phantomJsBinary = temporaryFolder.newFile(EXTRACT_TO_PATH);
+    executable = temporaryFolder.newFile(EXTRACT_TO_PATH);
 
     when(archive.getPathToExecutable()).thenReturn(EXTRACT_TO_PATH);
 
-    assertThat(phantomJsInstaller.install(archive)).isEqualTo(phantomJsBinary.getAbsolutePath());
+    assertThat(installer.install(archive)).isEqualTo(executable.getAbsolutePath());
 
     verifyNoMoreInteractions(downloader, extractor);
   }
@@ -135,7 +117,7 @@ public class PhantomJsInstallerTest {
     when(archive.getPathToExecutable()).thenReturn(EXTRACT_TO_PATH);
     when(downloader.download(archive)).thenThrow(new DownloadException("error"));
 
-    assertThatThrownBy(() -> phantomJsInstaller.install(archive))
+    assertThatThrownBy(() -> installer.install(archive))
       .isInstanceOf(InstallationException.class);
   }
 
@@ -149,7 +131,7 @@ public class PhantomJsInstallerTest {
     ExtractionException exception = new ExtractionException("error", new RuntimeException());
     doThrow(exception).when(extractor).extract(same(archiveFile), eq(EXTRACT_TO_PATH), any(File.class));
 
-    assertThatThrownBy(() -> phantomJsInstaller.install(archive))
+    assertThatThrownBy(() -> installer.install(archive))
       .isInstanceOf(InstallationException.class);
   }
 }

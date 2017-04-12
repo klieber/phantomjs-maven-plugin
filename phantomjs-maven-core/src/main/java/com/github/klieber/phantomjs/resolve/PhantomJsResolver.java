@@ -37,50 +37,83 @@ import java.util.List;
 @Named
 public class PhantomJsResolver {
 
-  private final ResolverFactory resolverFactory;
+  private final ArchiveResolverFactory archiveResolverFactory;
+  private final PathResolverFactory pathResolverFactory;
 
   @Inject
-  public PhantomJsResolver(ResolverFactory resolverFactory) {
-    this.resolverFactory = resolverFactory;
+  public PhantomJsResolver(ArchiveResolverFactory archiveResolverFactory,
+                           PathResolverFactory pathResolverFactory) {
+    this.archiveResolverFactory = archiveResolverFactory;
+    this.pathResolverFactory = pathResolverFactory;
   }
 
-  public Builder options(PhantomJsResolverOptions options) {
-    return new Builder(resolverFactory, options);
+  public RepositorySystemStep options(PhantomJsResolverOptions options) {
+    return new Builder(archiveResolverFactory, pathResolverFactory).options(options);
   }
 
-  public static class Builder {
+  public interface RepositorySystemStep {
+    RemoteRepositoryStep repositorySystem(RepositorySystem repositorySystem);
+  }
 
-    private final ResolverFactory resolverFactory;
-    private final PhantomJsResolverOptions options;
+  public interface RemoteRepositoryStep {
+    RepositorySystemSessionStep remoteRepositories(List<RemoteRepository> remoteRepositories);
+  }
+
+  public interface RepositorySystemSessionStep {
+    Resolver repositorySystemSession(RepositorySystemSession repositorySystemSession);
+  }
+
+  public static class Builder implements RepositorySystemStep, RepositorySystemSessionStep, RemoteRepositoryStep {
+
+    private final ArchiveResolverFactory archiveResolverFactory;
+    private final PathResolverFactory pathResolverFactory;
     private final List<RemoteRepository> remoteRepositories;
 
+    private PhantomJsResolverOptions options;
     private RepositorySystem repositorySystem;
     private RepositorySystemSession repositorySystemSession;
 
-    private Builder(ResolverFactory resolverFactory,
-                    PhantomJsResolverOptions options) {
-      this.resolverFactory = resolverFactory;
-      this.options = options;
+    private Builder(ArchiveResolverFactory archiveResolverFactory,
+                    PathResolverFactory pathResolverFactory) {
+      this.archiveResolverFactory = archiveResolverFactory;
+      this.pathResolverFactory = pathResolverFactory;
       this.remoteRepositories = new ArrayList<>();
     }
 
+    public Builder options(PhantomJsResolverOptions options) {
+      assertNotNull(options, "options");
+      this.options = options;
+      return this;
+    }
+
     public Builder repositorySystem(RepositorySystem repositorySystem) {
+      assertNotNull(repositorySystem, "repositorySystem");
       this.repositorySystem = repositorySystem;
       return this;
     }
 
-    public Builder repositorySystemSession(RepositorySystemSession repositorySystemSession) {
-      this.repositorySystemSession = repositorySystemSession;
-      return this;
-    }
-
     public Builder remoteRepositories(List<RemoteRepository> remoteRepositories) {
+      assertNotEmpty(remoteRepositories, "remoteRepositories");
       this.remoteRepositories.addAll(remoteRepositories);
       return this;
     }
 
-    public String resolve() {
-      return resolverFactory.create(options, createRepositoryDetails()).resolve();
+    public Resolver repositorySystemSession(RepositorySystemSession repositorySystemSession) {
+      assertNotNull(repositorySystemSession, "repositorySystemSession");
+      this.repositorySystemSession = repositorySystemSession;
+      return createResolver();
+    }
+
+    private Resolver createResolver() {
+      List<Resolver> resolvers = new ArrayList<>();
+
+      if (options.isCheckSystemPath()) {
+        resolvers.add(this.pathResolverFactory.create(options));
+      }
+
+      resolvers.add(this.archiveResolverFactory.create(options, createRepositoryDetails()));
+
+      return new CompositeResolver(resolvers);
     }
 
     private RepositoryDetails createRepositoryDetails() {
@@ -89,6 +122,18 @@ public class PhantomJsResolver {
         this.repositorySystemSession,
         this.remoteRepositories
       );
+    }
+
+    private static void assertNotNull(Object object, String name) {
+      if (object == null) {
+        throw new IllegalArgumentException(name + " must not be null");
+      }
+    }
+
+    private static void assertNotEmpty(List<?> list, String name) {
+      if (list == null || list.isEmpty()) {
+        throw new IllegalArgumentException(name + " must not be empty");
+      }
     }
   }
 }

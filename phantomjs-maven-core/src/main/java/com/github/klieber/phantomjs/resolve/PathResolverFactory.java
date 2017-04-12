@@ -25,58 +25,27 @@
  */
 package com.github.klieber.phantomjs.resolve;
 
-import com.github.klieber.phantomjs.archive.Archive;
-import com.github.klieber.phantomjs.archive.ArchiveFactory;
-import com.github.klieber.phantomjs.install.Installer;
-import com.github.klieber.phantomjs.install.InstallerFactory;
 import com.github.klieber.phantomjs.sys.SystemProperties;
 import com.github.klieber.phantomjs.util.VersionUtil;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
 
 @Named
-public class ResolverFactory {
+public class PathResolverFactory {
 
-  private final InstallerFactory installerFactory;
-  private final ArchiveFactory archiveFactory;
   private final SystemProperties systemProperties;
 
   @Inject
-  public ResolverFactory(InstallerFactory installerFactory,
-                         ArchiveFactory archiveFactory,
-                         SystemProperties systemProperties) {
-    this.installerFactory = installerFactory;
-    this.archiveFactory = archiveFactory;
+  public PathResolverFactory(SystemProperties systemProperties) {
     this.systemProperties = systemProperties;
   }
 
-  public Resolver create(PhantomJsResolverOptions options,
-                         RepositoryDetails repositoryDetails) {
-    List<Resolver> resolvers = new ArrayList<Resolver>();
-    if (options.isCheckSystemPath()) {
-      resolvers.add(this.createPathResolver(options));
-    }
-    if (repositoryDetails != null) {
-      resolvers.add(this.createArchiveResolver(options, repositoryDetails));
-    }
-    return new CompositeResolver(resolvers);
+  public Resolver create(PhantomJsResolverOptions options) {
+    return create(getVersionSpec(options));
   }
 
-  private Resolver createPathResolver(PhantomJsResolverOptions options) {
-    return createPathResolver(getVersionSpec(options));
-  }
-
-  private Resolver createArchiveResolver(PhantomJsResolverOptions options,
-                                         RepositoryDetails repositoryDetails) {
-    Archive archive = archiveFactory.create(options);
-    Installer installer = installerFactory.create(options, repositoryDetails);
-    return new ArchiveResolver(installer, archive);
-  }
-
-  private Resolver createPathResolver(String versionSpec) {
+  private Resolver create(String versionSpec) {
     return new PathResolver(systemProperties, versionSpec);
   }
 

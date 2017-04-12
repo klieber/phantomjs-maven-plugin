@@ -42,6 +42,6 @@ public class ArchiveCacheFactory {
   }
 
   public ArchiveCache create(RepositorySystemSession repositorySystemSession) {
-    return new ArchiveCache(artifactBuilder, repositorySystemSession);
+    return new AetherArchiveCache(artifactBuilder, repositorySystemSession);
   }
 }

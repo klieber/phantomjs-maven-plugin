@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.klieber.phantomjs.archive.mapping.ArchiveMapping;
 import com.github.klieber.phantomjs.archive.mapping.ArchiveMappings;
-import com.github.klieber.phantomjs.resolve.PhantomJsResolverOptions;
 import com.github.klieber.phantomjs.sys.os.OperatingSystem;
 import com.github.klieber.phantomjs.sys.os.OperatingSystemFactory;
 import org.slf4j.Logger;
@@ -50,10 +49,6 @@ public class ArchiveFactory {
   @Inject
   public ArchiveFactory(OperatingSystemFactory operatingSystemFactory) {
     this.operatingSystemFactory = operatingSystemFactory;
-  }
-
-  public Archive create(PhantomJsResolverOptions options) {
-    return create(options.getVersion(), options.getBaseUrl());
   }
 
   public Archive create(String version, String baseUrl) {

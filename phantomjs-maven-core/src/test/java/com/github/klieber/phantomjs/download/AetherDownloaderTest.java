@@ -54,7 +54,7 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RepositoryDownloaderTest {
+public class AetherDownloaderTest {
 
   @Mock
   private ArtifactBuilder artifactBuilder;
@@ -86,7 +86,7 @@ public class RepositoryDownloaderTest {
   private File archiveFile;
 
   @InjectMocks
-  private RepositoryDownloader repositoryDownloader;
+  private AetherDownloader aetherDownloader;
 
   @Before
   public void before() {
@@ -105,7 +105,7 @@ public class RepositoryDownloaderTest {
       artifactResult);
     when(artifact.getFile()).thenReturn(archiveFile);
 
-    assertThat(repositoryDownloader.download(archive)).isSameAs(archiveFile);
+    assertThat(aetherDownloader.download(archive)).isSameAs(archiveFile);
 
     ArtifactRequest request = artifactRequestCaptor.getValue();
     assertThat(request.getArtifact()).isSameAs(artifact);
@@ -120,7 +120,7 @@ public class RepositoryDownloaderTest {
       artifactRequestCaptor.capture()
     )).thenThrow(new ArtifactResolutionException(Collections.<ArtifactResult>emptyList()));
 
-    assertThatThrownBy(() -> repositoryDownloader.download(archive))
+    assertThatThrownBy(() -> aetherDownloader.download(archive))
       .isInstanceOf(DownloadException.class);
   }
 }

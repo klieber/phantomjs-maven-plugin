@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-public class RepositoryDownloader implements Downloader {
+public class AetherDownloader implements Downloader {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryDownloader.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AetherDownloader.class);
 
   private final static String UNABLE_TO_RESOLVE = "Unable to resolve artifact.";
 
@@ -47,8 +47,8 @@ public class RepositoryDownloader implements Downloader {
   private final ArtifactBuilder artifactBuilder;
   private final RepositoryDetails repositoryDetails;
 
-  public RepositoryDownloader(ArtifactBuilder artifactBuilder,
-                              RepositoryDetails repositoryDetails) {
+  public AetherDownloader(ArtifactBuilder artifactBuilder,
+                          RepositoryDetails repositoryDetails) {
     this.artifactBuilder = artifactBuilder;
     this.repositoryDetails = repositoryDetails;
   }

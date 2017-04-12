@@ -47,18 +47,18 @@ public class DownloaderFactory {
     this.artifactBuilder = artifactBuilder;
   }
 
-  public Downloader create(PhantomJsResolverOptions options,
+  public Downloader create(PhantomJsResolverOptions.Source source,
                            RepositoryDetails repositoryDetails) {
-    return isRepositorySource(options) ?
-      createRepositoryDownloader(repositoryDetails) : createWebDownloader(repositoryDetails);
+    return isRepositorySource(source) ?
+      createAetherDownloader(repositoryDetails) : createWebDownloader(repositoryDetails);
   }
 
-  private boolean isRepositorySource(PhantomJsResolverOptions options) {
-    return PhantomJsResolverOptions.Source.REPOSITORY.equals(options.getSource());
+  private boolean isRepositorySource(PhantomJsResolverOptions.Source source) {
+    return PhantomJsResolverOptions.Source.REPOSITORY.equals(source);
   }
 
-  private Downloader createRepositoryDownloader(RepositoryDetails repositoryDetails) {
-    return new RepositoryDownloader(artifactBuilder, repositoryDetails);
+  private Downloader createAetherDownloader(RepositoryDetails repositoryDetails) {
+    return new AetherDownloader(artifactBuilder, repositoryDetails);
   }
 
   private Downloader createWebDownloader(RepositoryDetails repositoryDetails) {

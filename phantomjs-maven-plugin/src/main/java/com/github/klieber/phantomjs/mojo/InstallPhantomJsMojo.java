@@ -104,7 +104,7 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Phant
   @Parameter(
     defaultValue = "true",
     property = "phantomjs.enforceVersion",
-    required = false
+    required = true
   )
   private String enforceVersion;
 
@@ -143,42 +143,37 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Phant
     this.phantomJsResolver = phantomJsResolver;
   }
 
-  @Override
-  public Source getSource() {
+  public PhantomJsResolverOptions.Source getSource() {
     return this.source;
   }
 
-  @Override
   public String getVersion() {
     return this.version;
   }
 
-  @Override
   public boolean isCheckSystemPath() {
     return this.checkSystemPath;
   }
 
-  @Override
   public String getEnforceVersion() {
     return this.enforceVersion;
   }
 
-  @Override
   public String getBaseUrl() {
     return this.baseUrl;
   }
 
-  @Override
   public File getOutputDirectory() {
     return this.outputDirectory;
   }
 
   public void run() throws MojoFailureException {
+
     String location = phantomJsResolver
       .options(this)
       .repositorySystem(repositorySystem)
-      .repositorySystemSession(repositorySystemSession)
       .remoteRepositories(getMavenProject().getRemoteProjectRepositories())
+      .repositorySystemSession(repositorySystemSession)
       .resolve();
 
     if (location == null) {

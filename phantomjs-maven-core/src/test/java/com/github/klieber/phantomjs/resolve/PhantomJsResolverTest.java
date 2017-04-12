@@ -34,11 +34,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -47,10 +47,16 @@ public class PhantomJsResolverTest {
   private static final String MOCK_EXECUTABLE_PATH = "/usr/bin/phantomjs";
 
   @Mock
-  private ResolverFactory resolverFactory;
+  private ArchiveResolverFactory archiveResolverFactory;
 
   @Mock
-  private Resolver resolver;
+  private Resolver archiveResolver;
+
+  @Mock
+  private PathResolverFactory pathResolverFactory;
+
+  @Mock
+  private Resolver pathResolver;
 
   @Mock
   private PhantomJsResolverOptions options;
@@ -66,14 +72,22 @@ public class PhantomJsResolverTest {
 
   @Test
   public void testResolve() {
-    when(resolverFactory.create(eq(options), any(RepositoryDetails.class))).thenReturn(resolver);
-    when(resolver.resolve()).thenReturn(MOCK_EXECUTABLE_PATH);
+    when(options.isCheckSystemPath()).thenReturn(true);
 
-    String executable = phantomJsResolver.options(options)
-                                         .repositorySystem(repositorySystem)
-                                         .repositorySystemSession(repositorySystemSession)
-                                         .remoteRepositories(new ArrayList<RemoteRepository>())
-                                         .resolve();
+    when(archiveResolverFactory.create(eq(options), isA(RepositoryDetails.class))).thenReturn(archiveResolver);
+    when(pathResolverFactory.create(options)).thenReturn(pathResolver);
+
+    when(archiveResolver.resolve()).thenReturn(MOCK_EXECUTABLE_PATH);
+
+    RemoteRepository remoteRepository = new RemoteRepository.Builder("", "", "").build();
+
+
+    String executable = phantomJsResolver
+      .options(options)
+      .repositorySystem(repositorySystem)
+      .remoteRepositories(Collections.singletonList(remoteRepository))
+      .repositorySystemSession(repositorySystemSession)
+      .resolve();
 
     assertThat(executable).isEqualTo(MOCK_EXECUTABLE_PATH);
   }

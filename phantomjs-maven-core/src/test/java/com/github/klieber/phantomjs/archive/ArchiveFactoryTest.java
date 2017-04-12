@@ -98,10 +98,8 @@ public class ArchiveFactoryTest {
 
   @Test
   public void testBuildPhantomJSArchiveWithCustomBaseUrl() {
-    when(options.getVersion()).thenReturn("1.9.0");
-    when(options.getBaseUrl()).thenReturn("http://example.org/files");
     when(operatingSystem.getName()).thenReturn("mac");
-    Archive archive = builder.create(options);
+    Archive archive = builder.create("1.9.0", "http://example.org/files");
     assertThat(archive.getArchiveName()).isEqualTo("phantomjs-1.9.0-macosx.zip");
     assertThat(archive.getUrl()).isEqualTo("http://example.org/files/phantomjs-1.9.0-macosx.zip");
   }
@@ -109,7 +107,6 @@ public class ArchiveFactoryTest {
   @Test
   public void testBuildInvalidPlatform() {
     when(operatingSystem.getName()).thenReturn("invalid");
-    assertThatThrownBy(() -> builder.create(""))
-      .isInstanceOf(UnsupportedPlatformException.class);
+    assertThatThrownBy(() -> builder.create("")).isInstanceOf(UnsupportedPlatformException.class);
   }
 }

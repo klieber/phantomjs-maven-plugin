@@ -36,7 +36,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DownloaderFactoryTest {
@@ -58,14 +57,14 @@ public class DownloaderFactoryTest {
 
   @Test
   public void testGetDownloader_RepositoryDownloader() {
-    when(options.getSource()).thenReturn(PhantomJsResolverOptions.Source.REPOSITORY);
-    assertThat(downloaderFactory.create(options, repositoryDetails)).isInstanceOf(RepositoryDownloader.class);
+    assertThat(downloaderFactory.create(PhantomJsResolverOptions.Source.REPOSITORY, repositoryDetails))
+      .isInstanceOf(AetherDownloader.class);
   }
 
   @Test
   public void testGetDownloader_WebDownloader() {
-    when(options.getSource()).thenReturn(PhantomJsResolverOptions.Source.URL);
-    assertThat(downloaderFactory.create(options, repositoryDetails)).isInstanceOf(WebDownloader.class);
+    assertThat(downloaderFactory.create(PhantomJsResolverOptions.Source.URL, repositoryDetails))
+      .isInstanceOf(WebDownloader.class);
   }
 
 }

@@ -25,14 +25,12 @@
  */
 package com.github.klieber.phantomjs.resolve;
 
-import com.github.klieber.phantomjs.resolve.RepositoryDetails;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -52,7 +50,6 @@ public class RepositoryDetailsTest {
 
   private List<RemoteRepository> remoteRepositories = new ArrayList<>();
 
-  @InjectMocks
   private RepositoryDetails repositoryDetails;
 
   @Before
