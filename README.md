@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/klieber/phantomjs-maven-plugin.png?label=ready)](https://waffle.io/klieber/phantomjs-maven-plugin)
 phantomjs-maven-plugin
 ======================
 
